@@ -179,6 +179,9 @@ function M.setup_lsp_start()
 	vim.api.nvim_create_autocmd("FileType", {
 		pattern = vim.tbl_extend("force", {
 			"css",
+			"scss",
+			"sass",
+			"less",
 			"postcss",
 		}, user_config.filetypes or {}),
 		callback = function(args)
