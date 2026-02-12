@@ -81,7 +81,7 @@ For more stylelint options, please take a look at https://github.com/stylelint/v
 
 If the linter doesn't work for your project, there are several ways to troubleshoot.
 
-First, enable debug level logs for Nvim LSP with `vim.lsp.set_log_level('debug')`. This will show detailed requests and responses sent to and received from the ESLint language server, helping you identify issues related to configuration, handlers, or the language server startup.
+First, enable debug level logs for Nvim LSP with `vim.lsp.set_log_level('debug')`. This will show detailed requests and responses sent to and received from the Stylelint language server, helping you identify issues related to configuration, handlers, or the language server startup.
 
 If the issue seems to originate from the Stylelint language server itself, you can attach to the Node.js process for debugging:
 
