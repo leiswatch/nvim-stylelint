@@ -4,7 +4,7 @@
 
 ## Why
 
-I was inspired to make the same Neovim plugin for Stylelint as it has already been done in [esmuellert/nvim-eslint](https://github.com/esmuellert/nvim-eslint) for ESLint. The [stylelint-lsp](https://github.com/bmatcuk/stylelint-lsp) doesn't seem to be maintained anymore. Other solutions, like [none-ls](https://github.com/nvimtools/none-ls.nvim) or [efm](https://github.com/mattn/efm-langserver) apparently do not support the code actions.
+I was inspired to make the same Neovim plugin for Stylelint as it has already been done in [esmuellert/nvim-eslint](https://github.com/esmuellert/nvim-eslint) for ESLint. The [stylelint-lsp](https://github.com/bmatcuk/stylelint-lsp) doesn't seem to be maintained anymore. Other solutions, like [none-ls](https://github.com/nvimtools/none-ls.nvim) or [efm](https://github.com/mattn/efm-langserver) apparently do not support code actions.
 
 ## Features
 
