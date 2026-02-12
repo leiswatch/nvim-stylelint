@@ -25,7 +25,7 @@ npm run build-bundle
 if [ "$DEBUG_MODE" == "false" ]; then
     cd ..
     # echo "Cleaning up the repository except for ./vscode-stylelint/dist/..."
-    find ./vscode-stylelint -mindepth 1 ! -regex '^./vscode-stylelint/dist\(/.*\)?' -delete
+    find ./vscode-stylelint -mindepth 1 ! -regex '^./vscode-stylelint/dist\(/.*\)?' ! -regex '^./vscode-stylelint/LICENSE' -delete
 else
     echo "Skipping cleanup due to --debug mode."
 fi
