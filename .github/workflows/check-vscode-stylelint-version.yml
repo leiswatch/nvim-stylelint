@@ -22,7 +22,7 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          bash .github/scripts/check-vscode-stylelint-version/check-vscode-stylelint-version.sh
+          bash .github/scripts/check-vscode-stylelint-version.sh
 
       - name: Create issue for new version
         if: steps.version-check.outputs.up-to-date == 'false'
