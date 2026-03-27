@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # Version of vscode-stylelint to use
-VSCODE_STYLELINT_VERSION="2.0.2"
+VSCODE_STYLELINT_VERSION="2.2.0"
 
 # Check if --debug option is provided
 DEBUG_MODE=false
