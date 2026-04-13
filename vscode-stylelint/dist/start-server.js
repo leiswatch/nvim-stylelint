@@ -157,7 +157,7 @@ var require_messages = __commonJS({
       ErrorCodes4.jsonrpcReservedErrorRangeEnd = -32e3;
       ErrorCodes4.serverErrorEnd = -32e3;
     })(ErrorCodes3 || (exports2.ErrorCodes = ErrorCodes3 = {}));
-    var ResponseError3 = class _ResponseError extends Error {
+    var ResponseError4 = class _ResponseError extends Error {
       static {
         __name(this, "ResponseError");
       }
@@ -178,7 +178,7 @@ var require_messages = __commonJS({
         return result;
       }
     };
-    exports2.ResponseError = ResponseError3;
+    exports2.ResponseError = ResponseError4;
     var ParameterStructures = class _ParameterStructures {
       static {
         __name(this, "ParameterStructures");
@@ -5384,12 +5384,12 @@ var require_protocol_workspaceFolder = __commonJS({
       WorkspaceFoldersRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
       WorkspaceFoldersRequest2.type = new messages_1.ProtocolRequestType0(WorkspaceFoldersRequest2.method);
     })(WorkspaceFoldersRequest || (exports2.WorkspaceFoldersRequest = WorkspaceFoldersRequest = {}));
-    var DidChangeWorkspaceFoldersNotification2;
-    (function(DidChangeWorkspaceFoldersNotification3) {
-      DidChangeWorkspaceFoldersNotification3.method = "workspace/didChangeWorkspaceFolders";
-      DidChangeWorkspaceFoldersNotification3.messageDirection = messages_1.MessageDirection.clientToServer;
-      DidChangeWorkspaceFoldersNotification3.type = new messages_1.ProtocolNotificationType(DidChangeWorkspaceFoldersNotification3.method);
-    })(DidChangeWorkspaceFoldersNotification2 || (exports2.DidChangeWorkspaceFoldersNotification = DidChangeWorkspaceFoldersNotification2 = {}));
+    var DidChangeWorkspaceFoldersNotification3;
+    (function(DidChangeWorkspaceFoldersNotification4) {
+      DidChangeWorkspaceFoldersNotification4.method = "workspace/didChangeWorkspaceFolders";
+      DidChangeWorkspaceFoldersNotification4.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidChangeWorkspaceFoldersNotification4.type = new messages_1.ProtocolNotificationType(DidChangeWorkspaceFoldersNotification4.method);
+    })(DidChangeWorkspaceFoldersNotification3 || (exports2.DidChangeWorkspaceFoldersNotification = DidChangeWorkspaceFoldersNotification3 = {}));
   }
 });
 
@@ -6740,15 +6740,15 @@ var require_api2 = __commonJS({
     Object.defineProperty(exports2, "createProtocolConnection", { enumerable: true, get: /* @__PURE__ */ __name(function() {
       return connection_1.createProtocolConnection;
     }, "get") });
-    var LSPErrorCodes;
-    (function(LSPErrorCodes2) {
-      LSPErrorCodes2.lspReservedErrorRangeStart = -32899;
-      LSPErrorCodes2.RequestFailed = -32803;
-      LSPErrorCodes2.ServerCancelled = -32802;
-      LSPErrorCodes2.ContentModified = -32801;
-      LSPErrorCodes2.RequestCancelled = -32800;
-      LSPErrorCodes2.lspReservedErrorRangeEnd = -32800;
-    })(LSPErrorCodes || (exports2.LSPErrorCodes = LSPErrorCodes = {}));
+    var LSPErrorCodes2;
+    (function(LSPErrorCodes3) {
+      LSPErrorCodes3.lspReservedErrorRangeStart = -32899;
+      LSPErrorCodes3.RequestFailed = -32803;
+      LSPErrorCodes3.ServerCancelled = -32802;
+      LSPErrorCodes3.ContentModified = -32801;
+      LSPErrorCodes3.RequestCancelled = -32800;
+      LSPErrorCodes3.lspReservedErrorRangeEnd = -32800;
+    })(LSPErrorCodes2 || (exports2.LSPErrorCodes = LSPErrorCodes2 = {}));
   }
 });
 
@@ -25377,13 +25377,14 @@ var init_stylelint_options_service = __esm({
   }
 });
 
-// packages/language-server/build/server/services/workspace/workspace-folder.service.js
-var __esDecorate4, __runInitializers4, WorkspaceFolderService;
-var init_workspace_folder_service = __esm({
-  "packages/language-server/build/server/services/workspace/workspace-folder.service.js"() {
+// packages/language-server/build/server/services/infrastructure/notification.service.js
+var __esDecorate4, __runInitializers4, NotificationService;
+var init_notification_service = __esm({
+  "packages/language-server/build/server/services/infrastructure/notification.service.js"() {
     "use strict";
     init_di();
     init_tokens2();
+    init_logging_service();
     __esDecorate4 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
@@ -25424,16 +25425,16 @@ var init_workspace_folder_service = __esm({
       }
       return useValue ? value : void 0;
     };
-    WorkspaceFolderService = (() => {
+    NotificationService = (() => {
       let _classDecorators = [inject({
-        inject: [PathIsInsideToken, UriModuleToken, NormalizeFsPathToken]
+        inject: [lspConnectionToken, loggingServiceToken]
       })];
       let _classDescriptor;
       let _classExtraInitializers = [];
       let _classThis;
-      var WorkspaceFolderService2 = class {
+      var NotificationService2 = class {
         static {
-          __name(this, "WorkspaceFolderService");
+          __name(this, "NotificationService");
         }
         static {
           _classThis = this;
@@ -25441,56 +25442,91 @@ var init_workspace_folder_service = __esm({
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
           __esDecorate4(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkspaceFolderService2 = _classThis = _classDescriptor.value;
+          NotificationService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
           __runInitializers4(_classThis, _classExtraInitializers);
         }
-        #pathIsInside;
-        #uri;
-        #normalizeFsPath;
-        constructor(pathIsInsideFn, uriModule, normalizeFsPathFn) {
-          this.#pathIsInside = pathIsInsideFn;
-          this.#uri = uriModule;
-          this.#normalizeFsPath = normalizeFsPathFn;
-        }
         /**
-         * Gets the workspace folder for a given document. If the document is an
-         * untitled file, then the first open workspace folder is returned.
-         * @param connection The language server connection to use to get available
-         * workspace folders.
-         * @param document The document to get the workspace folder for.
+         * The connection to the server.
          */
-        async getWorkspaceFolder(connection2, document) {
-          const { scheme, fsPath } = this.#uri.parse(document.uri);
-          if (scheme === "untitled") {
-            const uri = (await connection2.workspace.getWorkspaceFolders())?.[0]?.uri;
-            return uri ? this.#uri.parse(uri).fsPath : void 0;
-          }
-          if (!fsPath) {
-            return void 0;
-          }
-          const normalizedDocumentPath = this.#normalizeFsPath(fsPath);
-          if (!normalizedDocumentPath) {
-            return void 0;
-          }
-          const workspaceFolders = await connection2.workspace.getWorkspaceFolders();
-          if (!workspaceFolders) {
-            return void 0;
-          }
-          for (const { uri } of workspaceFolders) {
-            const workspacePath = this.#uri.parse(uri).fsPath;
-            const normalizedWorkspacePath = this.#normalizeFsPath(workspacePath);
-            if (!normalizedWorkspacePath) {
-              continue;
-            }
-            if (this.#pathIsInside(normalizedDocumentPath, normalizedWorkspacePath)) {
-              return workspacePath;
+        #connection;
+        /**
+         * The logger to use.
+         */
+        #logger;
+        /**
+         * The registered notification handlers.
+         */
+        #notifications = /* @__PURE__ */ new Map();
+        /**
+         * Instantiates a new notification manager.
+         */
+        constructor(connection2, loggingService) {
+          this.#connection = connection2;
+          this.#logger = loggingService.createLogger(NotificationService2);
+        }
+        dispose() {
+          this.#logger?.debug("Disposing notification manager");
+          for (const [type] of this.#notifications) {
+            if (type) {
+              this.#connection.onNotification(type, () => void 0);
+            } else {
+              this.#connection.onNotification(() => void 0);
             }
           }
-          return void 0;
+          this.#notifications.clear();
+        }
+        async #handleNotification(key, params) {
+          this.#logger?.debug("Received notification", {
+            notificationType: key ?? "<all>",
+            params
+          });
+          const handlers = this.#notifications.get(key);
+          const funcs = [];
+          for (const handler of handlers) {
+            funcs.push(async () => {
+              try {
+                await handler(...params);
+              } catch (error) {
+                this.#logger?.error("Error handling notification", {
+                  notificationType: key ?? "<all>",
+                  error
+                });
+              }
+            });
+          }
+          await Promise.all(funcs.map((func) => func()));
+        }
+        on(type, handler) {
+          const isStar = typeof type === "function";
+          const [key, func] = isStar ? [void 0, type] : [type, handler];
+          if (!func) {
+            throw new Error("Handler must be defined");
+          }
+          const disposable = {
+            dispose: /* @__PURE__ */ __name(() => {
+              this.#notifications.get(key)?.delete(func);
+            }, "dispose")
+          };
+          const existing = this.#notifications.get(key);
+          if (existing) {
+            existing.add(func);
+            return disposable;
+          }
+          this.#notifications.set(key, /* @__PURE__ */ new Set([func]));
+          if (isStar) {
+            this.#connection.onNotification((...params) => this.#handleNotification(void 0, params));
+            return disposable;
+          }
+          this.#connection.onNotification(
+            type,
+            // eslint-disable-next-line @typescript-eslint/no-misused-promises
+            (...params) => this.#handleNotification(type, params)
+          );
+          return disposable;
         }
       };
-      return WorkspaceFolderService2 = _classThis;
+      return NotificationService2 = _classThis;
     })();
   }
 });
@@ -27430,6 +27466,21 @@ var init_rule_code_actions_collection = __esm({
   }
 });
 
+// packages/language-server/build/server/utils/lsp/throw-if-cancelled.js
+function throwIfCancelled(token) {
+  if (token.isCancellationRequested) {
+    throw new import_vscode_languageserver_protocol.ResponseError(import_vscode_languageserver_protocol.LSPErrorCodes.RequestCancelled, "Request cancelled");
+  }
+}
+var import_vscode_languageserver_protocol;
+var init_throw_if_cancelled = __esm({
+  "packages/language-server/build/server/utils/lsp/throw-if-cancelled.js"() {
+    "use strict";
+    import_vscode_languageserver_protocol = __toESM(require_main3(), 1);
+    __name(throwIfCancelled, "throwIfCancelled");
+  }
+});
+
 // packages/language-server/build/server/utils/lsp/types.js
 var init_types5 = __esm({
   "packages/language-server/build/server/utils/lsp/types.js"() {
@@ -27444,6 +27495,7 @@ var init_lsp = __esm({
     init_create_disable_completion_item();
     init_display_error();
     init_rule_code_actions_collection();
+    init_throw_if_cancelled();
     init_types5();
   }
 });
@@ -27520,16 +27572,253 @@ var init_utils = __esm({
   }
 });
 
-// packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js
-var import_node_path2, import_node_process3, __esDecorate5, __runInitializers5, packageManifestFilename, PackageRootCacheService;
-var init_package_root_cache_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js"() {
+// packages/language-server/build/server/decorators.js
+function isLanguageServerServiceInstance(instance) {
+  return typeof instance === "object" && instance !== null && lspServiceMetadataKey in instance;
+}
+function isLanguageServerServiceConstructor(target) {
+  return lspServiceConstructorMetadataKey in target && target[lspServiceConstructorMetadataKey] === true;
+}
+function ensureLanguageServerServiceMetadata(instance) {
+  if (typeof instance !== "object" || instance === null) {
+    throw new Error("Language server services must be class instances.");
+  }
+  const ctor = instance.constructor;
+  if (!isLanguageServerServiceConstructor(ctor)) {
+    throw new Error("@lspService() must decorate a class before using language server service decorators.");
+  }
+  if (isLanguageServerServiceInstance(instance)) {
+    return instance[lspServiceMetadataKey];
+  }
+  const metadata = {
+    commandHandlers: [],
+    disposables: [],
+    connectionHandlers: [],
+    initializerHandlers: [],
+    notificationHandlers: [],
+    textDocumentHandlers: [],
+    shutdownHandlers: []
+  };
+  Object.defineProperty(instance, lspServiceMetadataKey, {
+    value: metadata,
+    writable: false,
+    configurable: false,
+    enumerable: false
+  });
+  return metadata;
+}
+function getLanguageServerServiceMetadata(instance) {
+  if (!isLanguageServerServiceInstance(instance)) {
+    return void 0;
+  }
+  return instance[lspServiceMetadataKey];
+}
+function registerNotificationHandler(manager, descriptor) {
+  const notificationType = descriptor.type;
+  if (typeof notificationType === "undefined") {
+    return manager.on(descriptor.handler);
+  }
+  return manager.on(notificationType, descriptor.handler);
+}
+function registerNotificationHandlers(metadata, resolve) {
+  if (metadata.notificationHandlers.length === 0) {
+    return;
+  }
+  const manager = resolve(NotificationService);
+  for (const descriptor of metadata.notificationHandlers) {
+    const disposable = registerNotificationHandler(manager, descriptor);
+    metadata.disposables.push(disposable);
+  }
+}
+function registerConnectionHandler(connection2, descriptor) {
+  switch (descriptor.kind) {
+    case "completion":
+      return connection2.onCompletion((params, token, workDone, resultProgress) => descriptor.handler(params, token, workDone, resultProgress));
+    case "codeAction":
+      return connection2.onCodeAction((params, token, workDone, resultProgress) => descriptor.handler(params, token, workDone, resultProgress));
+    case "documentFormatting":
+      return connection2.onDocumentFormatting((params, token, workDone, resultProgress) => descriptor.handler(params, token, workDone, resultProgress));
+    default: {
+      const neverDescriptor = descriptor;
+      throw new Error(`Unsupported connection handler kind: ${String(neverDescriptor)}`);
+    }
+  }
+}
+function registerConnectionHandlers(metadata, resolve) {
+  if (metadata.connectionHandlers.length === 0) {
+    return;
+  }
+  const connection2 = resolve(lspConnectionToken);
+  for (const descriptor of metadata.connectionHandlers) {
+    const disposable = registerConnectionHandler(connection2, descriptor);
+    metadata.disposables.push(disposable);
+  }
+}
+function lspService() {
+  const runtimeServiceDecorator = runtimeService();
+  return (target, context) => {
+    const { kind } = context;
+    if (kind !== "class") {
+      throw new Error("@lspService() can only be used on a class.");
+    }
+    const ctor = target;
+    runtimeServiceDecorator(target, context);
+    Object.defineProperty(ctor, lspServiceConstructorMetadataKey, {
+      value: true,
+      writable: false,
+      configurable: false,
+      enumerable: false
+    });
+    registerInitializationHook(ctor, ({ instance, resolve }) => {
+      const metadata = ensureLanguageServerServiceMetadata(instance);
+      registerNotificationHandlers(metadata, resolve);
+      registerConnectionHandlers(metadata, resolve);
+    });
+  };
+}
+function command(commandId, options = {}) {
+  return (target, { kind, name, addInitializer }) => {
+    if (kind !== "method") {
+      throw new Error("@command(...) can only be used on a method.");
+    }
+    addInitializer(function() {
+      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
+      const bound = target.bind(this);
+      instanceMetadata.commandHandlers.push({
+        commandId,
+        methodName: name ?? target.name,
+        handler: bound,
+        options
+      });
+    });
+  };
+}
+function initialize() {
+  return (target, { kind, addInitializer }) => {
+    if (kind !== "method") {
+      throw new Error("@initialize() can only be used on a method.");
+    }
+    addInitializer(function() {
+      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
+      const bound = target.bind(this);
+      instanceMetadata.initializerHandlers.push(bound);
+    });
+  };
+}
+function textDocumentEvent(event) {
+  return (target, { kind, addInitializer }) => {
+    if (kind !== "method") {
+      throw new Error("@textDocumentEvent(...) can only be used on a method.");
+    }
+    addInitializer(function() {
+      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
+      const bound = target.bind(this);
+      instanceMetadata.textDocumentHandlers.push({
+        event,
+        handler: bound
+      });
+    });
+  };
+}
+function notification(type) {
+  return (target, { kind, addInitializer }) => {
+    if (kind !== "method") {
+      throw new Error("@notification(...) can only be used on a method.");
+    }
+    addInitializer(function() {
+      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
+      const bound = target.bind(this);
+      instanceMetadata.notificationHandlers.push({
+        type,
+        handler: bound
+      });
+    });
+  };
+}
+function createConnectionHandlerDecorator(kind, decoratorName) {
+  return (target, { kind: decoratorKind, addInitializer }) => {
+    if (decoratorKind !== "method") {
+      throw new Error(`${decoratorName} can only be used on a method.`);
+    }
+    addInitializer(function() {
+      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
+      const bound = target.bind(this);
+      const descriptor = {
+        kind,
+        handler: bound
+      };
+      instanceMetadata.connectionHandlers.push(descriptor);
+    });
+  };
+}
+function completionRequest() {
+  return createConnectionHandlerDecorator("completion", "@completionRequest()");
+}
+function codeActionRequest() {
+  return createConnectionHandlerDecorator("codeAction", "@codeActionRequest()");
+}
+function documentFormattingRequest() {
+  return createConnectionHandlerDecorator("documentFormatting", "@documentFormattingRequest()");
+}
+function shutdown() {
+  return (target, { kind, addInitializer }) => {
+    if (kind !== "method") {
+      throw new Error("@shutdown() can only be used on a method.");
+    }
+    addInitializer(function() {
+      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
+      const bound = target.bind(this);
+      instanceMetadata.shutdownHandlers.push(bound);
+    });
+  };
+}
+var lspServiceMetadataKey, lspServiceConstructorMetadataKey;
+var init_decorators2 = __esm({
+  "packages/language-server/build/server/decorators.js"() {
     "use strict";
-    import_node_path2 = __toESM(require("node:path"), 1);
-    import_node_process3 = __toESM(require("node:process"), 1);
     init_di();
+    init_notification_service();
+    init_tokens2();
     init_utils();
-    init_package_root_service();
+    lspServiceMetadataKey = "__languageServerServiceMetadata__";
+    lspServiceConstructorMetadataKey = "__isLanguageServerService__";
+    __name(isLanguageServerServiceInstance, "isLanguageServerServiceInstance");
+    __name(isLanguageServerServiceConstructor, "isLanguageServerServiceConstructor");
+    __name(ensureLanguageServerServiceMetadata, "ensureLanguageServerServiceMetadata");
+    __name(getLanguageServerServiceMetadata, "getLanguageServerServiceMetadata");
+    __name(registerNotificationHandler, "registerNotificationHandler");
+    __name(registerNotificationHandlers, "registerNotificationHandlers");
+    __name(registerConnectionHandler, "registerConnectionHandler");
+    __name(registerConnectionHandlers, "registerConnectionHandlers");
+    __name(lspService, "lspService");
+    __name(command, "command");
+    __name(initialize, "initialize");
+    __name(textDocumentEvent, "textDocumentEvent");
+    __name(notification, "notification");
+    __name(createConnectionHandlerDecorator, "createConnectionHandlerDecorator");
+    __name(completionRequest, "completionRequest");
+    __name(codeActionRequest, "codeActionRequest");
+    __name(documentFormattingRequest, "documentFormattingRequest");
+    __name(shutdown, "shutdown");
+  }
+});
+
+// packages/language-server/build/server/services/workspace/workspace-folder.service.js
+var import_vscode_languageserver_protocol2, __runInitializers5, __esDecorate5, WorkspaceFolderService;
+var init_workspace_folder_service = __esm({
+  "packages/language-server/build/server/services/workspace/workspace-folder.service.js"() {
+    "use strict";
+    import_vscode_languageserver_protocol2 = __toESM(require_main3(), 1);
+    init_di();
+    init_decorators2();
+    init_tokens2();
+    __runInitializers5 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
     __esDecorate5 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
@@ -27563,7 +27852,142 @@ var init_package_root_cache_service = __esm({
       if (target) Object.defineProperty(target, contextIn.name, descriptor);
       done = true;
     };
-    __runInitializers5 = function(thisArg, initializers, value) {
+    WorkspaceFolderService = (() => {
+      let _classDecorators = [lspService(), inject({
+        inject: [PathIsInsideToken, UriModuleToken, NormalizeFsPathToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      let _instanceExtraInitializers = [];
+      let _clearCache_decorators;
+      var WorkspaceFolderService2 = class {
+        static {
+          __name(this, "WorkspaceFolderService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          _clearCache_decorators = [notification(import_vscode_languageserver_protocol2.DidChangeWorkspaceFoldersNotification.type)];
+          __esDecorate5(this, null, _clearCache_decorators, { kind: "method", name: "clearCache", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "clearCache" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.clearCache, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
+          __esDecorate5(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkspaceFolderService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers5(_classThis, _classExtraInitializers);
+        }
+        #pathIsInside = __runInitializers5(this, _instanceExtraInitializers);
+        #uri;
+        #normalizeFsPath;
+        #cachedFolders;
+        constructor(pathIsInsideFn, uriModule, normalizeFsPathFn) {
+          this.#pathIsInside = pathIsInsideFn;
+          this.#uri = uriModule;
+          this.#normalizeFsPath = normalizeFsPathFn;
+        }
+        /**
+         * Clears the cached workspace folders when the set of workspace folders
+         * changes.
+         */
+        clearCache() {
+          this.#cachedFolders = void 0;
+        }
+        /**
+         * Gets the workspace folder for a given document. If the document is an
+         * untitled file, then the first open workspace folder is returned.
+         * @param connection The language server connection to use to get available
+         * workspace folders.
+         * @param document The document to get the workspace folder for.
+         */
+        async getWorkspaceFolder(connection2, document) {
+          const { scheme, fsPath } = this.#uri.parse(document.uri);
+          if (scheme === "untitled") {
+            const folders = await this.#getWorkspaceFolders(connection2);
+            const uri = folders?.[0]?.uri;
+            return uri ? this.#uri.parse(uri).fsPath : void 0;
+          }
+          if (!fsPath) {
+            return void 0;
+          }
+          const normalizedDocumentPath = this.#normalizeFsPath(fsPath);
+          if (!normalizedDocumentPath) {
+            return void 0;
+          }
+          const workspaceFolders = await this.#getWorkspaceFolders(connection2);
+          if (!workspaceFolders) {
+            return void 0;
+          }
+          for (const { uri } of workspaceFolders) {
+            const workspacePath = this.#uri.parse(uri).fsPath;
+            const normalizedWorkspacePath = this.#normalizeFsPath(workspacePath);
+            if (!normalizedWorkspacePath) {
+              continue;
+            }
+            if (this.#pathIsInside(normalizedDocumentPath, normalizedWorkspacePath)) {
+              return workspacePath;
+            }
+          }
+          return void 0;
+        }
+        async #getWorkspaceFolders(connection2) {
+          if (this.#cachedFolders !== void 0) {
+            return this.#cachedFolders;
+          }
+          const folders = await connection2.workspace.getWorkspaceFolders();
+          this.#cachedFolders = folders ?? [];
+          return this.#cachedFolders;
+        }
+      };
+      return WorkspaceFolderService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js
+var import_node_path2, import_node_process3, __esDecorate6, __runInitializers6, packageManifestFilename, PackageRootCacheService;
+var init_package_root_cache_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js"() {
+    "use strict";
+    import_node_path2 = __toESM(require("node:path"), 1);
+    import_node_process3 = __toESM(require("node:process"), 1);
+    init_di();
+    init_utils();
+    init_package_root_service();
+    __esDecorate6 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers6 = function(thisArg, initializers, value) {
       var useValue = arguments.length > 2;
       for (var i = 0; i < initializers.length; i++) {
         value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
@@ -27587,10 +28011,10 @@ var init_package_root_cache_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate5(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate6(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           PackageRootCacheService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers5(_classThis, _classExtraInitializers);
+          __runInitializers6(_classThis, _classExtraInitializers);
         }
         #packageRootFinder;
         #cache = /* @__PURE__ */ new Map();
@@ -27676,7 +28100,7 @@ var init_package_root_cache_service = __esm({
 });
 
 // packages/language-server/build/server/services/stylelint-runtime/pnp-configuration-cache.service.js
-var import_promises2, import_node_path3, import_node_process4, __esDecorate6, __runInitializers6, pnpRegisterFilenames, pnpLoaderFilename, pnpConfigFilenames, resolvePnPConfigKey, PnPConfigurationCacheService;
+var import_promises2, import_node_path3, import_node_process4, __esDecorate7, __runInitializers7, pnpRegisterFilenames, pnpLoaderFilename, pnpConfigFilenames, resolvePnPConfigKey, PnPConfigurationCacheService;
 var init_pnp_configuration_cache_service = __esm({
   "packages/language-server/build/server/services/stylelint-runtime/pnp-configuration-cache.service.js"() {
     "use strict";
@@ -27686,7 +28110,7 @@ var init_pnp_configuration_cache_service = __esm({
     init_di();
     init_utils();
     init_tokens2();
-    __esDecorate6 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    __esDecorate7 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
         return f;
@@ -27719,7 +28143,7 @@ var init_pnp_configuration_cache_service = __esm({
       if (target) Object.defineProperty(target, contextIn.name, descriptor);
       done = true;
     };
-    __runInitializers6 = function(thisArg, initializers, value) {
+    __runInitializers7 = function(thisArg, initializers, value) {
       var useValue = arguments.length > 2;
       for (var i = 0; i < initializers.length; i++) {
         value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
@@ -27746,10 +28170,10 @@ var init_pnp_configuration_cache_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate6(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate7(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           PnPConfigurationCacheService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers6(_classThis, _classExtraInitializers);
+          __runInitializers7(_classThis, _classExtraInitializers);
         }
         #fs;
         #path;
@@ -27885,7 +28309,7 @@ var init_pnp_configuration_cache_service = __esm({
 });
 
 // packages/language-server/build/server/services/stylelint-runtime/worker-environment.service.js
-var __esDecorate7, __runInitializers7, WorkerEnvironmentService;
+var __esDecorate8, __runInitializers8, WorkerEnvironmentService;
 var init_worker_environment_service = __esm({
   "packages/language-server/build/server/services/stylelint-runtime/worker-environment.service.js"() {
     "use strict";
@@ -27894,7 +28318,7 @@ var init_worker_environment_service = __esm({
     init_tokens2();
     init_package_root_service();
     init_pnp_configuration_cache_service();
-    __esDecorate7 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    __esDecorate8 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
         return f;
@@ -27927,7 +28351,7 @@ var init_worker_environment_service = __esm({
       if (target) Object.defineProperty(target, contextIn.name, descriptor);
       done = true;
     };
-    __runInitializers7 = function(thisArg, initializers, value) {
+    __runInitializers8 = function(thisArg, initializers, value) {
       var useValue = arguments.length > 2;
       for (var i = 0; i < initializers.length; i++) {
         value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
@@ -27950,10 +28374,10 @@ var init_worker_environment_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate7(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate8(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           WorkerEnvironmentService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers7(_classThis, _classExtraInitializers);
+          __runInitializers8(_classThis, _classExtraInitializers);
         }
         #fs;
         #path;
@@ -28036,101 +28460,13 @@ var init_worker_environment_service = __esm({
 });
 
 // packages/language-server/build/server/services/stylelint-runtime/worker-process.service.js
-var __esDecorate8, __runInitializers8, WorkerProcessService;
+var __esDecorate9, __runInitializers9, WorkerProcessService;
 var init_worker_process_service = __esm({
   "packages/language-server/build/server/services/stylelint-runtime/worker-process.service.js"() {
     "use strict";
     init_di();
     init_worker_process();
     init_logging_service();
-    __esDecorate8 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers8 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    WorkerProcessService = (() => {
-      let _classDecorators = [inject({
-        inject: [loggingServiceToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkerProcessService2 = class {
-        static {
-          __name(this, "WorkerProcessService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate8(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkerProcessService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers8(_classThis, _classExtraInitializers);
-        }
-        #logger;
-        constructor(loggingService) {
-          this.#logger = loggingService.createLogger(WorkerProcessService2);
-        }
-        createWorkerProcess(workerRoot, idleTimeoutMs = defaultWorkerIdleTimeoutMs, pnpConfig) {
-          this.#logger.debug("Creating Stylelint worker process", { workerRoot });
-          return new StylelintWorkerProcess(workerRoot, this.#logger.child({ workerRoot }), idleTimeoutMs, pnpConfig);
-        }
-      };
-      return WorkerProcessService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js
-var import_node_path4, import_node_process5, __esDecorate9, __runInitializers9, maxConsecutiveCrashes, workerRecoveryCooldownMs, suppressionNotificationIntervalMs, resolvePathKey, WorkerRegistryService;
-var init_worker_registry_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js"() {
-    "use strict";
-    import_node_path4 = __toESM(require("node:path"), 1);
-    import_node_process5 = __toESM(require("node:process"), 1);
-    init_di();
-    init_utils();
-    init_worker_process();
-    init_logging_service();
-    init_pnp_configuration_cache_service();
-    init_worker_process_service();
     __esDecorate9 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
@@ -28171,6 +28507,94 @@ var init_worker_registry_service = __esm({
       }
       return useValue ? value : void 0;
     };
+    WorkerProcessService = (() => {
+      let _classDecorators = [inject({
+        inject: [loggingServiceToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var WorkerProcessService2 = class {
+        static {
+          __name(this, "WorkerProcessService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate9(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkerProcessService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers9(_classThis, _classExtraInitializers);
+        }
+        #logger;
+        constructor(loggingService) {
+          this.#logger = loggingService.createLogger(WorkerProcessService2);
+        }
+        createWorkerProcess(workerRoot, idleTimeoutMs = defaultWorkerIdleTimeoutMs, pnpConfig) {
+          this.#logger.debug("Creating Stylelint worker process", { workerRoot });
+          return new StylelintWorkerProcess(workerRoot, this.#logger.child({ workerRoot }), idleTimeoutMs, pnpConfig);
+        }
+      };
+      return WorkerProcessService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js
+var import_node_path4, import_node_process5, __esDecorate10, __runInitializers10, maxConsecutiveCrashes, workerRecoveryCooldownMs, suppressionNotificationIntervalMs, resolvePathKey, WorkerRegistryService;
+var init_worker_registry_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js"() {
+    "use strict";
+    import_node_path4 = __toESM(require("node:path"), 1);
+    import_node_process5 = __toESM(require("node:process"), 1);
+    init_di();
+    init_utils();
+    init_worker_process();
+    init_logging_service();
+    init_pnp_configuration_cache_service();
+    init_worker_process_service();
+    __esDecorate10 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers10 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
     maxConsecutiveCrashes = 3;
     workerRecoveryCooldownMs = 30 * 1e3;
     suppressionNotificationIntervalMs = 60 * 1e3;
@@ -28194,10 +28618,10 @@ var init_worker_registry_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate9(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate10(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           WorkerRegistryService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers9(_classThis, _classExtraInitializers);
+          __runInitializers10(_classThis, _classExtraInitializers);
         }
         #logger;
         #idleTimeoutMs;
@@ -28426,7 +28850,7 @@ var init_worker_registry_service = __esm({
 });
 
 // packages/language-server/build/server/services/stylelint-runtime/workspace-stylelint.service.js
-var __esDecorate10, __runInitializers10, WorkspaceStylelintService;
+var __esDecorate11, __runInitializers11, WorkspaceStylelintService;
 var init_workspace_stylelint_service = __esm({
   "packages/language-server/build/server/services/stylelint-runtime/workspace-stylelint.service.js"() {
     "use strict";
@@ -28437,7 +28861,7 @@ var init_workspace_stylelint_service = __esm({
     init_pnp_configuration_cache_service();
     init_worker_environment_service();
     init_worker_registry_service();
-    __esDecorate10 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    __esDecorate11 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
         return f;
@@ -28470,7 +28894,7 @@ var init_workspace_stylelint_service = __esm({
       if (target) Object.defineProperty(target, contextIn.name, descriptor);
       done = true;
     };
-    __runInitializers10 = function(thisArg, initializers, value) {
+    __runInitializers11 = function(thisArg, initializers, value) {
       var useValue = arguments.length > 2;
       for (var i = 0; i < initializers.length; i++) {
         value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
@@ -28499,10 +28923,10 @@ var init_workspace_stylelint_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate10(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate11(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           WorkspaceStylelintService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers10(_classThis, _classExtraInitializers);
+          __runInitializers11(_classThis, _classExtraInitializers);
         }
         #logger;
         #packageRootCache;
@@ -28625,7 +29049,7 @@ var init_workspace_stylelint_service = __esm({
 });
 
 // packages/language-server/build/server/services/stylelint-runtime/stylelint-runner.service.js
-var __esDecorate11, __runInitializers11, noopFormatter, StylelintRunnerService;
+var __esDecorate12, __runInitializers12, noopFormatter, StylelintRunnerService;
 var init_stylelint_runner_service = __esm({
   "packages/language-server/build/server/services/stylelint-runtime/stylelint-runner.service.js"() {
     "use strict";
@@ -28640,7 +29064,7 @@ var init_stylelint_runner_service = __esm({
     init_stylelint_options_service();
     init_workspace_folder_service();
     init_workspace_stylelint_service();
-    __esDecorate11 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    __esDecorate12 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
         return f;
@@ -28673,7 +29097,7 @@ var init_stylelint_runner_service = __esm({
       if (target) Object.defineProperty(target, contextIn.name, descriptor);
       done = true;
     };
-    __runInitializers11 = function(thisArg, initializers, value) {
+    __runInitializers12 = function(thisArg, initializers, value) {
       var useValue = arguments.length > 2;
       for (var i = 0; i < initializers.length; i++) {
         value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
@@ -28708,10 +29132,10 @@ var init_stylelint_runner_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate11(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate12(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           StylelintRunnerService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers11(_classThis, _classExtraInitializers);
+          __runInitializers12(_classThis, _classExtraInitializers);
         }
         /**
          * The language server connection.
@@ -29128,7 +29552,7 @@ function extractStylelintSettings(settings) {
   }
   return settings;
 }
-var __esDecorate12, __runInitializers12, WorkspaceOptionsService;
+var __esDecorate13, __runInitializers13, optionsCacheTtl, WorkspaceOptionsService;
 var init_workspace_options_service = __esm({
   "packages/language-server/build/server/services/workspace/workspace-options.service.js"() {
     "use strict";
@@ -29137,134 +29561,6 @@ var init_workspace_options_service = __esm({
     init_default_options();
     init_tokens2();
     init_logging_service();
-    __esDecorate12 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers12 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    __name(extractStylelintSettings, "extractStylelintSettings");
-    WorkspaceOptionsService = (() => {
-      let _classDecorators = [inject({
-        inject: [lspConnectionToken, loggingServiceToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkspaceOptionsService2 = class {
-        static {
-          __name(this, "WorkspaceOptionsService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate12(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkspaceOptionsService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers12(_classThis, _classExtraInitializers);
-        }
-        #connection;
-        #logger;
-        #supportsScopedConfiguration = false;
-        #globalOptions = mergeOptionsWithDefaults({}, defaultLanguageServerOptions);
-        #inFlightRequests = /* @__PURE__ */ new Map();
-        constructor(connection2, loggingService) {
-          this.#connection = connection2;
-          this.#logger = loggingService.createLogger(WorkspaceOptionsService2);
-        }
-        setSupportsWorkspaceConfiguration(supported) {
-          this.#supportsScopedConfiguration = supported;
-          if (!supported) {
-            this.clearCache();
-          }
-        }
-        #buildOptions(configuration) {
-          const merged = mergeOptionsWithDefaults(extractStylelintSettings(configuration) ?? {}, defaultLanguageServerOptions);
-          Object.freeze(merged);
-          return merged;
-        }
-        updateGlobalOptions(settings) {
-          this.#globalOptions = this.#buildOptions(settings);
-        }
-        clearCache() {
-          this.#inFlightRequests.clear();
-        }
-        delete(resource) {
-          this.#inFlightRequests.delete(resource);
-        }
-        async getOptions(resource) {
-          if (!this.#supportsScopedConfiguration) {
-            return this.#globalOptions;
-          }
-          let request = this.#inFlightRequests.get(resource);
-          if (!request) {
-            request = this.#requestScopedOptions(resource);
-            this.#inFlightRequests.set(resource, request);
-            request.catch(() => void 0).finally(() => {
-              this.#inFlightRequests.delete(resource);
-            });
-          }
-          return request;
-        }
-        async #requestScopedOptions(resource) {
-          this.#logger?.debug("Requesting workspace options from client", { resource });
-          const configuration = await this.#connection.workspace.getConfiguration({
-            scopeUri: resource,
-            section: "stylelint"
-          });
-          return this.#buildOptions(configuration);
-        }
-      };
-      return WorkspaceOptionsService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/documents/document-fixes.service.js
-var __esDecorate13, __runInitializers13, getFixesFnToken, DocumentFixesService;
-var init_document_fixes_service = __esm({
-  "packages/language-server/build/server/services/documents/document-fixes.service.js"() {
-    "use strict";
-    init_di();
-    init_logging_service();
-    init_stylelint_runner_service();
-    init_workspace_options_service();
     __esDecorate13 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
@@ -29305,6 +29601,147 @@ var init_document_fixes_service = __esm({
       }
       return useValue ? value : void 0;
     };
+    __name(extractStylelintSettings, "extractStylelintSettings");
+    optionsCacheTtl = 2e3;
+    WorkspaceOptionsService = (() => {
+      let _classDecorators = [inject({
+        inject: [lspConnectionToken, loggingServiceToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var WorkspaceOptionsService2 = class {
+        static {
+          __name(this, "WorkspaceOptionsService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate13(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkspaceOptionsService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers13(_classThis, _classExtraInitializers);
+        }
+        #connection;
+        #logger;
+        #supportsScopedConfiguration = false;
+        #globalOptions = mergeOptionsWithDefaults({}, defaultLanguageServerOptions);
+        #inFlightRequests = /* @__PURE__ */ new Map();
+        #cachedOptions = /* @__PURE__ */ new Map();
+        constructor(connection2, loggingService) {
+          this.#connection = connection2;
+          this.#logger = loggingService.createLogger(WorkspaceOptionsService2);
+        }
+        setSupportsWorkspaceConfiguration(supported) {
+          this.#supportsScopedConfiguration = supported;
+          if (!supported) {
+            this.clearCache();
+          }
+        }
+        #buildOptions(configuration) {
+          const merged = mergeOptionsWithDefaults(extractStylelintSettings(configuration) ?? {}, defaultLanguageServerOptions);
+          Object.freeze(merged);
+          return merged;
+        }
+        updateGlobalOptions(settings) {
+          this.#globalOptions = this.#buildOptions(settings);
+        }
+        clearCache() {
+          this.#inFlightRequests.clear();
+          this.#cachedOptions.clear();
+        }
+        delete(resource) {
+          this.#inFlightRequests.delete(resource);
+          this.#cachedOptions.delete(resource);
+        }
+        async getOptions(resource) {
+          if (!this.#supportsScopedConfiguration) {
+            return this.#globalOptions;
+          }
+          const cached = this.#cachedOptions.get(resource);
+          if (cached && Date.now() < cached.expiresAt) {
+            return cached.options;
+          }
+          let request = this.#inFlightRequests.get(resource);
+          if (!request) {
+            request = this.#requestScopedOptions(resource);
+            this.#inFlightRequests.set(resource, request);
+            request.then((options) => {
+              this.#cachedOptions.set(resource, {
+                options,
+                expiresAt: Date.now() + optionsCacheTtl
+              });
+            }).catch(() => void 0).finally(() => {
+              this.#inFlightRequests.delete(resource);
+            });
+          }
+          return request;
+        }
+        async #requestScopedOptions(resource) {
+          this.#logger?.debug("Requesting workspace options from client", { resource });
+          const configuration = await this.#connection.workspace.getConfiguration({
+            scopeUri: resource,
+            section: "stylelint"
+          });
+          return this.#buildOptions(configuration);
+        }
+      };
+      return WorkspaceOptionsService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/documents/document-fixes.service.js
+var __esDecorate14, __runInitializers14, getFixesFnToken, DocumentFixesService;
+var init_document_fixes_service = __esm({
+  "packages/language-server/build/server/services/documents/document-fixes.service.js"() {
+    "use strict";
+    init_di();
+    init_logging_service();
+    init_stylelint_runner_service();
+    init_workspace_options_service();
+    __esDecorate14 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers14 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
     getFixesFnToken = createToken("DocumentFixesGetFixesFn");
     DocumentFixesService = (() => {
       let _classDecorators = [inject({
@@ -29322,10 +29759,10 @@ var init_document_fixes_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate13(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate14(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           DocumentFixesService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers13(_classThis, _classExtraInitializers);
+          __runInitializers14(_classThis, _classExtraInitializers);
         }
         #runner;
         #options;
@@ -29375,7 +29812,7 @@ var init_documents2 = __esm({
 });
 
 // packages/language-server/build/server/services/infrastructure/command.service.js
-var LSP, __esDecorate14, __runInitializers14, CommandService;
+var LSP, __esDecorate15, __runInitializers15, CommandService;
 var init_command_service = __esm({
   "packages/language-server/build/server/services/infrastructure/command.service.js"() {
     "use strict";
@@ -29383,7 +29820,7 @@ var init_command_service = __esm({
     init_di();
     init_tokens2();
     init_logging_service();
-    __esDecorate14 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    __esDecorate15 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
         return f;
@@ -29416,7 +29853,7 @@ var init_command_service = __esm({
       if (target) Object.defineProperty(target, contextIn.name, descriptor);
       done = true;
     };
-    __runInitializers14 = function(thisArg, initializers, value) {
+    __runInitializers15 = function(thisArg, initializers, value) {
       var useValue = arguments.length > 2;
       for (var i = 0; i < initializers.length; i++) {
         value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
@@ -29439,10 +29876,10 @@ var init_command_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate14(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate15(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           CommandService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers14(_classThis, _classExtraInitializers);
+          __runInitializers15(_classThis, _classExtraInitializers);
         }
         /**
          * The language server connection.
@@ -29538,160 +29975,6 @@ var init_command_service = __esm({
   }
 });
 
-// packages/language-server/build/server/services/infrastructure/notification.service.js
-var __esDecorate15, __runInitializers15, NotificationService;
-var init_notification_service = __esm({
-  "packages/language-server/build/server/services/infrastructure/notification.service.js"() {
-    "use strict";
-    init_di();
-    init_tokens2();
-    init_logging_service();
-    __esDecorate15 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers15 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    NotificationService = (() => {
-      let _classDecorators = [inject({
-        inject: [lspConnectionToken, loggingServiceToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var NotificationService2 = class {
-        static {
-          __name(this, "NotificationService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate15(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          NotificationService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers15(_classThis, _classExtraInitializers);
-        }
-        /**
-         * The connection to the server.
-         */
-        #connection;
-        /**
-         * The logger to use.
-         */
-        #logger;
-        /**
-         * The registered notification handlers.
-         */
-        #notifications = /* @__PURE__ */ new Map();
-        /**
-         * Instantiates a new notification manager.
-         */
-        constructor(connection2, loggingService) {
-          this.#connection = connection2;
-          this.#logger = loggingService.createLogger(NotificationService2);
-        }
-        dispose() {
-          this.#logger?.debug("Disposing notification manager");
-          for (const [type] of this.#notifications) {
-            if (type) {
-              this.#connection.onNotification(type, () => void 0);
-            } else {
-              this.#connection.onNotification(() => void 0);
-            }
-          }
-          this.#notifications.clear();
-        }
-        async #handleNotification(key, params) {
-          this.#logger?.debug("Received notification", {
-            notificationType: key ?? "<all>",
-            params
-          });
-          const handlers = this.#notifications.get(key);
-          const funcs = [];
-          for (const handler of handlers) {
-            funcs.push(async () => {
-              try {
-                await handler(...params);
-              } catch (error) {
-                this.#logger?.error("Error handling notification", {
-                  notificationType: key ?? "<all>",
-                  error
-                });
-              }
-            });
-          }
-          await Promise.all(funcs.map((func) => func()));
-        }
-        on(type, handler) {
-          const isStar = typeof type === "function";
-          const [key, func] = isStar ? [void 0, type] : [type, handler];
-          if (!func) {
-            throw new Error("Handler must be defined");
-          }
-          const disposable = {
-            dispose: /* @__PURE__ */ __name(() => {
-              this.#notifications.get(key)?.delete(func);
-            }, "dispose")
-          };
-          const existing = this.#notifications.get(key);
-          if (existing) {
-            existing.add(func);
-            return disposable;
-          }
-          this.#notifications.set(key, /* @__PURE__ */ new Set([func]));
-          if (isStar) {
-            this.#connection.onNotification((...params) => this.#handleNotification(void 0, params));
-            return disposable;
-          }
-          this.#connection.onNotification(
-            type,
-            // eslint-disable-next-line @typescript-eslint/no-misused-promises
-            (...params) => this.#handleNotification(type, params)
-          );
-          return disposable;
-        }
-      };
-      return NotificationService2 = _classThis;
-    })();
-  }
-});
-
 // packages/language-server/build/server/services/infrastructure/winston-logging.service.js
 function createWinstonLoggingService(level = "info", logPath) {
   return {
@@ -29753,236 +30036,6 @@ var init_infrastructure = __esm({
     init_logging_service();
     init_notification_service();
     init_winston_logging_service();
-  }
-});
-
-// packages/language-server/build/server/decorators.js
-function isLanguageServerServiceInstance(instance) {
-  return typeof instance === "object" && instance !== null && lspServiceMetadataKey in instance;
-}
-function isLanguageServerServiceConstructor(target) {
-  return lspServiceConstructorMetadataKey in target && target[lspServiceConstructorMetadataKey] === true;
-}
-function ensureLanguageServerServiceMetadata(instance) {
-  if (typeof instance !== "object" || instance === null) {
-    throw new Error("Language server services must be class instances.");
-  }
-  const ctor = instance.constructor;
-  if (!isLanguageServerServiceConstructor(ctor)) {
-    throw new Error("@lspService() must decorate a class before using language server service decorators.");
-  }
-  if (isLanguageServerServiceInstance(instance)) {
-    return instance[lspServiceMetadataKey];
-  }
-  const metadata = {
-    commandHandlers: [],
-    disposables: [],
-    connectionHandlers: [],
-    initializerHandlers: [],
-    notificationHandlers: [],
-    textDocumentHandlers: [],
-    shutdownHandlers: []
-  };
-  Object.defineProperty(instance, lspServiceMetadataKey, {
-    value: metadata,
-    writable: false,
-    configurable: false,
-    enumerable: false
-  });
-  return metadata;
-}
-function getLanguageServerServiceMetadata(instance) {
-  if (!isLanguageServerServiceInstance(instance)) {
-    return void 0;
-  }
-  return instance[lspServiceMetadataKey];
-}
-function registerNotificationHandler(manager, descriptor) {
-  const notificationType = descriptor.type;
-  if (typeof notificationType === "undefined") {
-    return manager.on(descriptor.handler);
-  }
-  return manager.on(notificationType, descriptor.handler);
-}
-function registerNotificationHandlers(metadata, resolve) {
-  if (metadata.notificationHandlers.length === 0) {
-    return;
-  }
-  const manager = resolve(NotificationService);
-  for (const descriptor of metadata.notificationHandlers) {
-    const disposable = registerNotificationHandler(manager, descriptor);
-    metadata.disposables.push(disposable);
-  }
-}
-function registerConnectionHandler(connection2, descriptor) {
-  switch (descriptor.kind) {
-    case "completion":
-      return connection2.onCompletion((params, _token, _workDone, _resultProgress) => descriptor.handler(params));
-    case "codeAction":
-      return connection2.onCodeAction((params, _token, _workDone, _resultProgress) => descriptor.handler(params));
-    case "documentFormatting":
-      return connection2.onDocumentFormatting((params, _token, _workDone, _resultProgress) => descriptor.handler(params));
-    default: {
-      const neverDescriptor = descriptor;
-      throw new Error(`Unsupported connection handler kind: ${String(neverDescriptor)}`);
-    }
-  }
-}
-function registerConnectionHandlers(metadata, resolve) {
-  if (metadata.connectionHandlers.length === 0) {
-    return;
-  }
-  const connection2 = resolve(lspConnectionToken);
-  for (const descriptor of metadata.connectionHandlers) {
-    const disposable = registerConnectionHandler(connection2, descriptor);
-    metadata.disposables.push(disposable);
-  }
-}
-function lspService() {
-  const runtimeServiceDecorator = runtimeService();
-  return (target, context) => {
-    const { kind } = context;
-    if (kind !== "class") {
-      throw new Error("@lspService() can only be used on a class.");
-    }
-    const ctor = target;
-    runtimeServiceDecorator(target, context);
-    Object.defineProperty(ctor, lspServiceConstructorMetadataKey, {
-      value: true,
-      writable: false,
-      configurable: false,
-      enumerable: false
-    });
-    registerInitializationHook(ctor, ({ instance, resolve }) => {
-      const metadata = ensureLanguageServerServiceMetadata(instance);
-      registerNotificationHandlers(metadata, resolve);
-      registerConnectionHandlers(metadata, resolve);
-    });
-  };
-}
-function command(commandId, options = {}) {
-  return (target, { kind, name, addInitializer }) => {
-    if (kind !== "method") {
-      throw new Error("@command(...) can only be used on a method.");
-    }
-    addInitializer(function() {
-      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
-      const bound = target.bind(this);
-      instanceMetadata.commandHandlers.push({
-        commandId,
-        methodName: name ?? target.name,
-        handler: bound,
-        options
-      });
-    });
-  };
-}
-function initialize() {
-  return (target, { kind, addInitializer }) => {
-    if (kind !== "method") {
-      throw new Error("@initialize() can only be used on a method.");
-    }
-    addInitializer(function() {
-      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
-      const bound = target.bind(this);
-      instanceMetadata.initializerHandlers.push(bound);
-    });
-  };
-}
-function textDocumentEvent(event) {
-  return (target, { kind, addInitializer }) => {
-    if (kind !== "method") {
-      throw new Error("@textDocumentEvent(...) can only be used on a method.");
-    }
-    addInitializer(function() {
-      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
-      const bound = target.bind(this);
-      instanceMetadata.textDocumentHandlers.push({
-        event,
-        handler: bound
-      });
-    });
-  };
-}
-function notification(type) {
-  return (target, { kind, addInitializer }) => {
-    if (kind !== "method") {
-      throw new Error("@notification(...) can only be used on a method.");
-    }
-    addInitializer(function() {
-      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
-      const bound = target.bind(this);
-      instanceMetadata.notificationHandlers.push({
-        type,
-        handler: bound
-      });
-    });
-  };
-}
-function createConnectionHandlerDecorator(kind, decoratorName) {
-  return (target, { kind: decoratorKind, addInitializer }) => {
-    if (decoratorKind !== "method") {
-      throw new Error(`${decoratorName} can only be used on a method.`);
-    }
-    addInitializer(function() {
-      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
-      const bound = target.bind(this);
-      const descriptor = {
-        kind,
-        handler: bound
-      };
-      instanceMetadata.connectionHandlers.push(descriptor);
-    });
-  };
-}
-function completionRequest() {
-  return createConnectionHandlerDecorator("completion", "@completionRequest()");
-}
-function codeActionRequest() {
-  return createConnectionHandlerDecorator("codeAction", "@codeActionRequest()");
-}
-function documentFormattingRequest() {
-  return createConnectionHandlerDecorator("documentFormatting", "@documentFormattingRequest()");
-}
-function shutdown() {
-  return (target, { kind, addInitializer }) => {
-    if (kind !== "method") {
-      throw new Error("@shutdown() can only be used on a method.");
-    }
-    addInitializer(function() {
-      const instanceMetadata = ensureLanguageServerServiceMetadata(this);
-      const bound = target.bind(this);
-      instanceMetadata.shutdownHandlers.push(bound);
-    });
-  };
-}
-var lspServiceMetadataKey, lspServiceConstructorMetadataKey;
-var init_decorators2 = __esm({
-  "packages/language-server/build/server/decorators.js"() {
-    "use strict";
-    init_di();
-    init_notification_service();
-    init_tokens2();
-    lspServiceMetadataKey = "__languageServerServiceMetadata__";
-    lspServiceConstructorMetadataKey = "__isLanguageServerService__";
-    __name(isLanguageServerServiceInstance, "isLanguageServerServiceInstance");
-    __name(isLanguageServerServiceConstructor, "isLanguageServerServiceConstructor");
-    __name(ensureLanguageServerServiceMetadata, "ensureLanguageServerServiceMetadata");
-    __name(getLanguageServerServiceMetadata, "getLanguageServerServiceMetadata");
-    __name(registerNotificationHandler, "registerNotificationHandler");
-    __name(registerNotificationHandlers, "registerNotificationHandlers");
-    __name(registerConnectionHandler, "registerConnectionHandler");
-    __name(registerConnectionHandlers, "registerConnectionHandlers");
-    __name(lspService, "lspService");
-    __name(command, "command");
-    __name(initialize, "initialize");
-    __name(textDocumentEvent, "textDocumentEvent");
-    __name(notification, "notification");
-    __name(createConnectionHandlerDecorator, "createConnectionHandlerDecorator");
-    __name(completionRequest, "completionRequest");
-    __name(codeActionRequest, "codeActionRequest");
-    __name(documentFormattingRequest, "documentFormattingRequest");
-    __name(shutdown, "shutdown");
   }
 });
 
@@ -30134,12 +30187,12 @@ var init_stylelint = __esm({
 });
 
 // packages/language-server/build/server/types.js
-var import_vscode_languageserver_protocol, CommandId, CodeActionKind2, Status, StatusNotification;
+var import_vscode_languageserver_protocol3, CommandId, CodeActionKind2, Status, StatusNotification;
 var init_types7 = __esm({
   "packages/language-server/build/server/types.js"() {
     "use strict";
     init_main();
-    import_vscode_languageserver_protocol = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol3 = __toESM(require_main3(), 1);
     (function(CommandId2) {
       CommandId2["ApplyAutoFix"] = "stylelint.applyAutoFix";
       CommandId2["OpenRuleDoc"] = "stylelint.openRuleDoc";
@@ -30154,7 +30207,7 @@ var init_types7 = __esm({
       Status2[Status2["warn"] = 2] = "warn";
       Status2[Status2["error"] = 3] = "error";
     })(Status || (Status = {}));
-    StatusNotification = new import_vscode_languageserver_protocol.NotificationType("stylelint/status");
+    StatusNotification = new import_vscode_languageserver_protocol3.NotificationType("stylelint/status");
   }
 });
 
@@ -30476,10 +30529,11 @@ var init_code_action_service = __esm({
           }
           return {};
         }
-        async handleCodeAction(params) {
+        async handleCodeAction(params, token) {
           const { textDocument, context } = params;
           const { uri } = textDocument;
           this.#logger?.debug("Received onCodeAction", { uri, context });
+          throwIfCancelled(token);
           const document = this.#documents.get(uri);
           if (!document) {
             this.#logger?.debug("Unknown document, ignoring", { uri });
@@ -30492,7 +30546,8 @@ var init_code_action_service = __esm({
             });
             return [];
           }
-          const actions = await this.#getCodeActions(document, context);
+          throwIfCancelled(token);
+          const actions = await this.#getCodeActions(document, context, token);
           this.#logger?.debug("Returning code actions", { uri, count: actions.length });
           return actions;
         }
@@ -30500,10 +30555,11 @@ var init_code_action_service = __esm({
           const options = await this.#options.getOptions(document.uri);
           return options.validate.includes(document.languageId);
         }
-        async #getCodeActions(document, context) {
+        async #getCodeActions(document, context, token) {
           const only = context.only && new Set(context.only);
           const fixAllActions = [];
           if (only?.has(LSP4.CodeActionKind.SourceFixAll) || only?.has(CodeActionKind2.StylelintSourceFixAll)) {
+            throwIfCancelled(token);
             this.#logger?.debug('Creating "source-fix-all" code action');
             const action = await this.#getAutoFixAllAction(document);
             if (action) {
@@ -30637,11 +30693,11 @@ var init_code_actions = __esm({
 });
 
 // packages/language-server/build/server/services/lsp/auto-fix.service.js
-var import_vscode_languageserver_protocol2, __runInitializers19, __esDecorate19, AutoFixService;
+var import_vscode_languageserver_protocol4, __runInitializers19, __esDecorate19, AutoFixService;
 var init_auto_fix_service = __esm({
   "packages/language-server/build/server/services/lsp/auto-fix.service.js"() {
     "use strict";
-    import_vscode_languageserver_protocol2 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol4 = __toESM(require_main3(), 1);
     init_di();
     init_decorators2();
     init_tokens2();
@@ -30773,7 +30829,7 @@ var init_auto_fix_service = __esm({
             });
             return;
           }
-          const workspaceChange = new import_vscode_languageserver_protocol2.WorkspaceChange();
+          const workspaceChange = new import_vscode_languageserver_protocol4.WorkspaceChange();
           const textChange = workspaceChange.getTextEditChange(identifier);
           const edits = await this.#fixes.getFixes(document);
           edits.forEach((edit) => textChange.add(edit));
@@ -30901,7 +30957,7 @@ var init_completion_service = __esm({
           const options = await this.#options.getOptions(document.uri);
           return options.validate.includes(document.languageId) && options.snippet.includes(document.languageId);
         }
-        async handleCompletion(params) {
+        async handleCompletion(params, token) {
           const { textDocument, position } = params;
           const { uri } = textDocument;
           this.#logger?.debug("Received onCompletion", { uri, position });
@@ -30919,6 +30975,7 @@ var init_completion_service = __esm({
             }
             return [];
           }
+          throwIfCancelled(token);
           const diagnostics = this.#diagnostics.getDiagnostics(uri);
           if (!diagnostics || diagnostics.length === 0) {
             const items = [
@@ -33505,11 +33562,11 @@ var init_old_stylelint_warning_service = __esm({
 });
 
 // packages/language-server/build/server/services/lsp/validator.service.js
-var import_vscode_languageserver_protocol3, __runInitializers24, __esDecorate24, __setFunctionName, ValidatorLspService;
+var import_vscode_languageserver_protocol5, __runInitializers24, __esDecorate24, __setFunctionName, validationDebounceDelay, ValidatorLspService;
 var init_validator_service = __esm({
   "packages/language-server/build/server/services/lsp/validator.service.js"() {
     "use strict";
-    import_vscode_languageserver_protocol3 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol5 = __toESM(require_main3(), 1);
     init_di();
     init_utils();
     init_decorators2();
@@ -33563,6 +33620,7 @@ var init_validator_service = __esm({
       if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
       return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
     };
+    validationDebounceDelay = 300;
     ValidatorLspService = (() => {
       let _classDecorators = [lspService(), inject({
         inject: [
@@ -33602,7 +33660,7 @@ var init_validator_service = __esm({
           _handleDocumentChanged_decorators = [textDocumentEvent("onDidChangeContent")];
           _handleDocumentSaved_decorators = [textDocumentEvent("onDidSave")];
           _handleDocumentClosed_decorators = [textDocumentEvent("onDidClose")];
-          _private_validateAll_decorators = [notification(import_vscode_languageserver_protocol3.DidChangeWatchedFilesNotification.type), notification(import_vscode_languageserver_protocol3.DidChangeConfigurationNotification.type)];
+          _private_validateAll_decorators = [notification(import_vscode_languageserver_protocol5.DidChangeWatchedFilesNotification.type), notification(import_vscode_languageserver_protocol5.DidChangeConfigurationNotification.type)];
           _clearAllProblems_decorators = [command(CommandId.ClearAllProblems)];
           _lintFiles_decorators = [command(CommandId.LintFiles)];
           __esDecorate24(this, null, _onInitialize_decorators, { kind: "method", name: "onInitialize", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "onInitialize" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.onInitialize, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -33628,6 +33686,8 @@ var init_validator_service = __esm({
         #logger;
         #uri;
         #publishedUris = /* @__PURE__ */ new Set();
+        #debounceTimers = /* @__PURE__ */ new Map();
+        #pendingValidations = /* @__PURE__ */ new Map();
         constructor(documents, options, diagnostics, runner, connection2, loggingService, uriModule) {
           this.#documents = documents;
           this.#options = options;
@@ -33653,7 +33713,7 @@ var init_validator_service = __esm({
         async handleDocumentChanged({ document }) {
           const options = await this.#options.getOptions(document.uri);
           if (options.run === "onType") {
-            await this.#validate(document);
+            await this.#validateDebounced(document);
           }
         }
         async handleDocumentSaved({ document }) {
@@ -33663,13 +33723,41 @@ var init_validator_service = __esm({
           }
         }
         async handleDocumentClosed({ document }) {
+          this.#cancelPendingValidation(document.uri);
           await this.#clearDiagnostics(document);
         }
         async #shouldValidate(document) {
           const options = await this.#options.getOptions(document.uri);
           return options.validate.includes(document.languageId);
         }
+        /**
+         * Schedules a debounced validation for the document. If a previous
+         * debounce timer exists for the same URI it is cancelled first, so only
+         * the latest edit triggers a lint.
+         */
+        #validateDebounced(document) {
+          return new Promise((resolve) => {
+            this.#cancelPendingValidation(document.uri);
+            const timer = setTimeout(() => {
+              this.#debounceTimers.delete(document.uri);
+              const validation = this.#validate(document).finally(() => {
+                this.#pendingValidations.delete(document.uri);
+              });
+              this.#pendingValidations.set(document.uri, validation);
+              validation.then(resolve, resolve);
+            }, validationDebounceDelay);
+            this.#debounceTimers.set(document.uri, timer);
+          });
+        }
+        #cancelPendingValidation(uri) {
+          const timer = this.#debounceTimers.get(uri);
+          if (timer) {
+            clearTimeout(timer);
+            this.#debounceTimers.delete(uri);
+          }
+        }
         async #validate(document) {
+          const versionBefore = document.version;
           if (!await this.#shouldValidate(document)) {
             if (this.#diagnostics.getDiagnostics(document.uri).length > 0) {
               this.#logger?.debug("Document should not be validated, clearing diagnostics", {
@@ -33688,6 +33776,15 @@ var init_validator_service = __esm({
           const result = await this.#lintDocument(document);
           if (!result) {
             this.#logger?.debug("No lint result, ignoring", { uri: document.uri });
+            return;
+          }
+          const currentDocument = this.#documents.get(document.uri);
+          if (currentDocument && currentDocument.version !== versionBefore) {
+            this.#logger?.debug("Discarding stale lint result", {
+              uri: document.uri,
+              lintedVersion: versionBefore,
+              currentVersion: currentDocument.version
+            });
             return;
           }
           this.#logger?.debug("Sending diagnostics", {
@@ -33800,11 +33897,11 @@ var init_validator_service = __esm({
 });
 
 // packages/language-server/build/server/services/lsp/workspace-activity.service.js
-var import_vscode_languageserver_protocol4, __runInitializers25, __esDecorate25, WorkspaceActivityLspService;
+var import_vscode_languageserver_protocol6, __runInitializers25, __esDecorate25, WorkspaceActivityLspService;
 var init_workspace_activity_service = __esm({
   "packages/language-server/build/server/services/lsp/workspace-activity.service.js"() {
     "use strict";
-    import_vscode_languageserver_protocol4 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol6 = __toESM(require_main3(), 1);
     init_di();
     init_decorators2();
     init_stylelint_runner_service();
@@ -33868,7 +33965,7 @@ var init_workspace_activity_service = __esm({
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
           _handleDocumentOpened_decorators = [textDocumentEvent("onDidOpen")];
-          _handleWatchedFilesChanged_decorators = [notification(import_vscode_languageserver_protocol4.DidChangeWatchedFilesNotification.type)];
+          _handleWatchedFilesChanged_decorators = [notification(import_vscode_languageserver_protocol6.DidChangeWatchedFilesNotification.type)];
           __esDecorate25(this, null, _handleDocumentOpened_decorators, { kind: "method", name: "handleDocumentOpened", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "handleDocumentOpened" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.handleDocumentOpened, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
           __esDecorate25(this, null, _handleWatchedFilesChanged_decorators, { kind: "method", name: "handleWatchedFilesChanged", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "handleWatchedFilesChanged" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.handleWatchedFilesChanged, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
           __esDecorate25(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -35237,11 +35334,11 @@ var init_lsp_service_runtime = __esm({
 function createLanguageServerFeature(options) {
   return new LanguageServerFeature(options.connection, options.runtimeFactory ?? defaultRuntimeFactory);
 }
-var import_vscode_languageserver_protocol5, defaultRuntimeFactory, LanguageServerFeature;
+var import_vscode_languageserver_protocol7, defaultRuntimeFactory, LanguageServerFeature;
 var init_language_server_feature = __esm({
   "packages/language-server/build/server/runtime/language-server-feature.js"() {
     "use strict";
-    import_vscode_languageserver_protocol5 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol7 = __toESM(require_main3(), 1);
     init_decorators2();
     init_services();
     init_tokens2();
@@ -35350,7 +35447,7 @@ var init_language_server_feature = __esm({
         this.#optionsService?.setSupportsWorkspaceConfiguration(this.#supportsWorkspaceConfiguration);
         const baseResult = {
           capabilities: {
-            textDocumentSync: import_vscode_languageserver_protocol5.TextDocumentSyncKind.Full
+            textDocumentSync: import_vscode_languageserver_protocol7.TextDocumentSyncKind.Full
           }
         };
         const decorated = this.#serviceRuntime?.runInitializers(params);
@@ -35363,7 +35460,7 @@ var init_language_server_feature = __esm({
         if (!this.#supportsWorkspaceConfiguration) {
           return;
         }
-        await this.#connection.client.register(import_vscode_languageserver_protocol5.DidChangeConfigurationNotification.type, {
+        await this.#connection.client.register(import_vscode_languageserver_protocol7.DidChangeConfigurationNotification.type, {
           section: "stylelint"
         });
       }

@@ -524,6 +524,7 @@ __export(di_exports, {
   createContainer: () => createContainer,
   createRuntimeApplication: () => createRuntimeApplication,
   createToken: () => createToken,
+  describeToken: () => describeToken2,
   getInitializationHooks: () => getInitializationHooks,
   getInjectMetadata: () => getInjectMetadata,
   inject: () => inject,
@@ -16043,4003 +16044,6 @@ var init_stylelint_options_service = __esm({
   }
 });
 
-// packages/language-server/build/server/services/workspace/workspace-folder.service.js
-var __esDecorate4, __runInitializers4, WorkspaceFolderService;
-var init_workspace_folder_service = __esm({
-  "packages/language-server/build/server/services/workspace/workspace-folder.service.js"() {
-    "use strict";
-    init_di();
-    init_tokens2();
-    __esDecorate4 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers4 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    WorkspaceFolderService = (() => {
-      let _classDecorators = [inject({
-        inject: [PathIsInsideToken, UriModuleToken, NormalizeFsPathToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkspaceFolderService2 = class {
-        static {
-          __name(this, "WorkspaceFolderService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate4(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkspaceFolderService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers4(_classThis, _classExtraInitializers);
-        }
-        #pathIsInside;
-        #uri;
-        #normalizeFsPath;
-        constructor(pathIsInsideFn, uriModule, normalizeFsPathFn) {
-          this.#pathIsInside = pathIsInsideFn;
-          this.#uri = uriModule;
-          this.#normalizeFsPath = normalizeFsPathFn;
-        }
-        /**
-         * Gets the workspace folder for a given document. If the document is an
-         * untitled file, then the first open workspace folder is returned.
-         * @param connection The language server connection to use to get available
-         * workspace folders.
-         * @param document The document to get the workspace folder for.
-         */
-        async getWorkspaceFolder(connection, document) {
-          const { scheme, fsPath } = this.#uri.parse(document.uri);
-          if (scheme === "untitled") {
-            const uri = (await connection.workspace.getWorkspaceFolders())?.[0]?.uri;
-            return uri ? this.#uri.parse(uri).fsPath : void 0;
-          }
-          if (!fsPath) {
-            return void 0;
-          }
-          const normalizedDocumentPath = this.#normalizeFsPath(fsPath);
-          if (!normalizedDocumentPath) {
-            return void 0;
-          }
-          const workspaceFolders = await connection.workspace.getWorkspaceFolders();
-          if (!workspaceFolders) {
-            return void 0;
-          }
-          for (const { uri } of workspaceFolders) {
-            const workspacePath = this.#uri.parse(uri).fsPath;
-            const normalizedWorkspacePath = this.#normalizeFsPath(workspacePath);
-            if (!normalizedWorkspacePath) {
-              continue;
-            }
-            if (this.#pathIsInside(normalizedDocumentPath, normalizedWorkspacePath)) {
-              return workspacePath;
-            }
-          }
-          return void 0;
-        }
-      };
-      return WorkspaceFolderService2 = _classThis;
-    })();
-  }
-});
-
-// node_modules/fast-diff/diff.js
-var require_diff = __commonJS({
-  "node_modules/fast-diff/diff.js"(exports2, module3) {
-    var DIFF_DELETE = -1;
-    var DIFF_INSERT = 1;
-    var DIFF_EQUAL = 0;
-    function diff_main(text1, text2, cursor_pos, cleanup, _fix_unicode) {
-      if (text1 === text2) {
-        if (text1) {
-          return [[DIFF_EQUAL, text1]];
-        }
-        return [];
-      }
-      if (cursor_pos != null) {
-        var editdiff = find_cursor_edit_diff(text1, text2, cursor_pos);
-        if (editdiff) {
-          return editdiff;
-        }
-      }
-      var commonlength = diff_commonPrefix(text1, text2);
-      var commonprefix = text1.substring(0, commonlength);
-      text1 = text1.substring(commonlength);
-      text2 = text2.substring(commonlength);
-      commonlength = diff_commonSuffix(text1, text2);
-      var commonsuffix = text1.substring(text1.length - commonlength);
-      text1 = text1.substring(0, text1.length - commonlength);
-      text2 = text2.substring(0, text2.length - commonlength);
-      var diffs = diff_compute_(text1, text2);
-      if (commonprefix) {
-        diffs.unshift([DIFF_EQUAL, commonprefix]);
-      }
-      if (commonsuffix) {
-        diffs.push([DIFF_EQUAL, commonsuffix]);
-      }
-      diff_cleanupMerge(diffs, _fix_unicode);
-      if (cleanup) {
-        diff_cleanupSemantic(diffs);
-      }
-      return diffs;
-    }
-    __name(diff_main, "diff_main");
-    function diff_compute_(text1, text2) {
-      var diffs;
-      if (!text1) {
-        return [[DIFF_INSERT, text2]];
-      }
-      if (!text2) {
-        return [[DIFF_DELETE, text1]];
-      }
-      var longtext = text1.length > text2.length ? text1 : text2;
-      var shorttext = text1.length > text2.length ? text2 : text1;
-      var i = longtext.indexOf(shorttext);
-      if (i !== -1) {
-        diffs = [
-          [DIFF_INSERT, longtext.substring(0, i)],
-          [DIFF_EQUAL, shorttext],
-          [DIFF_INSERT, longtext.substring(i + shorttext.length)]
-        ];
-        if (text1.length > text2.length) {
-          diffs[0][0] = diffs[2][0] = DIFF_DELETE;
-        }
-        return diffs;
-      }
-      if (shorttext.length === 1) {
-        return [
-          [DIFF_DELETE, text1],
-          [DIFF_INSERT, text2]
-        ];
-      }
-      var hm = diff_halfMatch_(text1, text2);
-      if (hm) {
-        var text1_a = hm[0];
-        var text1_b = hm[1];
-        var text2_a = hm[2];
-        var text2_b = hm[3];
-        var mid_common = hm[4];
-        var diffs_a = diff_main(text1_a, text2_a);
-        var diffs_b = diff_main(text1_b, text2_b);
-        return diffs_a.concat([[DIFF_EQUAL, mid_common]], diffs_b);
-      }
-      return diff_bisect_(text1, text2);
-    }
-    __name(diff_compute_, "diff_compute_");
-    function diff_bisect_(text1, text2) {
-      var text1_length = text1.length;
-      var text2_length = text2.length;
-      var max_d = Math.ceil((text1_length + text2_length) / 2);
-      var v_offset = max_d;
-      var v_length = 2 * max_d;
-      var v1 = new Array(v_length);
-      var v2 = new Array(v_length);
-      for (var x = 0; x < v_length; x++) {
-        v1[x] = -1;
-        v2[x] = -1;
-      }
-      v1[v_offset + 1] = 0;
-      v2[v_offset + 1] = 0;
-      var delta = text1_length - text2_length;
-      var front = delta % 2 !== 0;
-      var k1start = 0;
-      var k1end = 0;
-      var k2start = 0;
-      var k2end = 0;
-      for (var d = 0; d < max_d; d++) {
-        for (var k1 = -d + k1start; k1 <= d - k1end; k1 += 2) {
-          var k1_offset = v_offset + k1;
-          var x1;
-          if (k1 === -d || k1 !== d && v1[k1_offset - 1] < v1[k1_offset + 1]) {
-            x1 = v1[k1_offset + 1];
-          } else {
-            x1 = v1[k1_offset - 1] + 1;
-          }
-          var y1 = x1 - k1;
-          while (x1 < text1_length && y1 < text2_length && text1.charAt(x1) === text2.charAt(y1)) {
-            x1++;
-            y1++;
-          }
-          v1[k1_offset] = x1;
-          if (x1 > text1_length) {
-            k1end += 2;
-          } else if (y1 > text2_length) {
-            k1start += 2;
-          } else if (front) {
-            var k2_offset = v_offset + delta - k1;
-            if (k2_offset >= 0 && k2_offset < v_length && v2[k2_offset] !== -1) {
-              var x2 = text1_length - v2[k2_offset];
-              if (x1 >= x2) {
-                return diff_bisectSplit_(text1, text2, x1, y1);
-              }
-            }
-          }
-        }
-        for (var k2 = -d + k2start; k2 <= d - k2end; k2 += 2) {
-          var k2_offset = v_offset + k2;
-          var x2;
-          if (k2 === -d || k2 !== d && v2[k2_offset - 1] < v2[k2_offset + 1]) {
-            x2 = v2[k2_offset + 1];
-          } else {
-            x2 = v2[k2_offset - 1] + 1;
-          }
-          var y2 = x2 - k2;
-          while (x2 < text1_length && y2 < text2_length && text1.charAt(text1_length - x2 - 1) === text2.charAt(text2_length - y2 - 1)) {
-            x2++;
-            y2++;
-          }
-          v2[k2_offset] = x2;
-          if (x2 > text1_length) {
-            k2end += 2;
-          } else if (y2 > text2_length) {
-            k2start += 2;
-          } else if (!front) {
-            var k1_offset = v_offset + delta - k2;
-            if (k1_offset >= 0 && k1_offset < v_length && v1[k1_offset] !== -1) {
-              var x1 = v1[k1_offset];
-              var y1 = v_offset + x1 - k1_offset;
-              x2 = text1_length - x2;
-              if (x1 >= x2) {
-                return diff_bisectSplit_(text1, text2, x1, y1);
-              }
-            }
-          }
-        }
-      }
-      return [
-        [DIFF_DELETE, text1],
-        [DIFF_INSERT, text2]
-      ];
-    }
-    __name(diff_bisect_, "diff_bisect_");
-    function diff_bisectSplit_(text1, text2, x, y) {
-      var text1a = text1.substring(0, x);
-      var text2a = text2.substring(0, y);
-      var text1b = text1.substring(x);
-      var text2b = text2.substring(y);
-      var diffs = diff_main(text1a, text2a);
-      var diffsb = diff_main(text1b, text2b);
-      return diffs.concat(diffsb);
-    }
-    __name(diff_bisectSplit_, "diff_bisectSplit_");
-    function diff_commonPrefix(text1, text2) {
-      if (!text1 || !text2 || text1.charAt(0) !== text2.charAt(0)) {
-        return 0;
-      }
-      var pointermin = 0;
-      var pointermax = Math.min(text1.length, text2.length);
-      var pointermid = pointermax;
-      var pointerstart = 0;
-      while (pointermin < pointermid) {
-        if (text1.substring(pointerstart, pointermid) == text2.substring(pointerstart, pointermid)) {
-          pointermin = pointermid;
-          pointerstart = pointermin;
-        } else {
-          pointermax = pointermid;
-        }
-        pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
-      }
-      if (is_surrogate_pair_start(text1.charCodeAt(pointermid - 1))) {
-        pointermid--;
-      }
-      return pointermid;
-    }
-    __name(diff_commonPrefix, "diff_commonPrefix");
-    function diff_commonOverlap_(text1, text2) {
-      var text1_length = text1.length;
-      var text2_length = text2.length;
-      if (text1_length == 0 || text2_length == 0) {
-        return 0;
-      }
-      if (text1_length > text2_length) {
-        text1 = text1.substring(text1_length - text2_length);
-      } else if (text1_length < text2_length) {
-        text2 = text2.substring(0, text1_length);
-      }
-      var text_length = Math.min(text1_length, text2_length);
-      if (text1 == text2) {
-        return text_length;
-      }
-      var best = 0;
-      var length = 1;
-      while (true) {
-        var pattern = text1.substring(text_length - length);
-        var found = text2.indexOf(pattern);
-        if (found == -1) {
-          return best;
-        }
-        length += found;
-        if (found == 0 || text1.substring(text_length - length) == text2.substring(0, length)) {
-          best = length;
-          length++;
-        }
-      }
-    }
-    __name(diff_commonOverlap_, "diff_commonOverlap_");
-    function diff_commonSuffix(text1, text2) {
-      if (!text1 || !text2 || text1.slice(-1) !== text2.slice(-1)) {
-        return 0;
-      }
-      var pointermin = 0;
-      var pointermax = Math.min(text1.length, text2.length);
-      var pointermid = pointermax;
-      var pointerend = 0;
-      while (pointermin < pointermid) {
-        if (text1.substring(text1.length - pointermid, text1.length - pointerend) == text2.substring(text2.length - pointermid, text2.length - pointerend)) {
-          pointermin = pointermid;
-          pointerend = pointermin;
-        } else {
-          pointermax = pointermid;
-        }
-        pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
-      }
-      if (is_surrogate_pair_end(text1.charCodeAt(text1.length - pointermid))) {
-        pointermid--;
-      }
-      return pointermid;
-    }
-    __name(diff_commonSuffix, "diff_commonSuffix");
-    function diff_halfMatch_(text1, text2) {
-      var longtext = text1.length > text2.length ? text1 : text2;
-      var shorttext = text1.length > text2.length ? text2 : text1;
-      if (longtext.length < 4 || shorttext.length * 2 < longtext.length) {
-        return null;
-      }
-      function diff_halfMatchI_(longtext2, shorttext2, i) {
-        var seed = longtext2.substring(i, i + Math.floor(longtext2.length / 4));
-        var j = -1;
-        var best_common = "";
-        var best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b;
-        while ((j = shorttext2.indexOf(seed, j + 1)) !== -1) {
-          var prefixLength = diff_commonPrefix(
-            longtext2.substring(i),
-            shorttext2.substring(j)
-          );
-          var suffixLength = diff_commonSuffix(
-            longtext2.substring(0, i),
-            shorttext2.substring(0, j)
-          );
-          if (best_common.length < suffixLength + prefixLength) {
-            best_common = shorttext2.substring(j - suffixLength, j) + shorttext2.substring(j, j + prefixLength);
-            best_longtext_a = longtext2.substring(0, i - suffixLength);
-            best_longtext_b = longtext2.substring(i + prefixLength);
-            best_shorttext_a = shorttext2.substring(0, j - suffixLength);
-            best_shorttext_b = shorttext2.substring(j + prefixLength);
-          }
-        }
-        if (best_common.length * 2 >= longtext2.length) {
-          return [
-            best_longtext_a,
-            best_longtext_b,
-            best_shorttext_a,
-            best_shorttext_b,
-            best_common
-          ];
-        } else {
-          return null;
-        }
-      }
-      __name(diff_halfMatchI_, "diff_halfMatchI_");
-      var hm1 = diff_halfMatchI_(
-        longtext,
-        shorttext,
-        Math.ceil(longtext.length / 4)
-      );
-      var hm2 = diff_halfMatchI_(
-        longtext,
-        shorttext,
-        Math.ceil(longtext.length / 2)
-      );
-      var hm;
-      if (!hm1 && !hm2) {
-        return null;
-      } else if (!hm2) {
-        hm = hm1;
-      } else if (!hm1) {
-        hm = hm2;
-      } else {
-        hm = hm1[4].length > hm2[4].length ? hm1 : hm2;
-      }
-      var text1_a, text1_b, text2_a, text2_b;
-      if (text1.length > text2.length) {
-        text1_a = hm[0];
-        text1_b = hm[1];
-        text2_a = hm[2];
-        text2_b = hm[3];
-      } else {
-        text2_a = hm[0];
-        text2_b = hm[1];
-        text1_a = hm[2];
-        text1_b = hm[3];
-      }
-      var mid_common = hm[4];
-      return [text1_a, text1_b, text2_a, text2_b, mid_common];
-    }
-    __name(diff_halfMatch_, "diff_halfMatch_");
-    function diff_cleanupSemantic(diffs) {
-      var changes = false;
-      var equalities = [];
-      var equalitiesLength = 0;
-      var lastequality = null;
-      var pointer = 0;
-      var length_insertions1 = 0;
-      var length_deletions1 = 0;
-      var length_insertions2 = 0;
-      var length_deletions2 = 0;
-      while (pointer < diffs.length) {
-        if (diffs[pointer][0] == DIFF_EQUAL) {
-          equalities[equalitiesLength++] = pointer;
-          length_insertions1 = length_insertions2;
-          length_deletions1 = length_deletions2;
-          length_insertions2 = 0;
-          length_deletions2 = 0;
-          lastequality = diffs[pointer][1];
-        } else {
-          if (diffs[pointer][0] == DIFF_INSERT) {
-            length_insertions2 += diffs[pointer][1].length;
-          } else {
-            length_deletions2 += diffs[pointer][1].length;
-          }
-          if (lastequality && lastequality.length <= Math.max(length_insertions1, length_deletions1) && lastequality.length <= Math.max(length_insertions2, length_deletions2)) {
-            diffs.splice(equalities[equalitiesLength - 1], 0, [
-              DIFF_DELETE,
-              lastequality
-            ]);
-            diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT;
-            equalitiesLength--;
-            equalitiesLength--;
-            pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
-            length_insertions1 = 0;
-            length_deletions1 = 0;
-            length_insertions2 = 0;
-            length_deletions2 = 0;
-            lastequality = null;
-            changes = true;
-          }
-        }
-        pointer++;
-      }
-      if (changes) {
-        diff_cleanupMerge(diffs);
-      }
-      diff_cleanupSemanticLossless(diffs);
-      pointer = 1;
-      while (pointer < diffs.length) {
-        if (diffs[pointer - 1][0] == DIFF_DELETE && diffs[pointer][0] == DIFF_INSERT) {
-          var deletion = diffs[pointer - 1][1];
-          var insertion = diffs[pointer][1];
-          var overlap_length1 = diff_commonOverlap_(deletion, insertion);
-          var overlap_length2 = diff_commonOverlap_(insertion, deletion);
-          if (overlap_length1 >= overlap_length2) {
-            if (overlap_length1 >= deletion.length / 2 || overlap_length1 >= insertion.length / 2) {
-              diffs.splice(pointer, 0, [
-                DIFF_EQUAL,
-                insertion.substring(0, overlap_length1)
-              ]);
-              diffs[pointer - 1][1] = deletion.substring(
-                0,
-                deletion.length - overlap_length1
-              );
-              diffs[pointer + 1][1] = insertion.substring(overlap_length1);
-              pointer++;
-            }
-          } else {
-            if (overlap_length2 >= deletion.length / 2 || overlap_length2 >= insertion.length / 2) {
-              diffs.splice(pointer, 0, [
-                DIFF_EQUAL,
-                deletion.substring(0, overlap_length2)
-              ]);
-              diffs[pointer - 1][0] = DIFF_INSERT;
-              diffs[pointer - 1][1] = insertion.substring(
-                0,
-                insertion.length - overlap_length2
-              );
-              diffs[pointer + 1][0] = DIFF_DELETE;
-              diffs[pointer + 1][1] = deletion.substring(overlap_length2);
-              pointer++;
-            }
-          }
-          pointer++;
-        }
-        pointer++;
-      }
-    }
-    __name(diff_cleanupSemantic, "diff_cleanupSemantic");
-    var nonAlphaNumericRegex_ = /[^a-zA-Z0-9]/;
-    var whitespaceRegex_ = /\s/;
-    var linebreakRegex_ = /[\r\n]/;
-    var blanklineEndRegex_ = /\n\r?\n$/;
-    var blanklineStartRegex_ = /^\r?\n\r?\n/;
-    function diff_cleanupSemanticLossless(diffs) {
-      function diff_cleanupSemanticScore_(one, two) {
-        if (!one || !two) {
-          return 6;
-        }
-        var char1 = one.charAt(one.length - 1);
-        var char2 = two.charAt(0);
-        var nonAlphaNumeric1 = char1.match(nonAlphaNumericRegex_);
-        var nonAlphaNumeric2 = char2.match(nonAlphaNumericRegex_);
-        var whitespace1 = nonAlphaNumeric1 && char1.match(whitespaceRegex_);
-        var whitespace2 = nonAlphaNumeric2 && char2.match(whitespaceRegex_);
-        var lineBreak1 = whitespace1 && char1.match(linebreakRegex_);
-        var lineBreak2 = whitespace2 && char2.match(linebreakRegex_);
-        var blankLine1 = lineBreak1 && one.match(blanklineEndRegex_);
-        var blankLine2 = lineBreak2 && two.match(blanklineStartRegex_);
-        if (blankLine1 || blankLine2) {
-          return 5;
-        } else if (lineBreak1 || lineBreak2) {
-          return 4;
-        } else if (nonAlphaNumeric1 && !whitespace1 && whitespace2) {
-          return 3;
-        } else if (whitespace1 || whitespace2) {
-          return 2;
-        } else if (nonAlphaNumeric1 || nonAlphaNumeric2) {
-          return 1;
-        }
-        return 0;
-      }
-      __name(diff_cleanupSemanticScore_, "diff_cleanupSemanticScore_");
-      var pointer = 1;
-      while (pointer < diffs.length - 1) {
-        if (diffs[pointer - 1][0] == DIFF_EQUAL && diffs[pointer + 1][0] == DIFF_EQUAL) {
-          var equality1 = diffs[pointer - 1][1];
-          var edit = diffs[pointer][1];
-          var equality2 = diffs[pointer + 1][1];
-          var commonOffset = diff_commonSuffix(equality1, edit);
-          if (commonOffset) {
-            var commonString = edit.substring(edit.length - commonOffset);
-            equality1 = equality1.substring(0, equality1.length - commonOffset);
-            edit = commonString + edit.substring(0, edit.length - commonOffset);
-            equality2 = commonString + equality2;
-          }
-          var bestEquality1 = equality1;
-          var bestEdit = edit;
-          var bestEquality2 = equality2;
-          var bestScore = diff_cleanupSemanticScore_(equality1, edit) + diff_cleanupSemanticScore_(edit, equality2);
-          while (edit.charAt(0) === equality2.charAt(0)) {
-            equality1 += edit.charAt(0);
-            edit = edit.substring(1) + equality2.charAt(0);
-            equality2 = equality2.substring(1);
-            var score = diff_cleanupSemanticScore_(equality1, edit) + diff_cleanupSemanticScore_(edit, equality2);
-            if (score >= bestScore) {
-              bestScore = score;
-              bestEquality1 = equality1;
-              bestEdit = edit;
-              bestEquality2 = equality2;
-            }
-          }
-          if (diffs[pointer - 1][1] != bestEquality1) {
-            if (bestEquality1) {
-              diffs[pointer - 1][1] = bestEquality1;
-            } else {
-              diffs.splice(pointer - 1, 1);
-              pointer--;
-            }
-            diffs[pointer][1] = bestEdit;
-            if (bestEquality2) {
-              diffs[pointer + 1][1] = bestEquality2;
-            } else {
-              diffs.splice(pointer + 1, 1);
-              pointer--;
-            }
-          }
-        }
-        pointer++;
-      }
-    }
-    __name(diff_cleanupSemanticLossless, "diff_cleanupSemanticLossless");
-    function diff_cleanupMerge(diffs, fix_unicode) {
-      diffs.push([DIFF_EQUAL, ""]);
-      var pointer = 0;
-      var count_delete = 0;
-      var count_insert = 0;
-      var text_delete = "";
-      var text_insert = "";
-      var commonlength;
-      while (pointer < diffs.length) {
-        if (pointer < diffs.length - 1 && !diffs[pointer][1]) {
-          diffs.splice(pointer, 1);
-          continue;
-        }
-        switch (diffs[pointer][0]) {
-          case DIFF_INSERT:
-            count_insert++;
-            text_insert += diffs[pointer][1];
-            pointer++;
-            break;
-          case DIFF_DELETE:
-            count_delete++;
-            text_delete += diffs[pointer][1];
-            pointer++;
-            break;
-          case DIFF_EQUAL:
-            var previous_equality = pointer - count_insert - count_delete - 1;
-            if (fix_unicode) {
-              if (previous_equality >= 0 && ends_with_pair_start(diffs[previous_equality][1])) {
-                var stray = diffs[previous_equality][1].slice(-1);
-                diffs[previous_equality][1] = diffs[previous_equality][1].slice(
-                  0,
-                  -1
-                );
-                text_delete = stray + text_delete;
-                text_insert = stray + text_insert;
-                if (!diffs[previous_equality][1]) {
-                  diffs.splice(previous_equality, 1);
-                  pointer--;
-                  var k = previous_equality - 1;
-                  if (diffs[k] && diffs[k][0] === DIFF_INSERT) {
-                    count_insert++;
-                    text_insert = diffs[k][1] + text_insert;
-                    k--;
-                  }
-                  if (diffs[k] && diffs[k][0] === DIFF_DELETE) {
-                    count_delete++;
-                    text_delete = diffs[k][1] + text_delete;
-                    k--;
-                  }
-                  previous_equality = k;
-                }
-              }
-              if (starts_with_pair_end(diffs[pointer][1])) {
-                var stray = diffs[pointer][1].charAt(0);
-                diffs[pointer][1] = diffs[pointer][1].slice(1);
-                text_delete += stray;
-                text_insert += stray;
-              }
-            }
-            if (pointer < diffs.length - 1 && !diffs[pointer][1]) {
-              diffs.splice(pointer, 1);
-              break;
-            }
-            if (text_delete.length > 0 || text_insert.length > 0) {
-              if (text_delete.length > 0 && text_insert.length > 0) {
-                commonlength = diff_commonPrefix(text_insert, text_delete);
-                if (commonlength !== 0) {
-                  if (previous_equality >= 0) {
-                    diffs[previous_equality][1] += text_insert.substring(
-                      0,
-                      commonlength
-                    );
-                  } else {
-                    diffs.splice(0, 0, [
-                      DIFF_EQUAL,
-                      text_insert.substring(0, commonlength)
-                    ]);
-                    pointer++;
-                  }
-                  text_insert = text_insert.substring(commonlength);
-                  text_delete = text_delete.substring(commonlength);
-                }
-                commonlength = diff_commonSuffix(text_insert, text_delete);
-                if (commonlength !== 0) {
-                  diffs[pointer][1] = text_insert.substring(text_insert.length - commonlength) + diffs[pointer][1];
-                  text_insert = text_insert.substring(
-                    0,
-                    text_insert.length - commonlength
-                  );
-                  text_delete = text_delete.substring(
-                    0,
-                    text_delete.length - commonlength
-                  );
-                }
-              }
-              var n = count_insert + count_delete;
-              if (text_delete.length === 0 && text_insert.length === 0) {
-                diffs.splice(pointer - n, n);
-                pointer = pointer - n;
-              } else if (text_delete.length === 0) {
-                diffs.splice(pointer - n, n, [DIFF_INSERT, text_insert]);
-                pointer = pointer - n + 1;
-              } else if (text_insert.length === 0) {
-                diffs.splice(pointer - n, n, [DIFF_DELETE, text_delete]);
-                pointer = pointer - n + 1;
-              } else {
-                diffs.splice(
-                  pointer - n,
-                  n,
-                  [DIFF_DELETE, text_delete],
-                  [DIFF_INSERT, text_insert]
-                );
-                pointer = pointer - n + 2;
-              }
-            }
-            if (pointer !== 0 && diffs[pointer - 1][0] === DIFF_EQUAL) {
-              diffs[pointer - 1][1] += diffs[pointer][1];
-              diffs.splice(pointer, 1);
-            } else {
-              pointer++;
-            }
-            count_insert = 0;
-            count_delete = 0;
-            text_delete = "";
-            text_insert = "";
-            break;
-        }
-      }
-      if (diffs[diffs.length - 1][1] === "") {
-        diffs.pop();
-      }
-      var changes = false;
-      pointer = 1;
-      while (pointer < diffs.length - 1) {
-        if (diffs[pointer - 1][0] === DIFF_EQUAL && diffs[pointer + 1][0] === DIFF_EQUAL) {
-          if (diffs[pointer][1].substring(
-            diffs[pointer][1].length - diffs[pointer - 1][1].length
-          ) === diffs[pointer - 1][1]) {
-            diffs[pointer][1] = diffs[pointer - 1][1] + diffs[pointer][1].substring(
-              0,
-              diffs[pointer][1].length - diffs[pointer - 1][1].length
-            );
-            diffs[pointer + 1][1] = diffs[pointer - 1][1] + diffs[pointer + 1][1];
-            diffs.splice(pointer - 1, 1);
-            changes = true;
-          } else if (diffs[pointer][1].substring(0, diffs[pointer + 1][1].length) == diffs[pointer + 1][1]) {
-            diffs[pointer - 1][1] += diffs[pointer + 1][1];
-            diffs[pointer][1] = diffs[pointer][1].substring(diffs[pointer + 1][1].length) + diffs[pointer + 1][1];
-            diffs.splice(pointer + 1, 1);
-            changes = true;
-          }
-        }
-        pointer++;
-      }
-      if (changes) {
-        diff_cleanupMerge(diffs, fix_unicode);
-      }
-    }
-    __name(diff_cleanupMerge, "diff_cleanupMerge");
-    function is_surrogate_pair_start(charCode) {
-      return charCode >= 55296 && charCode <= 56319;
-    }
-    __name(is_surrogate_pair_start, "is_surrogate_pair_start");
-    function is_surrogate_pair_end(charCode) {
-      return charCode >= 56320 && charCode <= 57343;
-    }
-    __name(is_surrogate_pair_end, "is_surrogate_pair_end");
-    function starts_with_pair_end(str) {
-      return is_surrogate_pair_end(str.charCodeAt(0));
-    }
-    __name(starts_with_pair_end, "starts_with_pair_end");
-    function ends_with_pair_start(str) {
-      return is_surrogate_pair_start(str.charCodeAt(str.length - 1));
-    }
-    __name(ends_with_pair_start, "ends_with_pair_start");
-    function remove_empty_tuples(tuples) {
-      var ret = [];
-      for (var i = 0; i < tuples.length; i++) {
-        if (tuples[i][1].length > 0) {
-          ret.push(tuples[i]);
-        }
-      }
-      return ret;
-    }
-    __name(remove_empty_tuples, "remove_empty_tuples");
-    function make_edit_splice(before, oldMiddle, newMiddle, after) {
-      if (ends_with_pair_start(before) || starts_with_pair_end(after)) {
-        return null;
-      }
-      return remove_empty_tuples([
-        [DIFF_EQUAL, before],
-        [DIFF_DELETE, oldMiddle],
-        [DIFF_INSERT, newMiddle],
-        [DIFF_EQUAL, after]
-      ]);
-    }
-    __name(make_edit_splice, "make_edit_splice");
-    function find_cursor_edit_diff(oldText, newText, cursor_pos) {
-      var oldRange = typeof cursor_pos === "number" ? { index: cursor_pos, length: 0 } : cursor_pos.oldRange;
-      var newRange = typeof cursor_pos === "number" ? null : cursor_pos.newRange;
-      var oldLength = oldText.length;
-      var newLength = newText.length;
-      if (oldRange.length === 0 && (newRange === null || newRange.length === 0)) {
-        var oldCursor = oldRange.index;
-        var oldBefore = oldText.slice(0, oldCursor);
-        var oldAfter = oldText.slice(oldCursor);
-        var maybeNewCursor = newRange ? newRange.index : null;
-        editBefore: {
-          var newCursor = oldCursor + newLength - oldLength;
-          if (maybeNewCursor !== null && maybeNewCursor !== newCursor) {
-            break editBefore;
-          }
-          if (newCursor < 0 || newCursor > newLength) {
-            break editBefore;
-          }
-          var newBefore = newText.slice(0, newCursor);
-          var newAfter = newText.slice(newCursor);
-          if (newAfter !== oldAfter) {
-            break editBefore;
-          }
-          var prefixLength = Math.min(oldCursor, newCursor);
-          var oldPrefix = oldBefore.slice(0, prefixLength);
-          var newPrefix = newBefore.slice(0, prefixLength);
-          if (oldPrefix !== newPrefix) {
-            break editBefore;
-          }
-          var oldMiddle = oldBefore.slice(prefixLength);
-          var newMiddle = newBefore.slice(prefixLength);
-          return make_edit_splice(oldPrefix, oldMiddle, newMiddle, oldAfter);
-        }
-        editAfter: {
-          if (maybeNewCursor !== null && maybeNewCursor !== oldCursor) {
-            break editAfter;
-          }
-          var cursor = oldCursor;
-          var newBefore = newText.slice(0, cursor);
-          var newAfter = newText.slice(cursor);
-          if (newBefore !== oldBefore) {
-            break editAfter;
-          }
-          var suffixLength = Math.min(oldLength - cursor, newLength - cursor);
-          var oldSuffix = oldAfter.slice(oldAfter.length - suffixLength);
-          var newSuffix = newAfter.slice(newAfter.length - suffixLength);
-          if (oldSuffix !== newSuffix) {
-            break editAfter;
-          }
-          var oldMiddle = oldAfter.slice(0, oldAfter.length - suffixLength);
-          var newMiddle = newAfter.slice(0, newAfter.length - suffixLength);
-          return make_edit_splice(oldBefore, oldMiddle, newMiddle, oldSuffix);
-        }
-      }
-      if (oldRange.length > 0 && newRange && newRange.length === 0) {
-        replaceRange: {
-          var oldPrefix = oldText.slice(0, oldRange.index);
-          var oldSuffix = oldText.slice(oldRange.index + oldRange.length);
-          var prefixLength = oldPrefix.length;
-          var suffixLength = oldSuffix.length;
-          if (newLength < prefixLength + suffixLength) {
-            break replaceRange;
-          }
-          var newPrefix = newText.slice(0, prefixLength);
-          var newSuffix = newText.slice(newLength - suffixLength);
-          if (oldPrefix !== newPrefix || oldSuffix !== newSuffix) {
-            break replaceRange;
-          }
-          var oldMiddle = oldText.slice(prefixLength, oldLength - suffixLength);
-          var newMiddle = newText.slice(prefixLength, newLength - suffixLength);
-          return make_edit_splice(oldPrefix, oldMiddle, newMiddle, oldSuffix);
-        }
-      }
-      return null;
-    }
-    __name(find_cursor_edit_diff, "find_cursor_edit_diff");
-    function diff2(text1, text2, cursor_pos, cleanup) {
-      return diff_main(text1, text2, cursor_pos, cleanup, true);
-    }
-    __name(diff2, "diff");
-    diff2.INSERT = DIFF_INSERT;
-    diff2.DELETE = DIFF_DELETE;
-    diff2.EQUAL = DIFF_EQUAL;
-    module3.exports = diff2;
-  }
-});
-
-// packages/language-server/build/server/utils/documents/create-text-edits.js
-function createTextEdits(document, newContents) {
-  const diffs = (0, import_fast_diff.default)(document.getText(), newContents);
-  const edits = [];
-  let offset = 0;
-  for (const [op, text] of diffs) {
-    const start = offset;
-    switch (op) {
-      case import_fast_diff.default.EQUAL:
-        offset += text.length;
-        break;
-      case import_fast_diff.default.DELETE:
-        offset += text.length;
-        edits.push(TextEdit.del(Range.create(document.positionAt(start), document.positionAt(offset))));
-        break;
-      case import_fast_diff.default.INSERT:
-        edits.push(TextEdit.insert(document.positionAt(start), text));
-        break;
-    }
-  }
-  return edits;
-}
-var import_fast_diff;
-var init_create_text_edits = __esm({
-  "packages/language-server/build/server/utils/documents/create-text-edits.js"() {
-    "use strict";
-    import_fast_diff = __toESM(require_diff(), 1);
-    init_main();
-    __name(createTextEdits, "createTextEdits");
-  }
-});
-
-// packages/language-server/build/server/utils/documents/get-edit-info.js
-function getEditInfo(document, diagnostic, lintResult) {
-  if (!lintResult || document.version !== lintResult.version) {
-    return void 0;
-  }
-  const warning = lintResult.getWarning?.(diagnostic);
-  if (!warning) {
-    return void 0;
-  }
-  const edit = warning.fix;
-  if (!edit) {
-    return void 0;
-  }
-  return {
-    label: `Fix this ${warning.rule} problem`,
-    edit: {
-      newText: edit.text,
-      range: {
-        start: document.positionAt(edit.range[0]),
-        end: document.positionAt(edit.range[1])
-      }
-    }
-  };
-}
-var init_get_edit_info = __esm({
-  "packages/language-server/build/server/utils/documents/get-edit-info.js"() {
-    "use strict";
-    __name(getEditInfo, "getEditInfo");
-  }
-});
-
-// packages/language-server/build/server/utils/documents/get-disable-type.js
-function getDisableType(document, position) {
-  const lineStartOffset = document.offsetAt(Position.create(position.line, 0));
-  const lineEndOffset = document.offsetAt(Position.create(position.line + 1, 0));
-  const line = document.getText().slice(lineStartOffset, lineEndOffset);
-  const before = line.slice(0, position.character);
-  const after = line.slice(position.character);
-  const disableKind = before.match(/\/\*\s*(stylelint-disable(?:(?:-next)?-line)?)\s[a-z\-/\s,]*$/i)?.[1]?.toLowerCase();
-  return disableKind && /^[a-z\-/\s,]*\*\//i.test(after) ? disableKind : void 0;
-}
-var init_get_disable_type = __esm({
-  "packages/language-server/build/server/utils/documents/get-disable-type.js"() {
-    "use strict";
-    init_main();
-    __name(getDisableType, "getDisableType");
-  }
-});
-
-// packages/language-server/build/server/utils/documents/get-fixes.js
-async function getFixes(runner, document, linterOptions = {}, runnerOptions = {}) {
-  const result = await runner.lintDocument(document, { ...linterOptions, fix: true }, runnerOptions);
-  const fixedCode = typeof result.code === "string" ? result.code : typeof result.output === "string" && result.output.length > 0 ? result.output : void 0;
-  return typeof fixedCode === "string" ? createTextEdits(document, fixedCode) : [];
-}
-var init_get_fixes = __esm({
-  "packages/language-server/build/server/utils/documents/get-fixes.js"() {
-    "use strict";
-    init_create_text_edits();
-    __name(getFixes, "getFixes");
-  }
-});
-
-// packages/language-server/build/server/utils/documents/index.js
-var init_documents = __esm({
-  "packages/language-server/build/server/utils/documents/index.js"() {
-    "use strict";
-    init_create_text_edits();
-    init_get_edit_info();
-    init_get_disable_type();
-    init_get_fixes();
-  }
-});
-
-// packages/language-server/build/server/utils/functions/get-first-return-value.js
-var init_get_first_return_value = __esm({
-  "packages/language-server/build/server/utils/functions/get-first-return-value.js"() {
-    "use strict";
-  }
-});
-
-// packages/language-server/build/server/utils/functions/lazy-call.js
-var init_lazy_call = __esm({
-  "packages/language-server/build/server/utils/functions/lazy-call.js"() {
-    "use strict";
-  }
-});
-
-// packages/language-server/build/server/utils/functions/index.js
-var init_functions = __esm({
-  "packages/language-server/build/server/utils/functions/index.js"() {
-    "use strict";
-    init_get_first_return_value();
-    init_lazy_call();
-  }
-});
-
-// node_modules/non-error/index.js
-function defineProperty(object, key, value) {
-  Object.defineProperty(object, key, {
-    value,
-    writable: false,
-    enumerable: false,
-    configurable: false
-  });
-}
-function stringify(value) {
-  if (value === void 0) {
-    return "undefined";
-  }
-  if (value === null) {
-    return "null";
-  }
-  if (typeof value === "string") {
-    return value;
-  }
-  if (typeof value === "number" || typeof value === "boolean") {
-    return String(value);
-  }
-  if (typeof value === "bigint") {
-    return `${value}n`;
-  }
-  if (typeof value === "symbol") {
-    return value.toString();
-  }
-  if (typeof value === "function") {
-    return `[Function${value.name ? ` ${value.name}` : " (anonymous)"}]`;
-  }
-  if (value instanceof Error) {
-    try {
-      return String(value);
-    } catch {
-      return "<Unserializable error>";
-    }
-  }
-  try {
-    return JSON.stringify(value);
-  } catch {
-    try {
-      return String(value);
-    } catch {
-      return "<Unserializable value>";
-    }
-  }
-}
-var isNonErrorSymbol, NonError;
-var init_non_error = __esm({
-  "node_modules/non-error/index.js"() {
-    isNonErrorSymbol = /* @__PURE__ */ Symbol("isNonError");
-    __name(defineProperty, "defineProperty");
-    __name(stringify, "stringify");
-    NonError = class _NonError extends Error {
-      static {
-        __name(this, "NonError");
-      }
-      constructor(value, { superclass: Superclass = Error } = {}) {
-        if (_NonError.isNonError(value)) {
-          return value;
-        }
-        if (value instanceof Error) {
-          throw new TypeError("Do not pass Error instances to NonError. Throw the error directly instead.");
-        }
-        super(`Non-error value: ${stringify(value)}`);
-        if (Superclass !== Error) {
-          Object.setPrototypeOf(this, Superclass.prototype);
-        }
-        defineProperty(this, "name", "NonError");
-        defineProperty(this, isNonErrorSymbol, true);
-        defineProperty(this, "isNonError", true);
-        defineProperty(this, "value", value);
-      }
-      static isNonError(value) {
-        return value?.[isNonErrorSymbol] === true;
-      }
-      static #handleCallback(callback, arguments_) {
-        try {
-          const result = callback(...arguments_);
-          if (result && typeof result.then === "function") {
-            return (async () => {
-              try {
-                return await result;
-              } catch (error) {
-                if (error instanceof Error) {
-                  throw error;
-                }
-                throw new _NonError(error);
-              }
-            })();
-          }
-          return result;
-        } catch (error) {
-          if (error instanceof Error) {
-            throw error;
-          }
-          throw new _NonError(error);
-        }
-      }
-      static try(callback) {
-        return _NonError.#handleCallback(callback, []);
-      }
-      static wrap(callback) {
-        return (...arguments_) => _NonError.#handleCallback(callback, arguments_);
-      }
-      // This makes instanceof work even when using the `superclass` option
-      static [Symbol.hasInstance](instance) {
-        return _NonError.isNonError(instance);
-      }
-    };
-  }
-});
-
-// node_modules/serialize-error/error-constructors.js
-var list, errorConstructors, errorFactories;
-var init_error_constructors = __esm({
-  "node_modules/serialize-error/error-constructors.js"() {
-    list = [
-      // Native ES errors https://262.ecma-international.org/12.0/#sec-well-known-intrinsic-objects
-      Error,
-      EvalError,
-      RangeError,
-      ReferenceError,
-      SyntaxError,
-      TypeError,
-      URIError,
-      AggregateError,
-      // Built-in errors
-      globalThis.DOMException,
-      // Node-specific errors
-      // https://nodejs.org/api/errors.html
-      globalThis.AssertionError,
-      globalThis.SystemError
-    ].filter(Boolean).map((constructor) => [constructor.name, constructor]);
-    errorConstructors = new Map(list);
-    errorFactories = /* @__PURE__ */ new Map();
-  }
-});
-
-// node_modules/serialize-error/index.js
-function serializeError(value, options = {}) {
-  const {
-    maxDepth = Number.POSITIVE_INFINITY,
-    useToJSON = true
-  } = options;
-  if (typeof value === "object" && value !== null) {
-    return destroyCircular({
-      from: value,
-      seen: /* @__PURE__ */ new Set(),
-      forceEnumerable: true,
-      maxDepth,
-      depth: 0,
-      useToJSON,
-      serialize: true
-    });
-  }
-  if (typeof value === "function") {
-    value = "<Function>";
-  }
-  return destroyCircular({
-    from: new NonError(value),
-    seen: /* @__PURE__ */ new Set(),
-    forceEnumerable: true,
-    maxDepth,
-    depth: 0,
-    useToJSON,
-    serialize: true
-  });
-}
-function isErrorLike(value) {
-  return Boolean(value) && typeof value === "object" && typeof value.name === "string" && typeof value.message === "string" && typeof value.stack === "string";
-}
-var errorProperties, toJsonWasCalled, toJSON, newError, destroyCircular;
-var init_serialize_error = __esm({
-  "node_modules/serialize-error/index.js"() {
-    init_non_error();
-    init_error_constructors();
-    errorProperties = [
-      {
-        property: "name",
-        enumerable: false
-      },
-      {
-        property: "message",
-        enumerable: false
-      },
-      {
-        property: "stack",
-        enumerable: false
-      },
-      {
-        property: "code",
-        enumerable: true
-      },
-      {
-        property: "cause",
-        enumerable: false
-      },
-      {
-        property: "errors",
-        enumerable: false
-      }
-    ];
-    toJsonWasCalled = /* @__PURE__ */ new WeakSet();
-    toJSON = /* @__PURE__ */ __name((from) => {
-      toJsonWasCalled.add(from);
-      const json = from.toJSON();
-      toJsonWasCalled.delete(from);
-      return json;
-    }, "toJSON");
-    newError = /* @__PURE__ */ __name((name) => {
-      if (name === "NonError") {
-        return new NonError();
-      }
-      const factory = errorFactories.get(name);
-      if (factory) {
-        return factory();
-      }
-      const ErrorConstructor = errorConstructors.get(name) ?? Error;
-      return ErrorConstructor === AggregateError ? new ErrorConstructor([]) : new ErrorConstructor();
-    }, "newError");
-    destroyCircular = /* @__PURE__ */ __name(({
-      from,
-      seen,
-      to,
-      forceEnumerable,
-      maxDepth,
-      depth,
-      useToJSON,
-      serialize
-    }) => {
-      if (!to) {
-        if (Array.isArray(from)) {
-          to = [];
-        } else if (!serialize && isErrorLike(from)) {
-          to = newError(from.name);
-        } else {
-          to = {};
-        }
-      }
-      seen.add(from);
-      if (depth >= maxDepth) {
-        seen.delete(from);
-        return to;
-      }
-      if (useToJSON && typeof from.toJSON === "function" && !toJsonWasCalled.has(from)) {
-        seen.delete(from);
-        return toJSON(from);
-      }
-      const continueDestroyCircular = /* @__PURE__ */ __name((value) => destroyCircular({
-        from: value,
-        seen,
-        forceEnumerable,
-        maxDepth,
-        depth: depth + 1,
-        useToJSON,
-        serialize
-      }), "continueDestroyCircular");
-      for (const key of Object.keys(from)) {
-        const value = from[key];
-        if (value && value instanceof Uint8Array && value.constructor.name === "Buffer") {
-          to[key] = serialize ? "[object Buffer]" : value;
-          continue;
-        }
-        if (value !== null && typeof value === "object" && typeof value.pipe === "function") {
-          to[key] = serialize ? "[object Stream]" : value;
-          continue;
-        }
-        if (typeof value === "function") {
-          if (!serialize) {
-            to[key] = value;
-          }
-          continue;
-        }
-        if (serialize && typeof value === "bigint") {
-          to[key] = `${value}n`;
-          continue;
-        }
-        if (!value || typeof value !== "object") {
-          try {
-            to[key] = value;
-          } catch {
-          }
-          continue;
-        }
-        if (!seen.has(value)) {
-          to[key] = continueDestroyCircular(value);
-          continue;
-        }
-        to[key] = "[Circular]";
-      }
-      if (serialize || to instanceof Error) {
-        for (const { property, enumerable } of errorProperties) {
-          const value = from[property];
-          if (value === void 0 || value === null) {
-            continue;
-          }
-          const descriptor = Object.getOwnPropertyDescriptor(to, property);
-          if (descriptor?.configurable === false) {
-            continue;
-          }
-          let processedValue = value;
-          if (typeof value === "object") {
-            processedValue = seen.has(value) ? "[Circular]" : continueDestroyCircular(value);
-          }
-          Object.defineProperty(to, property, {
-            value: processedValue,
-            enumerable: forceEnumerable || enumerable,
-            configurable: true,
-            writable: true
-          });
-        }
-      }
-      seen.delete(from);
-      return to;
-    }, "destroyCircular");
-    __name(serializeError, "serializeError");
-    __name(isErrorLike, "isErrorLike");
-  }
-});
-
-// packages/language-server/build/server/utils/iterables.js
-function isIterable(obj) {
-  return obj !== null && obj !== void 0 && typeof obj[Symbol.iterator] === "function";
-}
-function isIterableObject(obj) {
-  return isIterable(obj) && typeof obj === "object";
-}
-var init_iterables = __esm({
-  "packages/language-server/build/server/utils/iterables.js"() {
-    "use strict";
-    __name(isIterable, "isIterable");
-    __name(isIterableObject, "isIterableObject");
-  }
-});
-
-// packages/language-server/build/server/utils/objects/is-object.js
-function isObject(value) {
-  return typeof value === "object" && value !== null;
-}
-function isEmptyObject(value) {
-  return isObject(value) && !Array.isArray(value) && Object.keys(value).length === 0;
-}
-var init_is_object = __esm({
-  "packages/language-server/build/server/utils/objects/is-object.js"() {
-    "use strict";
-    __name(isObject, "isObject");
-    __name(isEmptyObject, "isEmptyObject");
-  }
-});
-
-// packages/language-server/build/server/utils/objects/merge-assign.js
-function mergeAssign(target, source1, source2) {
-  const targetAsUnion = target;
-  for (const object of [source1, source2]) {
-    if (!object) {
-      continue;
-    }
-    for (const key of Object.getOwnPropertyNames(object)) {
-      if (key === "__proto__" || key === "constructor") {
-        continue;
-      }
-      const value = object[key];
-      if (isObject(value)) {
-        if (Array.isArray(value)) {
-          const existing = targetAsUnion[key];
-          targetAsUnion[key] = Array.isArray(existing) ? existing.concat(value) : value;
-          continue;
-        }
-        if (!targetAsUnion[key]) {
-          targetAsUnion[key] = {};
-        }
-        targetAsUnion[key] = mergeAssign(targetAsUnion[key], value);
-      } else {
-        targetAsUnion[key] = value;
-      }
-    }
-  }
-  return targetAsUnion;
-}
-var init_merge_assign = __esm({
-  "packages/language-server/build/server/utils/objects/merge-assign.js"() {
-    "use strict";
-    init_is_object();
-    __name(mergeAssign, "mergeAssign");
-  }
-});
-
-// node_modules/rfdc/index.js
-var require_rfdc = __commonJS({
-  "node_modules/rfdc/index.js"(exports2, module3) {
-    "use strict";
-    module3.exports = rfdc2;
-    function copyBuffer(cur) {
-      if (cur instanceof Buffer) {
-        return Buffer.from(cur);
-      }
-      return new cur.constructor(cur.buffer.slice(), cur.byteOffset, cur.length);
-    }
-    __name(copyBuffer, "copyBuffer");
-    function rfdc2(opts) {
-      opts = opts || {};
-      if (opts.circles) return rfdcCircles(opts);
-      const constructorHandlers = /* @__PURE__ */ new Map();
-      constructorHandlers.set(Date, (o) => new Date(o));
-      constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
-      constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
-      if (opts.constructorHandlers) {
-        for (const handler2 of opts.constructorHandlers) {
-          constructorHandlers.set(handler2[0], handler2[1]);
-        }
-      }
-      let handler = null;
-      return opts.proto ? cloneProto : clone;
-      function cloneArray(a, fn) {
-        const keys = Object.keys(a);
-        const a2 = new Array(keys.length);
-        for (let i = 0; i < keys.length; i++) {
-          const k = keys[i];
-          const cur = a[k];
-          if (typeof cur !== "object" || cur === null) {
-            a2[k] = cur;
-          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-            a2[k] = handler(cur, fn);
-          } else if (ArrayBuffer.isView(cur)) {
-            a2[k] = copyBuffer(cur);
-          } else {
-            a2[k] = fn(cur);
-          }
-        }
-        return a2;
-      }
-      __name(cloneArray, "cloneArray");
-      function clone(o) {
-        if (typeof o !== "object" || o === null) return o;
-        if (Array.isArray(o)) return cloneArray(o, clone);
-        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-          return handler(o, clone);
-        }
-        const o2 = {};
-        for (const k in o) {
-          if (Object.hasOwnProperty.call(o, k) === false) continue;
-          const cur = o[k];
-          if (typeof cur !== "object" || cur === null) {
-            o2[k] = cur;
-          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-            o2[k] = handler(cur, clone);
-          } else if (ArrayBuffer.isView(cur)) {
-            o2[k] = copyBuffer(cur);
-          } else {
-            o2[k] = clone(cur);
-          }
-        }
-        return o2;
-      }
-      __name(clone, "clone");
-      function cloneProto(o) {
-        if (typeof o !== "object" || o === null) return o;
-        if (Array.isArray(o)) return cloneArray(o, cloneProto);
-        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-          return handler(o, cloneProto);
-        }
-        const o2 = {};
-        for (const k in o) {
-          const cur = o[k];
-          if (typeof cur !== "object" || cur === null) {
-            o2[k] = cur;
-          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-            o2[k] = handler(cur, cloneProto);
-          } else if (ArrayBuffer.isView(cur)) {
-            o2[k] = copyBuffer(cur);
-          } else {
-            o2[k] = cloneProto(cur);
-          }
-        }
-        return o2;
-      }
-      __name(cloneProto, "cloneProto");
-    }
-    __name(rfdc2, "rfdc");
-    function rfdcCircles(opts) {
-      const refs = [];
-      const refsNew = [];
-      const constructorHandlers = /* @__PURE__ */ new Map();
-      constructorHandlers.set(Date, (o) => new Date(o));
-      constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
-      constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
-      if (opts.constructorHandlers) {
-        for (const handler2 of opts.constructorHandlers) {
-          constructorHandlers.set(handler2[0], handler2[1]);
-        }
-      }
-      let handler = null;
-      return opts.proto ? cloneProto : clone;
-      function cloneArray(a, fn) {
-        const keys = Object.keys(a);
-        const a2 = new Array(keys.length);
-        for (let i = 0; i < keys.length; i++) {
-          const k = keys[i];
-          const cur = a[k];
-          if (typeof cur !== "object" || cur === null) {
-            a2[k] = cur;
-          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-            a2[k] = handler(cur, fn);
-          } else if (ArrayBuffer.isView(cur)) {
-            a2[k] = copyBuffer(cur);
-          } else {
-            const index = refs.indexOf(cur);
-            if (index !== -1) {
-              a2[k] = refsNew[index];
-            } else {
-              a2[k] = fn(cur);
-            }
-          }
-        }
-        return a2;
-      }
-      __name(cloneArray, "cloneArray");
-      function clone(o) {
-        if (typeof o !== "object" || o === null) return o;
-        if (Array.isArray(o)) return cloneArray(o, clone);
-        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-          return handler(o, clone);
-        }
-        const o2 = {};
-        refs.push(o);
-        refsNew.push(o2);
-        for (const k in o) {
-          if (Object.hasOwnProperty.call(o, k) === false) continue;
-          const cur = o[k];
-          if (typeof cur !== "object" || cur === null) {
-            o2[k] = cur;
-          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-            o2[k] = handler(cur, clone);
-          } else if (ArrayBuffer.isView(cur)) {
-            o2[k] = copyBuffer(cur);
-          } else {
-            const i = refs.indexOf(cur);
-            if (i !== -1) {
-              o2[k] = refsNew[i];
-            } else {
-              o2[k] = clone(cur);
-            }
-          }
-        }
-        refs.pop();
-        refsNew.pop();
-        return o2;
-      }
-      __name(clone, "clone");
-      function cloneProto(o) {
-        if (typeof o !== "object" || o === null) return o;
-        if (Array.isArray(o)) return cloneArray(o, cloneProto);
-        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
-          return handler(o, cloneProto);
-        }
-        const o2 = {};
-        refs.push(o);
-        refsNew.push(o2);
-        for (const k in o) {
-          const cur = o[k];
-          if (typeof cur !== "object" || cur === null) {
-            o2[k] = cur;
-          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
-            o2[k] = handler(cur, cloneProto);
-          } else if (ArrayBuffer.isView(cur)) {
-            o2[k] = copyBuffer(cur);
-          } else {
-            const i = refs.indexOf(cur);
-            if (i !== -1) {
-              o2[k] = refsNew[i];
-            } else {
-              o2[k] = cloneProto(cur);
-            }
-          }
-        }
-        refs.pop();
-        refsNew.pop();
-        return o2;
-      }
-      __name(cloneProto, "cloneProto");
-    }
-    __name(rfdcCircles, "rfdcCircles");
-  }
-});
-
-// packages/language-server/build/server/utils/objects/merge-options-with-defaults.js
-function mergeOptionsWithDefaultsInner(options, defaults, seen, mapped, circulars) {
-  if (!isObject(options)) {
-    return deepClone(defaults);
-  }
-  const result = {};
-  for (const key of Object.keys(defaults)) {
-    const fromDefaults = defaults[key];
-    const fromOptions = options[key];
-    if (fromOptions !== void 0) {
-      if (isObject(fromOptions)) {
-        if (seen.has(fromOptions)) {
-          circulars.add([fromOptions, result, key]);
-          continue;
-        }
-        seen.add(fromOptions);
-        const value = Array.isArray(fromOptions) ? fromOptions.map((item) => deepClone(item)) : isObject(fromDefaults) && !Array.isArray(fromDefaults) ? mergeOptionsWithDefaultsInner(fromOptions, fromDefaults, seen, mapped, circulars) : deepClone(fromOptions);
-        mapped.set(fromOptions, value);
-        result[key] = value;
-        continue;
-      }
-      result[key] = fromOptions;
-      continue;
-    }
-    result[key] = deepClone(fromDefaults);
-  }
-  return result;
-}
-function mergeOptionsWithDefaults(options, defaults) {
-  const seen = /* @__PURE__ */ new WeakSet();
-  const mapped = /* @__PURE__ */ new WeakMap();
-  const circulars = /* @__PURE__ */ new Set();
-  const result = mergeOptionsWithDefaultsInner(options, defaults, seen, mapped, circulars);
-  for (const [circular, obj, key] of circulars) {
-    obj[key] = mapped.get(circular);
-  }
-  return result;
-}
-var import_rfdc, deepClone;
-var init_merge_options_with_defaults = __esm({
-  "packages/language-server/build/server/utils/objects/merge-options-with-defaults.js"() {
-    "use strict";
-    import_rfdc = __toESM(require_rfdc(), 1);
-    init_is_object();
-    deepClone = (0, import_rfdc.default)();
-    __name(mergeOptionsWithDefaultsInner, "mergeOptionsWithDefaultsInner");
-    __name(mergeOptionsWithDefaults, "mergeOptionsWithDefaults");
-  }
-});
-
-// packages/language-server/build/server/utils/objects/index.js
-var init_objects = __esm({
-  "packages/language-server/build/server/utils/objects/index.js"() {
-    "use strict";
-    init_is_object();
-    init_merge_assign();
-    init_merge_options_with_defaults();
-  }
-});
-
-// packages/language-server/build/server/utils/errors.js
-function serializeErrors(object) {
-  const serializeInner = /* @__PURE__ */ __name((obj, visited) => {
-    if (!obj || typeof obj !== "object") {
-      return obj;
-    }
-    if (visited.has(obj)) {
-      return visited.get(obj);
-    }
-    if (obj instanceof Error) {
-      const result = serializeError(obj);
-      visited.set(obj, result);
-      return result;
-    }
-    if (obj instanceof Map) {
-      const result = /* @__PURE__ */ new Map();
-      visited.set(obj, result);
-      for (const [key, value] of obj) {
-        const serializedKey = serializeInner(key, visited);
-        const serializedValue = serializeInner(value, visited);
-        if (isObject(key)) {
-          visited.set(key, serializedKey);
-        }
-        if (isObject(value)) {
-          visited.set(value, serializedValue);
-        }
-        result.set(serializedKey, serializedValue);
-      }
-      return result;
-    }
-    if (obj instanceof Set) {
-      const result = /* @__PURE__ */ new Set();
-      visited.set(obj, result);
-      for (const value of obj) {
-        if (!isObject(value)) {
-          result.add(value);
-          continue;
-        }
-        const serializedValue = serializeInner(value, visited);
-        visited.set(value, serializedValue);
-        result.add(serializedValue);
-      }
-      return result;
-    }
-    if (isIterable(obj)) {
-      const result = [];
-      visited.set(obj, result);
-      for (const value of obj) {
-        result.push(serializeInner(value, visited));
-      }
-      return result;
-    }
-    visited.set(obj, "[Circular]");
-    const serializedObj = Object.fromEntries(Object.entries(obj).map(([key, value]) => {
-      if (!isObject(value)) {
-        return [key, value];
-      }
-      if (visited.has(value)) {
-        return [key, visited.get(value)];
-      }
-      if (value instanceof Error) {
-        const serialized = serializeError(value);
-        visited.set(value, serialized);
-        return [key, serialized];
-      }
-      const result = serializeInner(value, visited);
-      visited.set(value, result);
-      return [key, result];
-    }));
-    visited.set(obj, serializedObj);
-    return serializedObj;
-  }, "serializeInner");
-  return serializeInner(object, /* @__PURE__ */ new WeakMap());
-}
-var init_errors = __esm({
-  "packages/language-server/build/server/utils/errors.js"() {
-    "use strict";
-    init_serialize_error();
-    init_iterables();
-    init_objects();
-    __name(serializeErrors, "serializeErrors");
-  }
-});
-
-// packages/language-server/build/server/utils/logging/error-formatter.js
-var ErrorFormatter;
-var init_error_formatter = __esm({
-  "packages/language-server/build/server/utils/logging/error-formatter.js"() {
-    "use strict";
-    init_errors();
-    ErrorFormatter = class {
-      static {
-        __name(this, "ErrorFormatter");
-      }
-      transform(info) {
-        const transformed = serializeErrors({ ...info });
-        for (const key of Object.keys(transformed)) {
-          info[key] = transformed[key];
-        }
-        return info;
-      }
-    };
-  }
-});
-
-// packages/language-server/build/server/utils/logging/get-log-function.js
-var getLogFunction;
-var init_get_log_function = __esm({
-  "packages/language-server/build/server/utils/logging/get-log-function.js"() {
-    "use strict";
-    getLogFunction = /* @__PURE__ */ __name((remoteConsole, level) => {
-      const logFunction = remoteConsole[level];
-      if (typeof logFunction === "function") {
-        return logFunction;
-      }
-      return void 0;
-    }, "getLogFunction");
-  }
-});
-
-// packages/language-server/build/server/utils/strings.js
-var upperCaseFirstChar, padString, padNumber;
-var init_strings = __esm({
-  "packages/language-server/build/server/utils/strings.js"() {
-    "use strict";
-    upperCaseFirstChar = /* @__PURE__ */ __name((str) => {
-      return str.charAt(0).toUpperCase() + str.slice(1);
-    }, "upperCaseFirstChar");
-    padString = /* @__PURE__ */ __name((str, length) => {
-      return str + " ".repeat(length - str.length);
-    }, "padString");
-    padNumber = /* @__PURE__ */ __name((number, length) => {
-      const str = String(number);
-      return "0".repeat(length - str.length) + str;
-    }, "padNumber");
-  }
-});
-
-// packages/language-server/build/server/utils/logging/language-server-formatter.js
-var import_triple_beam, LanguageServerFormatter;
-var init_language_server_formatter = __esm({
-  "packages/language-server/build/server/utils/logging/language-server-formatter.js"() {
-    "use strict";
-    import_triple_beam = __toESM(require_triple_beam(), 1);
-    init_get_log_function();
-    init_strings();
-    LanguageServerFormatter = class {
-      static {
-        __name(this, "LanguageServerFormatter");
-      }
-      options;
-      constructor(options) {
-        this.options = options;
-      }
-      transform(info) {
-        const date = /* @__PURE__ */ new Date();
-        const timestamp = `${date.getHours() % 12 || 12}:${padNumber(date.getMinutes(), 2)}:${padNumber(date.getSeconds(), 2)} ${date.getHours() < 12 ? "a.m." : "p.m."}`;
-        const messageParts = [];
-        const level = String(info[import_triple_beam.LEVEL]);
-        if (!getLogFunction(this.options.connection.console, level)) {
-          messageParts.push(`[${padString(upperCaseFirstChar(level), 5)} - ${timestamp}]`);
-        }
-        if (info.component) {
-          messageParts.push(`[${String(info.component)}]`);
-        }
-        messageParts.push(info.message);
-        delete info.component;
-        delete info.timestamp;
-        const keys = new Set(Object.keys({ ...info }));
-        const postMessageParts = [];
-        if (this.options.preferredKeyOrder) {
-          for (const key of this.options.preferredKeyOrder) {
-            if (keys.has(key)) {
-              postMessageParts.push(`${key}: ${JSON.stringify(info[key])}`);
-              keys.delete(key);
-              delete info[key];
-            }
-          }
-        }
-        for (const key of keys) {
-          if (key === "level" || key === "message") {
-            continue;
-          }
-          postMessageParts.push(`${key}: ${JSON.stringify(info[key])}`);
-          delete info[key];
-        }
-        const message = postMessageParts.length > 0 ? `${messageParts.join(" ")} | ${postMessageParts.join(" ")}` : messageParts.join(" ");
-        info[import_triple_beam.MESSAGE] = message;
-        info.message = message;
-        return info;
-      }
-    };
-  }
-});
-
-// packages/language-server/build/server/utils/logging/language-server-transport.js
-var import_winston_transport, import_triple_beam2, LanguageServerTransport;
-var init_language_server_transport = __esm({
-  "packages/language-server/build/server/utils/logging/language-server-transport.js"() {
-    "use strict";
-    import_winston_transport = __toESM(require_winston_transport(), 1);
-    import_triple_beam2 = __toESM(require_triple_beam(), 1);
-    init_get_log_function();
-    LanguageServerTransport = class extends import_winston_transport.default {
-      static {
-        __name(this, "LanguageServerTransport");
-      }
-      /**
-       * The language server remote console.
-       */
-      #console;
-      constructor(options) {
-        super(options);
-        this.#console = options.connection.console;
-      }
-      log(info, callback) {
-        setImmediate(() => {
-          this.emit("logged", info);
-        });
-        try {
-          const logFunc = getLogFunction(this.#console, String(info[import_triple_beam2.LEVEL]));
-          if (typeof logFunc === "function") {
-            logFunc.call(this.#console, String(info[import_triple_beam2.MESSAGE]));
-          } else {
-            this.#console.log(String(info[import_triple_beam2.MESSAGE]));
-          }
-        } catch (error) {
-          if (!(error instanceof Error) || !error.message.includes("Connection is disposed")) {
-            this.emit("error", error);
-          }
-        }
-        callback();
-      }
-    };
-  }
-});
-
-// packages/language-server/build/server/utils/logging/index.js
-var init_logging = __esm({
-  "packages/language-server/build/server/utils/logging/index.js"() {
-    "use strict";
-    init_error_formatter();
-    init_get_log_function();
-    init_language_server_formatter();
-    init_language_server_transport();
-  }
-});
-
-// packages/language-server/build/server/utils/lsp/create-disable-completion-item.js
-function createDisableCompletionItem(disableType, rule = "") {
-  const item = CompletionItem.create(disableType);
-  item.kind = CompletionItemKind.Snippet;
-  item.insertTextFormat = InsertTextFormat.Snippet;
-  if (disableType === "stylelint-disable") {
-    item.insertText = `/* stylelint-disable \${0:${rule || "rule"}} */
-/* stylelint-enable \${0:${rule || "rule"}} */`;
-    item.detail = "Turn off all Stylelint or individual rules, after which you do not need to re-enable Stylelint. (Stylelint)";
-    item.documentation = {
-      kind: MarkupKind.Markdown,
-      value: `\`\`\`css
-/* stylelint-disable ${rule || "rule"} */
-/* stylelint-enable ${rule || "rule"} */
-\`\`\``
-    };
-  } else {
-    item.insertText = `/* ${disableType} \${0:${rule || "rule"}} */`;
-    item.detail = disableType === "stylelint-disable-line" ? "Turn off Stylelint rules for individual lines only, after which you do not need to explicitly re-enable them. (Stylelint)" : "Turn off Stylelint rules for the next line only, after which you do not need to explicitly re-enable them. (Stylelint)";
-    item.documentation = {
-      kind: MarkupKind.Markdown,
-      value: `\`\`\`css
-/* ${disableType} ${rule || "rule"} */
-\`\`\``
-    };
-  }
-  return item;
-}
-var init_create_disable_completion_item = __esm({
-  "packages/language-server/build/server/utils/lsp/create-disable-completion-item.js"() {
-    "use strict";
-    init_main();
-    __name(createDisableCompletionItem, "createDisableCompletionItem");
-  }
-});
-
-// packages/language-server/build/server/utils/lsp/display-error.js
-function displayError(connection, err) {
-  if (!(err instanceof Error)) {
-    connection.window.showErrorMessage(String(err).replace(/\n/gu, " "));
-    return;
-  }
-  if (isIterableObject(err?.reasons)) {
-    for (const reason of err.reasons) {
-      connection.window.showErrorMessage(`Stylelint: ${reason}`);
-    }
-    return;
-  }
-  if (err?.code === 78) {
-    connection.window.showErrorMessage(`Stylelint: ${err.message}`);
-    return;
-  }
-  connection.window.showErrorMessage((err.stack || err.message).replace(/\n/gu, " "));
-}
-var init_display_error = __esm({
-  "packages/language-server/build/server/utils/lsp/display-error.js"() {
-    "use strict";
-    init_iterables();
-    __name(displayError, "displayError");
-  }
-});
-
-// packages/language-server/build/server/utils/lsp/rule-code-actions-collection.js
-var RuleCodeActionsCollection;
-var init_rule_code_actions_collection = __esm({
-  "packages/language-server/build/server/utils/lsp/rule-code-actions-collection.js"() {
-    "use strict";
-    RuleCodeActionsCollection = class {
-      static {
-        __name(this, "RuleCodeActionsCollection");
-      }
-      /**
-       * The code actions, keyed by their rule.
-       */
-      #actions = /* @__PURE__ */ new Map();
-      /**
-       * Gets the code actions for a rule.
-       */
-      get(ruleId) {
-        const existing = this.#actions.get(ruleId);
-        if (existing) {
-          return existing;
-        }
-        const actions = {};
-        this.#actions.set(ruleId, actions);
-        return actions;
-      }
-      /**
-       * Iterates over the code actions, grouped by rule and sorted by the
-       * priority of the rule.
-       */
-      *[Symbol.iterator]() {
-        for (const actions of this.#actions.values()) {
-          if (actions.fixAll) {
-            yield actions.fixAll;
-          }
-          if (actions.disableLine) {
-            yield actions.disableLine;
-          }
-          if (actions.disableFile) {
-            yield actions.disableFile;
-          }
-          if (actions.documentation) {
-            yield actions.documentation;
-          }
-        }
-      }
-      /**
-       * Gets the number of code actions.
-       */
-      get size() {
-        const iterator = this[Symbol.iterator]();
-        let size = 0;
-        while (!iterator.next().done) {
-          size++;
-        }
-        return size;
-      }
-    };
-  }
-});
-
-// packages/language-server/build/server/utils/lsp/types.js
-var init_types5 = __esm({
-  "packages/language-server/build/server/utils/lsp/types.js"() {
-    "use strict";
-  }
-});
-
-// packages/language-server/build/server/utils/lsp/index.js
-var init_lsp = __esm({
-  "packages/language-server/build/server/utils/lsp/index.js"() {
-    "use strict";
-    init_create_disable_completion_item();
-    init_display_error();
-    init_rule_code_actions_collection();
-    init_types5();
-  }
-});
-
-// packages/language-server/build/server/utils/fs.js
-function normalizeFsPath(value, platform = import_node_process2.default.platform) {
-  if (!value) {
-    return void 0;
-  }
-  if (platform !== "win32") {
-    return value;
-  }
-  let result = value.replace(/\//gu, "\\");
-  if (/^[a-z]:\\/u.test(result)) {
-    result = result[0].toUpperCase() + result.slice(1);
-  }
-  return result;
-}
-var import_node_process2;
-var init_fs = __esm({
-  "packages/language-server/build/server/utils/fs.js"() {
-    "use strict";
-    import_node_process2 = __toESM(require("node:process"), 1);
-    __name(normalizeFsPath, "normalizeFsPath");
-  }
-});
-
-// packages/language-server/build/server/utils/sets.js
-function intersect(set1, set2) {
-  if (!set1) {
-    return set2;
-  }
-  if (!set2) {
-    return set1;
-  }
-  const [smallerSet, largerSet] = set1.size < set2.size ? [set1, set2] : [set2, set1];
-  const result = /* @__PURE__ */ new Set();
-  for (const item of smallerSet) {
-    if (largerSet.has(item)) {
-      result.add(item);
-    }
-  }
-  return result;
-}
-var init_sets = __esm({
-  "packages/language-server/build/server/utils/sets.js"() {
-    "use strict";
-    __name(intersect, "intersect");
-  }
-});
-
-// packages/language-server/build/server/utils/types.js
-var init_types6 = __esm({
-  "packages/language-server/build/server/utils/types.js"() {
-    "use strict";
-  }
-});
-
-// packages/language-server/build/server/utils/index.js
-var init_utils = __esm({
-  "packages/language-server/build/server/utils/index.js"() {
-    "use strict";
-    init_documents();
-    init_functions();
-    init_logging();
-    init_lsp();
-    init_objects();
-    init_errors();
-    init_fs();
-    init_iterables();
-    init_sets();
-    init_strings();
-    init_types6();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js
-var import_node_path2, import_node_process3, __esDecorate5, __runInitializers5, packageManifestFilename, PackageRootCacheService;
-var init_package_root_cache_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js"() {
-    "use strict";
-    import_node_path2 = __toESM(require("node:path"), 1);
-    import_node_process3 = __toESM(require("node:process"), 1);
-    init_di();
-    init_utils();
-    init_package_root_service();
-    __esDecorate5 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers5 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    packageManifestFilename = "package.json";
-    PackageRootCacheService = (() => {
-      let _classDecorators = [inject({
-        inject: [PackageRootService]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var PackageRootCacheService2 = class {
-        static {
-          __name(this, "PackageRootCacheService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate5(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          PackageRootCacheService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers5(_classThis, _classExtraInitializers);
-        }
-        #packageRootFinder;
-        #cache = /* @__PURE__ */ new Map();
-        constructor(packageRootFinder) {
-          this.#packageRootFinder = packageRootFinder;
-        }
-        async determineWorkerRoot(workspaceFolder, codeFilename, stylelintPath) {
-          if (codeFilename) {
-            const codeRoot = await this.#getCachedPackageRoot(codeFilename);
-            if (codeRoot) {
-              return codeRoot;
-            }
-          }
-          if (stylelintPath) {
-            const absoluteStylelintPath = import_node_path2.default.isAbsolute(stylelintPath) ? stylelintPath : import_node_path2.default.join(workspaceFolder, stylelintPath);
-            const stylelintRoot = await this.#getCachedPackageRoot(absoluteStylelintPath);
-            if (stylelintRoot) {
-              return stylelintRoot;
-            }
-          }
-          return workspaceFolder;
-        }
-        invalidateForFile(filePath) {
-          if (!filePath) {
-            return;
-          }
-          if (import_node_path2.default.basename(filePath) !== packageManifestFilename) {
-            return;
-          }
-          this.#invalidatePackageRootCache(import_node_path2.default.dirname(filePath));
-        }
-        clearForWorkspace(workspaceFolder) {
-          this.#deleteCacheEntriesWithinPath(workspaceFolder);
-        }
-        clear() {
-          this.#cache.clear();
-        }
-        async #getCachedPackageRoot(startPath) {
-          const cacheKey = this.#normalizeCachePath(startPath);
-          const cached = this.#cache.get(cacheKey);
-          if (cached !== void 0) {
-            return cached ?? void 0;
-          }
-          const result = await this.#packageRootFinder.find(startPath);
-          this.#cache.set(cacheKey, result ?? null);
-          return result;
-        }
-        #invalidatePackageRootCache(directory) {
-          const normalizedDir = this.#normalizeCachePath(directory);
-          for (const [key, value] of this.#cache.entries()) {
-            const matchesKey = this.#isWithinNormalizedPath(normalizedDir, key);
-            const normalizedValue = value ? this.#normalizeCachePath(value) : void 0;
-            const matchesValue = normalizedValue !== void 0 && this.#isWithinNormalizedPath(normalizedDir, normalizedValue);
-            if (matchesKey || matchesValue) {
-              this.#cache.delete(key);
-            }
-          }
-        }
-        #deleteCacheEntriesWithinPath(rootPath) {
-          const normalizedRoot = this.#normalizeCachePath(rootPath);
-          for (const key of this.#cache.keys()) {
-            if (this.#isWithinNormalizedPath(normalizedRoot, key)) {
-              this.#cache.delete(key);
-            }
-          }
-        }
-        #normalizeCachePath(value) {
-          const absolute = import_node_path2.default.isAbsolute(value) ? value : import_node_path2.default.resolve(value);
-          return normalizeFsPath(absolute) ?? absolute;
-        }
-        #isWithinNormalizedPath(normalizedRoot, candidateNormalized) {
-          const comparableRoot = import_node_process3.default.platform === "win32" ? normalizedRoot.toLowerCase() : normalizedRoot;
-          const comparableCandidate = import_node_process3.default.platform === "win32" ? candidateNormalized.toLowerCase() : candidateNormalized;
-          if (comparableCandidate === comparableRoot) {
-            return true;
-          }
-          return comparableCandidate.startsWith(`${comparableRoot}${import_node_path2.default.sep}`);
-        }
-      };
-      return PackageRootCacheService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/pnp-configuration-cache.service.js
-var import_promises2, import_node_path3, import_node_process4, __esDecorate6, __runInitializers6, pnpRegisterFilenames, pnpLoaderFilename, pnpConfigFilenames, resolvePnPConfigKey, PnPConfigurationCacheService;
-var init_pnp_configuration_cache_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/pnp-configuration-cache.service.js"() {
-    "use strict";
-    import_promises2 = __toESM(require("node:fs/promises"), 1);
-    import_node_path3 = __toESM(require("node:path"), 1);
-    import_node_process4 = __toESM(require("node:process"), 1);
-    init_di();
-    init_utils();
-    init_tokens2();
-    __esDecorate6 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers6 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    pnpRegisterFilenames = [".pnp.cjs", ".pnp.js"];
-    pnpLoaderFilename = ".pnp.loader.mjs";
-    pnpConfigFilenames = /* @__PURE__ */ new Set([...pnpRegisterFilenames, pnpLoaderFilename]);
-    resolvePnPConfigKey = /* @__PURE__ */ __name((config) => `${config?.registerPath ?? ""}|${config?.loaderPath ?? ""}`, "resolvePnPConfigKey");
-    PnPConfigurationCacheService = (() => {
-      let _classDecorators = [inject({
-        inject: [FsPromisesModuleToken, PathModuleToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var PnPConfigurationCacheService2 = class {
-        static {
-          __name(this, "PnPConfigurationCacheService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate6(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          PnPConfigurationCacheService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers6(_classThis, _classExtraInitializers);
-        }
-        #fs;
-        #path;
-        #cache = /* @__PURE__ */ new Map();
-        constructor(fsModule, pathModule2) {
-          this.#fs = fsModule ?? import_promises2.default;
-          this.#path = pathModule2 ?? import_node_path3.default;
-        }
-        async findConfiguration(codeFilename) {
-          if (!codeFilename) {
-            return void 0;
-          }
-          let currentDir2 = this.#path.dirname(codeFilename);
-          const visitedKeys = [];
-          while (true) {
-            const cacheKey = this.#normalizeCachePath(currentDir2);
-            visitedKeys.push(cacheKey);
-            const cached = this.#cache.get(cacheKey);
-            if (cached !== void 0) {
-              if (cached) {
-                this.#populateCache(visitedKeys, cached);
-                return cached;
-              }
-            } else {
-              const config = await this.#readPnPConfiguration(currentDir2);
-              if (config) {
-                this.#cache.set(cacheKey, config);
-                this.#populateCache(visitedKeys, config);
-                return config;
-              }
-              this.#cache.set(cacheKey, null);
-            }
-            const parent = this.#path.dirname(currentDir2);
-            if (parent === currentDir2) {
-              return void 0;
-            }
-            currentDir2 = parent;
-          }
-        }
-        invalidateForFile(filePath) {
-          if (!filePath) {
-            return;
-          }
-          const baseName = this.#path.basename(filePath);
-          if (!pnpConfigFilenames.has(baseName)) {
-            return;
-          }
-          this.#invalidatePnPConfigCache(this.#path.dirname(filePath));
-        }
-        clearForWorkspace(workspaceFolder) {
-          this.#deleteCacheEntriesWithinPath(workspaceFolder);
-        }
-        clear() {
-          this.#cache.clear();
-        }
-        resolveConfigKey(config) {
-          return resolvePnPConfigKey(config);
-        }
-        async #readPnPConfiguration(directory) {
-          for (const filename of pnpRegisterFilenames) {
-            const registerPath = await this.#statIfFile(this.#path.join(directory, filename));
-            if (registerPath) {
-              const loaderPath = await this.#statIfFile(this.#path.join(directory, pnpLoaderFilename));
-              return { registerPath, loaderPath };
-            }
-          }
-          return void 0;
-        }
-        async #statIfFile(filePath) {
-          try {
-            const stats = await this.#fs.stat(filePath);
-            if (stats.isFile()) {
-              return filePath;
-            }
-          } catch {
-          }
-          return void 0;
-        }
-        #populateCache(visitedKeys, config) {
-          for (const key of visitedKeys) {
-            this.#cache.set(key, config);
-          }
-        }
-        #invalidatePnPConfigCache(directory) {
-          const normalizedDir = this.#normalizeCachePath(directory);
-          for (const [key, value] of this.#cache.entries()) {
-            const matchesKey = this.#isWithinNormalizedPath(normalizedDir, key);
-            const matchesConfig = value ? this.#pnpConfigMatchesDirectory(value, normalizedDir) : false;
-            if (matchesKey || matchesConfig) {
-              this.#cache.delete(key);
-            }
-          }
-        }
-        #pnpConfigMatchesDirectory(config, normalizedDir) {
-          if (config.registerPath) {
-            const registerDir = this.#normalizeCachePath(this.#path.dirname(config.registerPath));
-            if (this.#isWithinNormalizedPath(normalizedDir, registerDir)) {
-              return true;
-            }
-          }
-          if (config.loaderPath) {
-            const loaderDir = this.#normalizeCachePath(this.#path.dirname(config.loaderPath));
-            if (this.#isWithinNormalizedPath(normalizedDir, loaderDir)) {
-              return true;
-            }
-          }
-          return false;
-        }
-        #deleteCacheEntriesWithinPath(rootPath) {
-          const normalizedRoot = this.#normalizeCachePath(rootPath);
-          for (const key of this.#cache.keys()) {
-            if (this.#isWithinNormalizedPath(normalizedRoot, key)) {
-              this.#cache.delete(key);
-            }
-          }
-        }
-        #normalizeCachePath(value) {
-          const absolute = this.#path.isAbsolute(value) ? value : this.#path.resolve(value);
-          return normalizeFsPath(absolute) ?? absolute;
-        }
-        #isWithinNormalizedPath(normalizedRoot, candidateNormalized) {
-          const comparableRoot = import_node_process4.default.platform === "win32" ? normalizedRoot.toLowerCase() : normalizedRoot;
-          const comparableCandidate = import_node_process4.default.platform === "win32" ? candidateNormalized.toLowerCase() : candidateNormalized;
-          if (comparableCandidate === comparableRoot) {
-            return true;
-          }
-          return comparableCandidate.startsWith(`${comparableRoot}${import_node_path3.default.sep}`);
-        }
-      };
-      return PnPConfigurationCacheService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/worker-environment.service.js
-var __esDecorate7, __runInitializers7, WorkerEnvironmentService;
-var init_worker_environment_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/worker-environment.service.js"() {
-    "use strict";
-    init_di();
-    init_utils();
-    init_tokens2();
-    init_package_root_service();
-    init_pnp_configuration_cache_service();
-    __esDecorate7 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers7 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    WorkerEnvironmentService = (() => {
-      let _classDecorators = [inject({
-        inject: [FsPromisesModuleToken, PathModuleToken, PackageRootService]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkerEnvironmentService2 = class {
-        static {
-          __name(this, "WorkerEnvironmentService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate7(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkerEnvironmentService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers7(_classThis, _classExtraInitializers);
-        }
-        #fs;
-        #path;
-        #packageRootService;
-        constructor(fsModule, pathModule2, packageRootService) {
-          this.#fs = fsModule;
-          this.#path = pathModule2;
-          this.#packageRootService = packageRootService;
-        }
-        async createKey(input) {
-          const normalizedRoot = this.#normalizePath(input.workerRoot);
-          const resolvedStylelintPath = this.#resolveMaybeRelative(input.stylelintPath, normalizedRoot);
-          const stylelintManifest = await this.#resolveStylelintManifest(resolvedStylelintPath);
-          const [packageJson, packageLock, yarnLock, pnpmLock, bunLock, pnpRegister, pnpLoader, stylelintEntry, stylelintPackage] = await Promise.all([
-            this.#statStamp(this.#path.join(normalizedRoot, "package.json")),
-            this.#statStamp(this.#path.join(normalizedRoot, "package-lock.json")),
-            this.#statStamp(this.#path.join(normalizedRoot, "yarn.lock")),
-            this.#statStamp(this.#path.join(normalizedRoot, "pnpm-lock.yaml")),
-            this.#statStamp(this.#path.join(normalizedRoot, "bun.lock")),
-            input.pnpConfig?.registerPath ? this.#statStamp(input.pnpConfig.registerPath) : void 0,
-            input.pnpConfig?.loaderPath ? this.#statStamp(input.pnpConfig.loaderPath) : void 0,
-            resolvedStylelintPath ? this.#statStamp(resolvedStylelintPath) : void 0,
-            stylelintManifest ? this.#statStamp(stylelintManifest) : void 0
-          ]);
-          return [
-            `root:${normalizedRoot}`,
-            `pkg:${packageJson ?? "-"}`,
-            `npmLock:${packageLock ?? "-"}`,
-            `yarnLock:${yarnLock ?? "-"}`,
-            `pnpmLock:${pnpmLock ?? "-"}`,
-            `bunLock:${bunLock ?? "-"}`,
-            `pnp:${resolvePnPConfigKey(input.pnpConfig)}`,
-            `pnpRegister:${pnpRegister ?? "-"}`,
-            `pnpLoader:${pnpLoader ?? "-"}`,
-            `stylelintPath:${resolvedStylelintPath ?? "-"}`,
-            `stylelintEntry:${stylelintEntry ?? "-"}`,
-            `stylelintPkg:${stylelintPackage ?? "-"}`
-          ].join("|");
-        }
-        async #resolveStylelintManifest(stylelintPath) {
-          if (!stylelintPath) {
-            return void 0;
-          }
-          const startDirectory = this.#guessDirectory(stylelintPath);
-          const packageRoot = await this.#packageRootService.find(startDirectory);
-          return packageRoot ? this.#path.join(packageRoot, "package.json") : void 0;
-        }
-        #guessDirectory(target) {
-          const extension = this.#path.extname(target);
-          if (extension) {
-            return this.#path.dirname(target);
-          }
-          return target;
-        }
-        async #statStamp(filePath) {
-          try {
-            const stats = await this.#fs.stat(filePath);
-            if (!stats.isFile()) {
-              return void 0;
-            }
-            return String(Math.trunc(stats.mtimeMs));
-          } catch {
-            return void 0;
-          }
-        }
-        #resolveMaybeRelative(target, base) {
-          if (!target) {
-            return void 0;
-          }
-          return this.#path.isAbsolute(target) ? target : this.#path.resolve(base, target);
-        }
-        #normalizePath(value) {
-          const absolute = this.#path.isAbsolute(value) ? value : this.#path.resolve(value);
-          return normalizeFsPath(absolute) ?? absolute;
-        }
-      };
-      return WorkerEnvironmentService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/worker-process.service.js
-var __esDecorate8, __runInitializers8, WorkerProcessService;
-var init_worker_process_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/worker-process.service.js"() {
-    "use strict";
-    init_di();
-    init_worker_process();
-    init_logging_service();
-    __esDecorate8 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers8 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    WorkerProcessService = (() => {
-      let _classDecorators = [inject({
-        inject: [loggingServiceToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkerProcessService2 = class {
-        static {
-          __name(this, "WorkerProcessService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate8(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkerProcessService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers8(_classThis, _classExtraInitializers);
-        }
-        #logger;
-        constructor(loggingService) {
-          this.#logger = loggingService.createLogger(WorkerProcessService2);
-        }
-        createWorkerProcess(workerRoot, idleTimeoutMs = defaultWorkerIdleTimeoutMs, pnpConfig) {
-          this.#logger.debug("Creating Stylelint worker process", { workerRoot });
-          return new StylelintWorkerProcess(workerRoot, this.#logger.child({ workerRoot }), idleTimeoutMs, pnpConfig);
-        }
-      };
-      return WorkerProcessService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js
-var import_node_path4, import_node_process5, __esDecorate9, __runInitializers9, maxConsecutiveCrashes, workerRecoveryCooldownMs, suppressionNotificationIntervalMs, resolvePathKey, WorkerRegistryService;
-var init_worker_registry_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js"() {
-    "use strict";
-    import_node_path4 = __toESM(require("node:path"), 1);
-    import_node_process5 = __toESM(require("node:process"), 1);
-    init_di();
-    init_utils();
-    init_worker_process();
-    init_logging_service();
-    init_pnp_configuration_cache_service();
-    init_worker_process_service();
-    __esDecorate9 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers9 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    maxConsecutiveCrashes = 3;
-    workerRecoveryCooldownMs = 30 * 1e3;
-    suppressionNotificationIntervalMs = 60 * 1e3;
-    resolvePathKey = /* @__PURE__ */ __name((folderPath) => {
-      const normalized = normalizeFsPath(folderPath);
-      return normalized ?? import_node_path4.default.resolve(folderPath);
-    }, "resolvePathKey");
-    WorkerRegistryService = (() => {
-      let _classDecorators = [inject({
-        inject: [loggingServiceToken, WorkerProcessService]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkerRegistryService2 = class {
-        static {
-          __name(this, "WorkerRegistryService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate9(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkerRegistryService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers9(_classThis, _classExtraInitializers);
-        }
-        #logger;
-        #idleTimeoutMs;
-        #workers = /* @__PURE__ */ new Map();
-        #workerProcessFactory;
-        constructor(loggingService, workerFactory) {
-          this.#logger = loggingService.createLogger(WorkerRegistryService2);
-          this.#workerProcessFactory = workerFactory;
-        }
-        async runWithWorker(context, executor) {
-          const record = this.#getWorker(context);
-          const suppressedError = this.#maybeCreateSuppressedError(context.workspaceFolder, context.workerRoot, record.state);
-          if (suppressedError) {
-            throw suppressedError;
-          }
-          try {
-            const result = await executor(record.process);
-            this.#markWorkerHealthy(record.state);
-            return result;
-          } catch (error) {
-            if (error instanceof StylelintWorkerCrashedError) {
-              throw this.#handleWorkerCrash(context.workspaceFolder, context.workerRoot, record.state, error);
-            }
-            throw error;
-          }
-        }
-        notifyWorkspaceActivity(workspaceFolder) {
-          const workspaceKey = resolvePathKey(workspaceFolder);
-          this.#resetWorkspaceWorkers(workspaceKey);
-        }
-        notifyFileActivity(filePath) {
-          const normalized = normalizeFsPath(filePath);
-          if (!normalized) {
-            return;
-          }
-          const absolute = import_node_path4.default.isAbsolute(normalized) ? normalized : import_node_path4.default.resolve(normalized);
-          for (const workspaceKey of this.#workers.keys()) {
-            if (this.#pathWithinWorkspace(workspaceKey, absolute)) {
-              this.#resetWorkspaceWorkers(workspaceKey);
-            }
-          }
-        }
-        dispose(workspaceFolder) {
-          const workspaceKey = resolvePathKey(workspaceFolder);
-          const workers = this.#workers.get(workspaceKey);
-          if (!workers) {
-            return;
-          }
-          for (const packageWorkers of workers.values()) {
-            for (const record of packageWorkers.values()) {
-              record.process.dispose();
-            }
-          }
-          this.#workers.delete(workspaceKey);
-        }
-        disposeAll() {
-          for (const workers of this.#workers.values()) {
-            for (const packageWorkers of workers.values()) {
-              for (const record of packageWorkers.values()) {
-                record.process.dispose();
-              }
-            }
-          }
-          this.#workers.clear();
-        }
-        #getWorker(context) {
-          const workspaceKey = resolvePathKey(context.workspaceFolder);
-          let workspaceWorkers = this.#workers.get(workspaceKey);
-          if (!workspaceWorkers) {
-            workspaceWorkers = /* @__PURE__ */ new Map();
-            this.#workers.set(workspaceKey, workspaceWorkers);
-          }
-          const packageKey = resolvePathKey(context.workerRoot);
-          let packageWorkers = workspaceWorkers.get(packageKey);
-          if (!packageWorkers) {
-            packageWorkers = /* @__PURE__ */ new Map();
-            workspaceWorkers.set(packageKey, packageWorkers);
-          }
-          const pnpKey = resolvePnPConfigKey(context.pnpConfig);
-          const existing = packageWorkers.get(pnpKey);
-          if (existing) {
-            if (existing.process.isDisposed()) {
-              existing.process.dispose();
-              const replacement = this.#createWorkerRecord(context);
-              packageWorkers.set(pnpKey, replacement);
-              return replacement;
-            }
-            if (context.environmentKey && existing.environmentKey && existing.environmentKey !== context.environmentKey) {
-              existing.process.dispose();
-              const replacement = this.#createWorkerRecord(context);
-              packageWorkers.set(pnpKey, replacement);
-              return replacement;
-            }
-            if (context.environmentKey && !existing.environmentKey) {
-              existing.environmentKey = context.environmentKey;
-            }
-            return existing;
-          }
-          const record = this.#createWorkerRecord(context);
-          packageWorkers.set(pnpKey, record);
-          return record;
-        }
-        #createWorkerRecord(context) {
-          const worker = this.#workerProcessFactory.createWorkerProcess(context.workerRoot, this.#idleTimeoutMs, context.pnpConfig);
-          return {
-            process: worker,
-            environmentKey: context.environmentKey,
-            state: {
-              consecutiveCrashes: 0
-            }
-          };
-        }
-        #markWorkerHealthy(state) {
-          if (state.consecutiveCrashes === 0 && state.cooldownExpiresAt === void 0 && state.lastCrashError === void 0) {
-            return;
-          }
-          state.consecutiveCrashes = 0;
-          state.cooldownExpiresAt = void 0;
-          state.lastCrashError = void 0;
-          state.lastHandledCrashError = void 0;
-          state.lastNotificationAt = void 0;
-        }
-        #handleWorkerCrash(workspaceFolder, workerRoot, state, error) {
-          if (state.lastHandledCrashError !== error) {
-            state.consecutiveCrashes += 1;
-            state.lastHandledCrashError = error;
-          }
-          state.lastCrashError = error;
-          if (state.consecutiveCrashes < maxConsecutiveCrashes) {
-            return error;
-          }
-          const now = Date.now();
-          if (!state.cooldownExpiresAt || now >= state.cooldownExpiresAt) {
-            state.cooldownExpiresAt = now + workerRecoveryCooldownMs;
-            state.lastNotificationAt = void 0;
-            this.#logger?.warn("Stylelint worker entered cooldown after repeated crashes", {
-              workspaceFolder,
-              packageRoot: workerRoot,
-              consecutiveCrashes: state.consecutiveCrashes
-            });
-          }
-          return this.#buildUnavailableError(workspaceFolder, workerRoot, state, now);
-        }
-        #maybeCreateSuppressedError(workspaceFolder, workerRoot, state) {
-          const cooldown = state.cooldownExpiresAt;
-          if (!cooldown) {
-            return void 0;
-          }
-          const now = Date.now();
-          if (now >= cooldown) {
-            state.cooldownExpiresAt = void 0;
-            state.consecutiveCrashes = 0;
-            state.lastHandledCrashError = void 0;
-            state.lastNotificationAt = void 0;
-            return void 0;
-          }
-          return this.#buildUnavailableError(workspaceFolder, workerRoot, state, now);
-        }
-        #buildUnavailableError(workspaceFolder, workerRoot, state, now) {
-          const retryInMs = Math.max(0, (state.cooldownExpiresAt ?? now) - now);
-          const notifyUser = this.#shouldNotifySuppression(state, now);
-          return new StylelintWorkerUnavailableError({
-            workspaceFolder,
-            packageRoot: workerRoot,
-            retryInMs,
-            notifyUser,
-            lastCrashError: state.lastCrashError
-          });
-        }
-        #shouldNotifySuppression(state, now) {
-          if (!state.lastNotificationAt) {
-            state.lastNotificationAt = now;
-            return true;
-          }
-          if (now - state.lastNotificationAt >= suppressionNotificationIntervalMs) {
-            state.lastNotificationAt = now;
-            return true;
-          }
-          return false;
-        }
-        #resetWorkspaceWorkers(workspaceKey) {
-          const workers = this.#workers.get(workspaceKey);
-          if (!workers) {
-            return;
-          }
-          for (const [packageKey, packageWorkers] of workers.entries()) {
-            for (const [pnpKey, record] of packageWorkers.entries()) {
-              if (this.#releaseSuppressedWorker(record.state)) {
-                this.#logger?.debug("Resetting Stylelint worker after workspace activity", {
-                  workspaceFolder: workspaceKey,
-                  packageRoot: packageKey,
-                  pnpKey
-                });
-              }
-            }
-          }
-        }
-        #releaseSuppressedWorker(state) {
-          if (!state.cooldownExpiresAt) {
-            return false;
-          }
-          state.cooldownExpiresAt = void 0;
-          state.consecutiveCrashes = 0;
-          state.lastHandledCrashError = void 0;
-          state.lastNotificationAt = void 0;
-          return true;
-        }
-        #pathWithinWorkspace(workspaceKey, targetPath) {
-          const normalizedTarget = normalizeFsPath(import_node_path4.default.resolve(targetPath));
-          if (!normalizedTarget) {
-            return false;
-          }
-          const normalizedWorkspace = normalizeFsPath(workspaceKey) ?? workspaceKey;
-          const normalizeValue = /* @__PURE__ */ __name((value) => import_node_process5.default.platform === "win32" ? value.toLowerCase() : value, "normalizeValue");
-          const comparableWorkspace = normalizeValue(normalizedWorkspace);
-          const comparableTarget = normalizeValue(normalizedTarget);
-          if (comparableTarget === comparableWorkspace) {
-            return true;
-          }
-          return comparableTarget.startsWith(`${comparableWorkspace}${import_node_path4.default.sep}`);
-        }
-      };
-      return WorkerRegistryService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/workspace-stylelint.service.js
-var __esDecorate10, __runInitializers10, WorkspaceStylelintService;
-var init_workspace_stylelint_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/workspace-stylelint.service.js"() {
-    "use strict";
-    init_di();
-    init_worker_process();
-    init_logging_service();
-    init_package_root_cache_service();
-    init_pnp_configuration_cache_service();
-    init_worker_environment_service();
-    init_worker_registry_service();
-    __esDecorate10 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers10 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    WorkspaceStylelintService = (() => {
-      let _classDecorators = [inject({
-        inject: [
-          loggingServiceToken,
-          PackageRootCacheService,
-          PnPConfigurationCacheService,
-          WorkerEnvironmentService,
-          WorkerRegistryService
-        ]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkspaceStylelintService2 = class {
-        static {
-          __name(this, "WorkspaceStylelintService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate10(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkspaceStylelintService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers10(_classThis, _classExtraInitializers);
-        }
-        #logger;
-        #packageRootCache;
-        #pnpConfigurationCache;
-        #workerEnvironment;
-        #workerRegistry;
-        constructor(loggingService, packageRootCache, pnpConfigurationCache, workerEnvironment, workerRegistry) {
-          this.#logger = loggingService.createLogger(WorkspaceStylelintService2);
-          this.#packageRootCache = packageRootCache;
-          this.#pnpConfigurationCache = pnpConfigurationCache;
-          this.#workerEnvironment = workerEnvironment;
-          this.#workerRegistry = workerRegistry;
-        }
-        async lint(request) {
-          const pnpConfig = await this.#pnpConfigurationCache.findConfiguration(request.options.codeFilename);
-          const workerRoot = await this.#packageRootCache.determineWorkerRoot(request.workspaceFolder, request.options.codeFilename, request.stylelintPath);
-          const environmentKey = await this.#workerEnvironment.createKey({
-            workerRoot,
-            stylelintPath: request.stylelintPath,
-            pnpConfig
-          });
-          try {
-            return await this.#workerRegistry.runWithWorker({
-              workspaceFolder: request.workspaceFolder,
-              workerRoot,
-              pnpConfig,
-              environmentKey
-            }, async (worker) => await worker.lint({
-              options: request.options,
-              stylelintPath: request.stylelintPath,
-              runnerOptions: request.runnerOptions
-            }));
-          } catch (error) {
-            if (error instanceof StylelintNotFoundError) {
-              this.#logger?.debug("Workspace Stylelint not found", {
-                workspaceFolder: request.workspaceFolder
-              });
-            }
-            throw error;
-          }
-        }
-        async resolve(request) {
-          const pnpConfig = await this.#pnpConfigurationCache.findConfiguration(request.codeFilename);
-          const workerRoot = await this.#packageRootCache.determineWorkerRoot(request.workspaceFolder, request.codeFilename, request.stylelintPath);
-          const environmentKey = await this.#workerEnvironment.createKey({
-            workerRoot,
-            stylelintPath: request.stylelintPath,
-            pnpConfig
-          });
-          try {
-            return await this.#workerRegistry.runWithWorker({
-              workspaceFolder: request.workspaceFolder,
-              workerRoot,
-              pnpConfig,
-              environmentKey
-            }, async (worker) => await worker.resolve({
-              stylelintPath: request.stylelintPath,
-              codeFilename: request.codeFilename,
-              runnerOptions: request.runnerOptions
-            }));
-          } catch (error) {
-            if (error instanceof StylelintNotFoundError) {
-              this.#logger?.debug("Workspace Stylelint not found during resolve", {
-                workspaceFolder: request.workspaceFolder
-              });
-            }
-            throw error;
-          }
-        }
-        async resolveConfig(request) {
-          const pnpConfig = await this.#pnpConfigurationCache.findConfiguration(request.filePath);
-          const workerRoot = await this.#packageRootCache.determineWorkerRoot(request.workspaceFolder, request.filePath, request.stylelintPath);
-          const environmentKey = await this.#workerEnvironment.createKey({
-            workerRoot,
-            stylelintPath: request.stylelintPath,
-            pnpConfig
-          });
-          try {
-            return await this.#workerRegistry.runWithWorker({
-              workspaceFolder: request.workspaceFolder,
-              workerRoot,
-              pnpConfig,
-              environmentKey
-            }, async (worker) => await worker.resolveConfig({
-              filePath: request.filePath,
-              stylelintPath: request.stylelintPath,
-              runnerOptions: request.runnerOptions
-            }));
-          } catch (error) {
-            if (error instanceof StylelintNotFoundError) {
-              this.#logger?.debug("Workspace Stylelint not found during resolveConfig", {
-                workspaceFolder: request.workspaceFolder
-              });
-            }
-            throw error;
-          }
-        }
-        dispose(workspaceFolder) {
-          this.#workerRegistry.dispose(workspaceFolder);
-          this.#packageRootCache.clearForWorkspace(workspaceFolder);
-          this.#pnpConfigurationCache.clearForWorkspace(workspaceFolder);
-        }
-        disposeAll() {
-          this.#workerRegistry.disposeAll();
-          this.#packageRootCache.clear();
-          this.#pnpConfigurationCache.clear();
-        }
-        notifyWorkspaceActivity(workspaceFolder) {
-          this.#workerRegistry.notifyWorkspaceActivity(workspaceFolder);
-        }
-        notifyFileActivity(filePath) {
-          this.#workerRegistry.notifyFileActivity(filePath);
-          this.#packageRootCache.invalidateForFile(filePath);
-          this.#pnpConfigurationCache.invalidateForFile(filePath);
-        }
-      };
-      return WorkspaceStylelintService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/stylelint-runtime/stylelint-runner.service.js
-var __esDecorate11, __runInitializers11, noopFormatter, StylelintRunnerService;
-var init_stylelint_runner_service = __esm({
-  "packages/language-server/build/server/services/stylelint-runtime/stylelint-runner.service.js"() {
-    "use strict";
-    init_main();
-    init_di();
-    init_process_linter_result();
-    init_types3();
-    init_tokens2();
-    init_worker_process();
-    init_logging_service();
-    init_package_root_service();
-    init_stylelint_options_service();
-    init_workspace_folder_service();
-    init_workspace_stylelint_service();
-    __esDecorate11 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers11 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    noopFormatter = /* @__PURE__ */ __name((() => ""), "noopFormatter");
-    StylelintRunnerService = (() => {
-      let _classDecorators = [inject({
-        inject: [
-          OsModuleToken,
-          PathModuleToken,
-          UriModuleToken,
-          FsPromisesModuleToken,
-          lspConnectionToken,
-          loggingServiceToken,
-          WorkspaceStylelintService,
-          WorkspaceFolderService,
-          StylelintOptionsService,
-          PackageRootService
-        ]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var StylelintRunnerService2 = class {
-        static {
-          __name(this, "StylelintRunnerService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate11(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          StylelintRunnerService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers11(_classThis, _classExtraInitializers);
-        }
-        /**
-         * The language server connection.
-         */
-        #connection;
-        /**
-         * The logger to use.
-         */
-        #logger;
-        /**
-         * Workspace worker service.
-         */
-        #workspaceService;
-        #workspaceFolderService;
-        #optionsBuilder;
-        #packageRootFinder;
-        #os;
-        #path;
-        #uri;
-        #fs;
-        constructor(osModule, pathModule2, uriModule, fsModule, connection, loggingService, workspaceService, workspaceFolderService, optionsBuilder, packageRootFinder) {
-          this.#os = osModule;
-          this.#path = pathModule2;
-          this.#uri = uriModule;
-          this.#fs = fsModule;
-          this.#connection = connection;
-          this.#logger = loggingService.createLogger(StylelintRunnerService2);
-          this.#workspaceService = workspaceService;
-          this.#workspaceFolderService = workspaceFolderService;
-          this.#optionsBuilder = optionsBuilder;
-          this.#packageRootFinder = packageRootFinder;
-        }
-        /**
-         * Lints the given document using Stylelint. The linting result is then
-         * converted to LSP diagnostics and returned.
-         * @param document
-         * @param linterOptions
-         * @param extensionOptions
-         */
-        async lintDocument(document, linterOptions = {}, runnerOptions = {}) {
-          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
-          const resolvedStylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, workspaceFolder ?? this.#getDocumentFolder(document));
-          const options = await this.#createLinterOptions(document, workspaceFolder, linterOptions, runnerOptions);
-          const diagnostics = await this.#lintWithWorkspaceService(document, workspaceFolder, options, runnerOptions, resolvedStylelintPath);
-          if (diagnostics) {
-            return diagnostics;
-          }
-          this.#logger?.info("No Stylelint found with which to lint document", {
-            uri: document.uri,
-            options: runnerOptions
-          });
-          return { diagnostics: [] };
-        }
-        /**
-         * Lint all files in a workspace folder.
-         * @param workspaceFolder Absolute path to the workspace folder.
-         * @param runnerOptions Extension options derived from settings.
-         */
-        async lintWorkspaceFolder(workspaceFolder, runnerOptions = {}) {
-          const subPackages = await this.#packageRootFinder.findSubPackages(workspaceFolder);
-          if (subPackages.length === 0) {
-            return this.#lintSingleRoot(workspaceFolder, workspaceFolder, runnerOptions);
-          }
-          this.#logger?.info("Found sub-packages in workspace folder", {
-            workspaceFolder,
-            subPackages
-          });
-          const baseGlob = runnerOptions.lintFilesGlob || "**/*.css";
-          const resolvedFiles = [];
-          for await (const file of this.#fs.glob(baseGlob, { cwd: workspaceFolder })) {
-            resolvedFiles.push(this.#path.resolve(workspaceFolder, file));
-          }
-          const filesByRoot = /* @__PURE__ */ new Map();
-          for (const absoluteFile of resolvedFiles) {
-            let bestMatch = workspaceFolder;
-            let bestDepth = 0;
-            for (const pkg of subPackages) {
-              const rel = this.#path.relative(pkg, absoluteFile);
-              if (!rel.startsWith("..") && !this.#path.isAbsolute(rel)) {
-                const depth = pkg.split(this.#path.sep).length;
-                if (depth > bestDepth) {
-                  bestMatch = pkg;
-                  bestDepth = depth;
-                }
-              }
-            }
-            const list2 = filesByRoot.get(bestMatch);
-            if (list2) {
-              list2.push(absoluteFile);
-            } else {
-              filesByRoot.set(bestMatch, [absoluteFile]);
-            }
-          }
-          const allDiagnostics = /* @__PURE__ */ new Map();
-          const lintPromises = [];
-          for (const [root, files] of filesByRoot) {
-            lintPromises.push(this.#lintSingleRoot(root, workspaceFolder, runnerOptions, files));
-          }
-          const results = await Promise.all(lintPromises);
-          for (const result of results) {
-            for (const [filePath, diagnostics] of result) {
-              allDiagnostics.set(filePath, diagnostics);
-            }
-          }
-          return allDiagnostics;
-        }
-        async #lintSingleRoot(cwd, workspaceFolder, runnerOptions, filePaths) {
-          const stylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, workspaceFolder);
-          const files = filePaths ? filePaths.map((f) => this.#path.relative(cwd, f).split(this.#path.sep).join("/")) : [runnerOptions.lintFilesGlob || "**/*.css"];
-          const options = await this.#createBaseOptions(this.#uri.file(cwd).toString(), workspaceFolder, runnerOptions, {
-            files,
-            cwd,
-            allowEmptyInput: true
-          });
-          this.#logger?.info("Linting folder", { cwd, workspaceFolder });
-          try {
-            const result = await this.#workspaceService.lint({
-              workspaceFolder: cwd,
-              options,
-              stylelintPath,
-              runnerOptions
-            });
-            if (!result) {
-              this.#logger?.info("No Stylelint found for folder", { cwd });
-              return /* @__PURE__ */ new Map();
-            }
-            return processMultiFileLinterResult(createRuleMetadataSourceFromSnapshot(result.ruleMetadata), result.linterResult, this.#logger, runnerOptions.rules?.customizations);
-          } catch (error) {
-            return this.#handleLintError(error, cwd, /* @__PURE__ */ new Map());
-          }
-        }
-        async resolve(document, runnerOptions = {}) {
-          if (!this.#workspaceService) {
-            return void 0;
-          }
-          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
-          const fallbackFolder = workspaceFolder ?? this.#getDocumentFolder(document);
-          if (!fallbackFolder) {
-            return void 0;
-          }
-          const stylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, fallbackFolder);
-          try {
-            const result = await this.#workspaceService.resolve({
-              workspaceFolder: fallbackFolder,
-              stylelintPath,
-              codeFilename: this.#uri.parse(document.uri).fsPath,
-              runnerOptions
-            });
-            return result ? {
-              entryPath: result.entryPath,
-              resolvedPath: result.resolvedPath,
-              version: result.version
-            } : void 0;
-          } catch (error) {
-            return this.#handleLintError(error, fallbackFolder, void 0);
-          }
-        }
-        async resolveConfig(document, runnerOptions = {}) {
-          if (!this.#workspaceService) {
-            return void 0;
-          }
-          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
-          const fallbackFolder = workspaceFolder ?? this.#getDocumentFolder(document);
-          if (!fallbackFolder) {
-            return void 0;
-          }
-          const stylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, fallbackFolder);
-          const fsPath = this.#uri.parse(document.uri).fsPath;
-          if (!fsPath) {
-            return void 0;
-          }
-          try {
-            const result = await this.#workspaceService.resolveConfig({
-              workspaceFolder: fallbackFolder,
-              filePath: fsPath,
-              stylelintPath,
-              runnerOptions
-            });
-            return result?.config;
-          } catch (error) {
-            return this.#handleLintError(error, fallbackFolder, void 0);
-          }
-        }
-        async handleDocumentOpened(document) {
-          if (!this.#workspaceService) {
-            return;
-          }
-          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
-          const fallbackFolder = workspaceFolder ?? this.#getDocumentFolder(document);
-          if (!fallbackFolder) {
-            return;
-          }
-          this.#logger?.debug("Document opened, notifying workspace activity", {
-            workspaceFolder: fallbackFolder
-          });
-          this.#workspaceService.notifyWorkspaceActivity(fallbackFolder);
-        }
-        notifyWorkspaceActivity(workspaceFolder) {
-          this.#workspaceService?.notifyWorkspaceActivity(workspaceFolder);
-        }
-        handleWatchedFilesChanged(changes) {
-          if (!this.#workspaceService || changes.length === 0) {
-            return;
-          }
-          for (const change of changes) {
-            const fsPath = this.#uri.parse(change.uri).fsPath;
-            if (fsPath) {
-              this.#workspaceService.notifyFileActivity(fsPath);
-            }
-          }
-        }
-        #handleWorkerUnavailable(error, workspaceFolder) {
-          const retryInSeconds = Math.max(1, Math.ceil(error.retryInMs / 1e3));
-          const lastErrorMessage = error.lastCrashError?.message ?? error.lastCrashError?.originalError?.message;
-          this.#logger?.warn("Stylelint worker temporarily unavailable", {
-            workspaceFolder,
-            packageRoot: error.packageRoot,
-            retryInSeconds,
-            lastError: lastErrorMessage,
-            notifyUser: error.notifyUser
-          });
-        }
-        #resolveConfiguredStylelintPath(stylelintPath, baseFolder) {
-          if (!stylelintPath) {
-            return void 0;
-          }
-          const pathModule2 = this.#path;
-          if (pathModule2.isAbsolute(stylelintPath)) {
-            return stylelintPath;
-          }
-          if (baseFolder) {
-            return pathModule2.join(baseFolder, stylelintPath);
-          }
-          return pathModule2.resolve(stylelintPath);
-        }
-        async #createBaseOptions(resourceUri, workspaceFolder, runnerOptions, linterOptions = {}, overrides = {}) {
-          const baseOptions = await this.#optionsBuilder.build(resourceUri, workspaceFolder, linterOptions, runnerOptions);
-          const options = {
-            ...baseOptions,
-            ...overrides,
-            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-            // @ts-ignore -- (TS2353) `computeEditInfo` option is available since v16.15.
-            computeEditInfo: true
-          };
-          if (options.formatter === void 0) {
-            options.formatter = noopFormatter;
-          }
-          return options;
-        }
-        #handleLintError(error, workspaceFolder, fallback) {
-          if (error instanceof StylelintNotFoundError) {
-            return fallback;
-          }
-          if (error instanceof StylelintWorkerUnavailableError) {
-            this.#handleWorkerUnavailable(error, workspaceFolder);
-            if (error.notifyUser) {
-              throw error;
-            }
-            return fallback;
-          }
-          throw error;
-        }
-        async #createLinterOptions(document, workspaceFolder, linterOptions, runnerOptions) {
-          const options = await this.#createBaseOptions(document.uri, workspaceFolder, runnerOptions, linterOptions, { code: document.getText() });
-          const codeFilename = this.#getCodeFilename(this.#uri.parse(document.uri).fsPath);
-          if (codeFilename) {
-            options.codeFilename = codeFilename;
-          } else if (!linterOptions?.config?.rules) {
-            options.config = { rules: {} };
-          }
-          return options;
-        }
-        #getCodeFilename(fsPath) {
-          if (!fsPath) {
-            return void 0;
-          }
-          if (this.#os.platform() === "win32") {
-            return fsPath.replace(/^[a-z]:/, (match) => match.toUpperCase());
-          }
-          return fsPath;
-        }
-        #getDocumentFolder(document) {
-          const { fsPath } = this.#uri.parse(document.uri);
-          if (!fsPath) {
-            return void 0;
-          }
-          return this.#path.dirname(fsPath);
-        }
-        async #lintWithWorkspaceService(document, workspaceFolder, options, runnerOptions, stylelintPath) {
-          if (!this.#workspaceService) {
-            return void 0;
-          }
-          const lintWorkspaceFolder = workspaceFolder ?? this.#getDocumentFolder(document);
-          if (!lintWorkspaceFolder) {
-            return void 0;
-          }
-          let cachedResult;
-          const convertResult = /* @__PURE__ */ __name((result) => processLinterResult(createRuleMetadataSourceFromSnapshot(result.ruleMetadata), result.linterResult, this.#logger, runnerOptions.rules?.customizations), "convertResult");
-          const runLint = /* @__PURE__ */ __name(async (lintOptions) => {
-            if (lintOptions.codeFilename && !lintOptions.disableDefaultIgnores && /(?:^|[\\/])node_modules(?:[\\/]|$)/.test(lintOptions.codeFilename)) {
-              return { diagnostics: [] };
-            }
-            const result = lintOptions === options && cachedResult ? cachedResult : await this.#workspaceService.lint({
-              workspaceFolder: lintWorkspaceFolder,
-              options: lintOptions,
-              stylelintPath,
-              runnerOptions
-            });
-            if (!result) {
-              throw new StylelintNotFoundError();
-            }
-            if (lintOptions === options) {
-              cachedResult = result;
-              if (this.#logger?.isDebugEnabled()) {
-                this.#logger.debug("Running Stylelint", {
-                  options: { ...lintOptions, code: "..." },
-                  workspaceFolder: lintWorkspaceFolder
-                });
-              }
-            }
-            const lintDiagnostics = convertResult(result);
-            const hasCssSyntaxErrors = result.linterResult.results?.some((lintResult) => lintResult.warnings?.some((warning) => warning.rule === "CssSyntaxError")) ?? false;
-            if (lintOptions.fix && hasCssSyntaxErrors) {
-              lintDiagnostics.code = void 0;
-              lintDiagnostics.output = void 0;
-            }
-            return lintDiagnostics;
-          }, "runLint");
-          try {
-            return await this.#runLintWithErrorHandling(runLint, options);
-          } catch (error) {
-            return this.#handleLintError(error, lintWorkspaceFolder, void 0);
-          }
-        }
-        async #runLintWithErrorHandling(runLint, options) {
-          try {
-            return await runLint(options);
-          } catch (err) {
-            if (!(err instanceof Error)) {
-              throw err;
-            }
-            const lintSyntax = /* @__PURE__ */ __name(async () => await runLint({ ...options, config: { rules: {} } }), "lintSyntax");
-            if (err.message.startsWith("No configuration provided for")) {
-              return await lintSyntax();
-            }
-            if (err.message.includes("No rules found within configuration")) {
-              const combinedResult = await lintSyntax();
-              combinedResult.diagnostics.push({
-                range: Range.create(Position.create(0, 0), Position.create(0, 0)),
-                message: err.message,
-                severity: DiagnosticSeverity.Error,
-                source: "Stylelint",
-                code: "no-rules-configured"
-              });
-              return combinedResult;
-            }
-            throw err;
-          }
-        }
-        disposeWorkspace(workspaceFolder) {
-          this.#workspaceService.dispose(workspaceFolder);
-        }
-        dispose() {
-          this.#workspaceService.disposeAll();
-        }
-      };
-      return StylelintRunnerService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/config/default-options.js
-var defaultLanguageServerOptions;
-var init_default_options = __esm({
-  "packages/language-server/build/server/config/default-options.js"() {
-    "use strict";
-    defaultLanguageServerOptions = {
-      codeAction: {
-        disableRuleComment: {
-          location: "separateLine"
-        }
-      },
-      config: null,
-      configFile: "",
-      configBasedir: "",
-      customSyntax: "",
-      ignoreDisables: false,
-      ignorePath: "",
-      packageManager: "npm",
-      reportDescriptionlessDisables: false,
-      reportInvalidScopeDisables: false,
-      reportNeedlessDisables: false,
-      run: "onType",
-      rules: {
-        customizations: []
-      },
-      snippet: ["css", "postcss"],
-      stylelintPath: "",
-      validate: ["css", "postcss"],
-      lintFiles: {
-        glob: "**/*.css"
-      }
-    };
-  }
-});
-
-// packages/language-server/build/server/services/workspace/workspace-options.service.js
-function extractStylelintSettings(settings) {
-  if (!settings || typeof settings !== "object") {
-    return void 0;
-  }
-  if ("stylelint" in settings) {
-    return settings.stylelint;
-  }
-  return settings;
-}
-var __esDecorate12, __runInitializers12, WorkspaceOptionsService;
-var init_workspace_options_service = __esm({
-  "packages/language-server/build/server/services/workspace/workspace-options.service.js"() {
-    "use strict";
-    init_di();
-    init_utils();
-    init_default_options();
-    init_tokens2();
-    init_logging_service();
-    __esDecorate12 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers12 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    __name(extractStylelintSettings, "extractStylelintSettings");
-    WorkspaceOptionsService = (() => {
-      let _classDecorators = [inject({
-        inject: [lspConnectionToken, loggingServiceToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var WorkspaceOptionsService2 = class {
-        static {
-          __name(this, "WorkspaceOptionsService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate12(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          WorkspaceOptionsService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers12(_classThis, _classExtraInitializers);
-        }
-        #connection;
-        #logger;
-        #supportsScopedConfiguration = false;
-        #globalOptions = mergeOptionsWithDefaults({}, defaultLanguageServerOptions);
-        #inFlightRequests = /* @__PURE__ */ new Map();
-        constructor(connection, loggingService) {
-          this.#connection = connection;
-          this.#logger = loggingService.createLogger(WorkspaceOptionsService2);
-        }
-        setSupportsWorkspaceConfiguration(supported) {
-          this.#supportsScopedConfiguration = supported;
-          if (!supported) {
-            this.clearCache();
-          }
-        }
-        #buildOptions(configuration) {
-          const merged = mergeOptionsWithDefaults(extractStylelintSettings(configuration) ?? {}, defaultLanguageServerOptions);
-          Object.freeze(merged);
-          return merged;
-        }
-        updateGlobalOptions(settings) {
-          this.#globalOptions = this.#buildOptions(settings);
-        }
-        clearCache() {
-          this.#inFlightRequests.clear();
-        }
-        delete(resource) {
-          this.#inFlightRequests.delete(resource);
-        }
-        async getOptions(resource) {
-          if (!this.#supportsScopedConfiguration) {
-            return this.#globalOptions;
-          }
-          let request = this.#inFlightRequests.get(resource);
-          if (!request) {
-            request = this.#requestScopedOptions(resource);
-            this.#inFlightRequests.set(resource, request);
-            request.catch(() => void 0).finally(() => {
-              this.#inFlightRequests.delete(resource);
-            });
-          }
-          return request;
-        }
-        async #requestScopedOptions(resource) {
-          this.#logger?.debug("Requesting workspace options from client", { resource });
-          const configuration = await this.#connection.workspace.getConfiguration({
-            scopeUri: resource,
-            section: "stylelint"
-          });
-          return this.#buildOptions(configuration);
-        }
-      };
-      return WorkspaceOptionsService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/documents/document-fixes.service.js
-var __esDecorate13, __runInitializers13, getFixesFnToken, DocumentFixesService;
-var init_document_fixes_service = __esm({
-  "packages/language-server/build/server/services/documents/document-fixes.service.js"() {
-    "use strict";
-    init_di();
-    init_logging_service();
-    init_stylelint_runner_service();
-    init_workspace_options_service();
-    __esDecorate13 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers13 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    getFixesFnToken = createToken("DocumentFixesGetFixesFn");
-    DocumentFixesService = (() => {
-      let _classDecorators = [inject({
-        inject: [StylelintRunnerService, WorkspaceOptionsService, loggingServiceToken, getFixesFnToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var DocumentFixesService2 = class {
-        static {
-          __name(this, "DocumentFixesService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate13(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          DocumentFixesService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers13(_classThis, _classExtraInitializers);
-        }
-        #runner;
-        #options;
-        #logger;
-        #getFixes;
-        constructor(runner, options, loggingService, getFixesFn) {
-          this.#runner = runner;
-          this.#options = options;
-          this.#logger = loggingService.createLogger(DocumentFixesService2);
-          this.#getFixes = getFixesFn;
-        }
-        async getFixes(document, linterOptions = {}) {
-          try {
-            const options = await this.#options.getOptions(document.uri);
-            const edits = await this.#getFixes(this.#runner, document, linterOptions, options);
-            this.#logger?.debug("Fixes retrieved", { uri: document.uri, edits });
-            return edits;
-          } catch (error) {
-            this.#logger?.error("Error getting fixes", { uri: document.uri, error });
-            return [];
-          }
-        }
-        async resolveConfig(document) {
-          try {
-            const runnerOptions = await this.#options.getOptions(document.uri);
-            const config = await this.#runner.resolveConfig(document, runnerOptions);
-            this.#logger?.debug("Config resolved", { uri: document.uri, hasConfig: Boolean(config) });
-            return config;
-          } catch (error) {
-            this.#logger?.error("Error resolving config", { uri: document.uri, error });
-            return void 0;
-          }
-        }
-      };
-      return DocumentFixesService2 = _classThis;
-    })();
-  }
-});
-
-// packages/language-server/build/server/services/documents/index.js
-var init_documents2 = __esm({
-  "packages/language-server/build/server/services/documents/index.js"() {
-    "use strict";
-    init_document_diagnostics_service();
-    init_document_fixes_service();
-  }
-});
-
 // node_modules/vscode-languageserver-protocol/node_modules/vscode-jsonrpc/lib/common/is.js
 var require_is = __commonJS({
   "node_modules/vscode-languageserver-protocol/node_modules/vscode-jsonrpc/lib/common/is.js"(exports2) {
@@ -20109,7 +16113,7 @@ var require_messages = __commonJS({
       ErrorCodes4.jsonrpcReservedErrorRangeEnd = -32e3;
       ErrorCodes4.serverErrorEnd = -32e3;
     })(ErrorCodes3 || (exports2.ErrorCodes = ErrorCodes3 = {}));
-    var ResponseError3 = class _ResponseError extends Error {
+    var ResponseError4 = class _ResponseError extends Error {
       static {
         __name(this, "ResponseError");
       }
@@ -20130,7 +16134,7 @@ var require_messages = __commonJS({
         return result;
       }
     };
-    exports2.ResponseError = ResponseError3;
+    exports2.ResponseError = ResponseError4;
     var ParameterStructures = class _ParameterStructures {
       static {
         __name(this, "ParameterStructures");
@@ -25336,12 +21340,12 @@ var require_protocol_workspaceFolder = __commonJS({
       WorkspaceFoldersRequest2.messageDirection = messages_1.MessageDirection.serverToClient;
       WorkspaceFoldersRequest2.type = new messages_1.ProtocolRequestType0(WorkspaceFoldersRequest2.method);
     })(WorkspaceFoldersRequest || (exports2.WorkspaceFoldersRequest = WorkspaceFoldersRequest = {}));
-    var DidChangeWorkspaceFoldersNotification2;
-    (function(DidChangeWorkspaceFoldersNotification3) {
-      DidChangeWorkspaceFoldersNotification3.method = "workspace/didChangeWorkspaceFolders";
-      DidChangeWorkspaceFoldersNotification3.messageDirection = messages_1.MessageDirection.clientToServer;
-      DidChangeWorkspaceFoldersNotification3.type = new messages_1.ProtocolNotificationType(DidChangeWorkspaceFoldersNotification3.method);
-    })(DidChangeWorkspaceFoldersNotification2 || (exports2.DidChangeWorkspaceFoldersNotification = DidChangeWorkspaceFoldersNotification2 = {}));
+    var DidChangeWorkspaceFoldersNotification3;
+    (function(DidChangeWorkspaceFoldersNotification4) {
+      DidChangeWorkspaceFoldersNotification4.method = "workspace/didChangeWorkspaceFolders";
+      DidChangeWorkspaceFoldersNotification4.messageDirection = messages_1.MessageDirection.clientToServer;
+      DidChangeWorkspaceFoldersNotification4.type = new messages_1.ProtocolNotificationType(DidChangeWorkspaceFoldersNotification4.method);
+    })(DidChangeWorkspaceFoldersNotification3 || (exports2.DidChangeWorkspaceFoldersNotification = DidChangeWorkspaceFoldersNotification3 = {}));
   }
 });
 
@@ -26692,15 +22696,15 @@ var require_api2 = __commonJS({
     Object.defineProperty(exports2, "createProtocolConnection", { enumerable: true, get: /* @__PURE__ */ __name(function() {
       return connection_1.createProtocolConnection;
     }, "get") });
-    var LSPErrorCodes;
-    (function(LSPErrorCodes2) {
-      LSPErrorCodes2.lspReservedErrorRangeStart = -32899;
-      LSPErrorCodes2.RequestFailed = -32803;
-      LSPErrorCodes2.ServerCancelled = -32802;
-      LSPErrorCodes2.ContentModified = -32801;
-      LSPErrorCodes2.RequestCancelled = -32800;
-      LSPErrorCodes2.lspReservedErrorRangeEnd = -32800;
-    })(LSPErrorCodes || (exports2.LSPErrorCodes = LSPErrorCodes = {}));
+    var LSPErrorCodes2;
+    (function(LSPErrorCodes3) {
+      LSPErrorCodes3.lspReservedErrorRangeStart = -32899;
+      LSPErrorCodes3.RequestFailed = -32803;
+      LSPErrorCodes3.ServerCancelled = -32802;
+      LSPErrorCodes3.ContentModified = -32801;
+      LSPErrorCodes3.RequestCancelled = -32800;
+      LSPErrorCodes3.lspReservedErrorRangeEnd = -32800;
+    })(LSPErrorCodes2 || (exports2.LSPErrorCodes = LSPErrorCodes2 = {}));
   }
 });
 
@@ -26737,179 +22741,15 @@ var require_main3 = __commonJS({
   }
 });
 
-// packages/language-server/build/server/services/infrastructure/command.service.js
-var LSP, __esDecorate14, __runInitializers14, CommandService;
-var init_command_service = __esm({
-  "packages/language-server/build/server/services/infrastructure/command.service.js"() {
-    "use strict";
-    LSP = __toESM(require_main3(), 1);
-    init_di();
-    init_tokens2();
-    init_logging_service();
-    __esDecorate14 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
-      function accept(f) {
-        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
-        return f;
-      }
-      __name(accept, "accept");
-      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
-      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
-      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
-      var _, done = false;
-      for (var i = decorators.length - 1; i >= 0; i--) {
-        var context = {};
-        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
-        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
-        context.addInitializer = function(f) {
-          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
-          extraInitializers.push(accept(f || null));
-        };
-        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
-        if (kind === "accessor") {
-          if (result === void 0) continue;
-          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
-          if (_ = accept(result.get)) descriptor.get = _;
-          if (_ = accept(result.set)) descriptor.set = _;
-          if (_ = accept(result.init)) initializers.unshift(_);
-        } else if (_ = accept(result)) {
-          if (kind === "field") initializers.unshift(_);
-          else descriptor[key] = _;
-        }
-      }
-      if (target) Object.defineProperty(target, contextIn.name, descriptor);
-      done = true;
-    };
-    __runInitializers14 = function(thisArg, initializers, value) {
-      var useValue = arguments.length > 2;
-      for (var i = 0; i < initializers.length; i++) {
-        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
-      }
-      return useValue ? value : void 0;
-    };
-    CommandService = (() => {
-      let _classDecorators = [inject({
-        inject: [lspConnectionToken, loggingServiceToken]
-      })];
-      let _classDescriptor;
-      let _classExtraInitializers = [];
-      let _classThis;
-      var CommandService2 = class {
-        static {
-          __name(this, "CommandService");
-        }
-        static {
-          _classThis = this;
-        }
-        static {
-          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate14(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
-          CommandService2 = _classThis = _classDescriptor.value;
-          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers14(_classThis, _classExtraInitializers);
-        }
-        /**
-         * The language server connection.
-         */
-        #connection;
-        /**
-         * The logger to use.
-         */
-        #logger;
-        /**
-         * Command handlers by command name.
-         */
-        #commands = /* @__PURE__ */ new Map();
-        /**
-         * Instantiates a new command manager.
-         */
-        constructor(connection, loggingService) {
-          this.#connection = connection;
-          this.#logger = loggingService.createLogger(CommandService2);
-        }
-        dispose() {
-          this.#logger?.debug("Disposing command manager");
-          this.#commands.clear();
-          this.#connection.onExecuteCommand(() => void 0);
-        }
-        /**
-         * Registers a handler for a command.
-         */
-        on(name, handler) {
-          if (Array.isArray(name)) {
-            this.#logger?.debug("Registering commands", { commands: name });
-            for (const commandName of name) {
-              this.#commands.set(commandName, handler);
-            }
-            return {
-              dispose: /* @__PURE__ */ __name(() => {
-                this.#logger?.debug("Deregistering commands", { commands: name });
-                for (const commandName of name) {
-                  this.#commands.delete(commandName);
-                }
-              }, "dispose")
-            };
-          }
-          this.#logger?.debug("Registering command", { command: name });
-          this.#commands.set(name, handler);
-          return {
-            dispose: /* @__PURE__ */ __name(() => {
-              this.#logger?.debug("Deregistering command", { command: name });
-              this.#commands.delete(name);
-            }, "dispose")
-          };
-        }
-        /**
-         * Registers the command manager as a request handler.
-         */
-        register() {
-          this.#logger?.debug("Registering ExecuteCommandRequest handler");
-          this.#connection.onExecuteCommand(async (...params) => {
-            this.#logger?.debug("Received ExecuteCommandRequest", {
-              command: params[0].command,
-              arguments: params[0].arguments
-            });
-            const handler = this.#commands.get(params[0].command);
-            if (!handler) {
-              this.#logger?.debug("No handler registered for command", {
-                command: params[0].command
-              });
-              return {};
-            }
-            this.#logger?.debug("Executing command", {
-              command: params[0].command
-            });
-            try {
-              const response = await handler(...params);
-              this.#logger?.debug("Sending command response", {
-                command: params[0].command,
-                response
-              });
-              return response;
-            } catch (error) {
-              this.#logger?.error("Error executing command", {
-                command: params[0].command,
-                error
-              });
-              return new LSP.ResponseError(LSP.ErrorCodes.InternalError, `Error executing command ${params[0].command}`, error);
-            }
-          });
-          this.#logger?.debug("ExecuteCommandRequest handler registered");
-        }
-      };
-      return CommandService2 = _classThis;
-    })();
-  }
-});
-
 // packages/language-server/build/server/services/infrastructure/notification.service.js
-var __esDecorate15, __runInitializers15, NotificationService;
+var __esDecorate4, __runInitializers4, NotificationService;
 var init_notification_service = __esm({
   "packages/language-server/build/server/services/infrastructure/notification.service.js"() {
     "use strict";
     init_di();
     init_tokens2();
     init_logging_service();
-    __esDecorate15 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+    __esDecorate4 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
       function accept(f) {
         if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
         return f;
@@ -26942,7 +22782,7 @@ var init_notification_service = __esm({
       if (target) Object.defineProperty(target, contextIn.name, descriptor);
       done = true;
     };
-    __runInitializers15 = function(thisArg, initializers, value) {
+    __runInitializers4 = function(thisArg, initializers, value) {
       var useValue = arguments.length > 2;
       for (var i = 0; i < initializers.length; i++) {
         value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
@@ -26965,10 +22805,10 @@ var init_notification_service = __esm({
         }
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
-          __esDecorate15(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          __esDecorate4(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
           NotificationService2 = _classThis = _classDescriptor.value;
           if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
-          __runInitializers15(_classThis, _classExtraInitializers);
+          __runInitializers4(_classThis, _classExtraInitializers);
         }
         /**
          * The connection to the server.
@@ -27055,67 +22895,2044 @@ var init_notification_service = __esm({
   }
 });
 
-// packages/language-server/build/server/services/infrastructure/winston-logging.service.js
-function createWinstonLoggingService(level = "info", logPath) {
-  return {
-    token: loggingServiceToken,
-    inject: [lspConnectionToken, winstonToken],
-    useFactory: /* @__PURE__ */ __name((connection, winstonModule) => {
-      const transports = [
-        new LanguageServerTransport({
-          connection,
-          format: winstonModule.format.combine(new ErrorFormatter(), new LanguageServerFormatter({
-            connection,
-            preferredKeyOrder: ["service", "uri", "command"]
-          }))
-        })
-      ];
-      if (logPath) {
-        transports.push(new winstonModule.transports.File({
-          filename: logPath,
-          format: winstonModule.format.combine(new ErrorFormatter(), winstonModule.format.timestamp(), winstonModule.format.json())
-        }));
-      }
-      const logger = winstonModule.createLogger({
-        level,
-        transports,
-        levels: {
-          error: 0,
-          warn: 1,
-          info: 2,
-          debug: 3
+// node_modules/fast-diff/diff.js
+var require_diff = __commonJS({
+  "node_modules/fast-diff/diff.js"(exports2, module3) {
+    var DIFF_DELETE = -1;
+    var DIFF_INSERT = 1;
+    var DIFF_EQUAL = 0;
+    function diff_main(text1, text2, cursor_pos, cleanup, _fix_unicode) {
+      if (text1 === text2) {
+        if (text1) {
+          return [[DIFF_EQUAL, text1]];
         }
-      });
-      return {
-        createLogger: /* @__PURE__ */ __name((component) => {
-          const serviceName = component.name || "UnknownService";
-          return logger.child({ service: serviceName });
-        }, "createLogger")
-      };
-    }, "useFactory")
-  };
-}
-var winstonToken;
-var init_winston_logging_service = __esm({
-  "packages/language-server/build/server/services/infrastructure/winston-logging.service.js"() {
-    "use strict";
-    init_di();
-    init_utils();
-    init_tokens2();
-    init_logging_service();
-    winstonToken = createToken("Winston");
-    __name(createWinstonLoggingService, "createWinstonLoggingService");
+        return [];
+      }
+      if (cursor_pos != null) {
+        var editdiff = find_cursor_edit_diff(text1, text2, cursor_pos);
+        if (editdiff) {
+          return editdiff;
+        }
+      }
+      var commonlength = diff_commonPrefix(text1, text2);
+      var commonprefix = text1.substring(0, commonlength);
+      text1 = text1.substring(commonlength);
+      text2 = text2.substring(commonlength);
+      commonlength = diff_commonSuffix(text1, text2);
+      var commonsuffix = text1.substring(text1.length - commonlength);
+      text1 = text1.substring(0, text1.length - commonlength);
+      text2 = text2.substring(0, text2.length - commonlength);
+      var diffs = diff_compute_(text1, text2);
+      if (commonprefix) {
+        diffs.unshift([DIFF_EQUAL, commonprefix]);
+      }
+      if (commonsuffix) {
+        diffs.push([DIFF_EQUAL, commonsuffix]);
+      }
+      diff_cleanupMerge(diffs, _fix_unicode);
+      if (cleanup) {
+        diff_cleanupSemantic(diffs);
+      }
+      return diffs;
+    }
+    __name(diff_main, "diff_main");
+    function diff_compute_(text1, text2) {
+      var diffs;
+      if (!text1) {
+        return [[DIFF_INSERT, text2]];
+      }
+      if (!text2) {
+        return [[DIFF_DELETE, text1]];
+      }
+      var longtext = text1.length > text2.length ? text1 : text2;
+      var shorttext = text1.length > text2.length ? text2 : text1;
+      var i = longtext.indexOf(shorttext);
+      if (i !== -1) {
+        diffs = [
+          [DIFF_INSERT, longtext.substring(0, i)],
+          [DIFF_EQUAL, shorttext],
+          [DIFF_INSERT, longtext.substring(i + shorttext.length)]
+        ];
+        if (text1.length > text2.length) {
+          diffs[0][0] = diffs[2][0] = DIFF_DELETE;
+        }
+        return diffs;
+      }
+      if (shorttext.length === 1) {
+        return [
+          [DIFF_DELETE, text1],
+          [DIFF_INSERT, text2]
+        ];
+      }
+      var hm = diff_halfMatch_(text1, text2);
+      if (hm) {
+        var text1_a = hm[0];
+        var text1_b = hm[1];
+        var text2_a = hm[2];
+        var text2_b = hm[3];
+        var mid_common = hm[4];
+        var diffs_a = diff_main(text1_a, text2_a);
+        var diffs_b = diff_main(text1_b, text2_b);
+        return diffs_a.concat([[DIFF_EQUAL, mid_common]], diffs_b);
+      }
+      return diff_bisect_(text1, text2);
+    }
+    __name(diff_compute_, "diff_compute_");
+    function diff_bisect_(text1, text2) {
+      var text1_length = text1.length;
+      var text2_length = text2.length;
+      var max_d = Math.ceil((text1_length + text2_length) / 2);
+      var v_offset = max_d;
+      var v_length = 2 * max_d;
+      var v1 = new Array(v_length);
+      var v2 = new Array(v_length);
+      for (var x = 0; x < v_length; x++) {
+        v1[x] = -1;
+        v2[x] = -1;
+      }
+      v1[v_offset + 1] = 0;
+      v2[v_offset + 1] = 0;
+      var delta = text1_length - text2_length;
+      var front = delta % 2 !== 0;
+      var k1start = 0;
+      var k1end = 0;
+      var k2start = 0;
+      var k2end = 0;
+      for (var d = 0; d < max_d; d++) {
+        for (var k1 = -d + k1start; k1 <= d - k1end; k1 += 2) {
+          var k1_offset = v_offset + k1;
+          var x1;
+          if (k1 === -d || k1 !== d && v1[k1_offset - 1] < v1[k1_offset + 1]) {
+            x1 = v1[k1_offset + 1];
+          } else {
+            x1 = v1[k1_offset - 1] + 1;
+          }
+          var y1 = x1 - k1;
+          while (x1 < text1_length && y1 < text2_length && text1.charAt(x1) === text2.charAt(y1)) {
+            x1++;
+            y1++;
+          }
+          v1[k1_offset] = x1;
+          if (x1 > text1_length) {
+            k1end += 2;
+          } else if (y1 > text2_length) {
+            k1start += 2;
+          } else if (front) {
+            var k2_offset = v_offset + delta - k1;
+            if (k2_offset >= 0 && k2_offset < v_length && v2[k2_offset] !== -1) {
+              var x2 = text1_length - v2[k2_offset];
+              if (x1 >= x2) {
+                return diff_bisectSplit_(text1, text2, x1, y1);
+              }
+            }
+          }
+        }
+        for (var k2 = -d + k2start; k2 <= d - k2end; k2 += 2) {
+          var k2_offset = v_offset + k2;
+          var x2;
+          if (k2 === -d || k2 !== d && v2[k2_offset - 1] < v2[k2_offset + 1]) {
+            x2 = v2[k2_offset + 1];
+          } else {
+            x2 = v2[k2_offset - 1] + 1;
+          }
+          var y2 = x2 - k2;
+          while (x2 < text1_length && y2 < text2_length && text1.charAt(text1_length - x2 - 1) === text2.charAt(text2_length - y2 - 1)) {
+            x2++;
+            y2++;
+          }
+          v2[k2_offset] = x2;
+          if (x2 > text1_length) {
+            k2end += 2;
+          } else if (y2 > text2_length) {
+            k2start += 2;
+          } else if (!front) {
+            var k1_offset = v_offset + delta - k2;
+            if (k1_offset >= 0 && k1_offset < v_length && v1[k1_offset] !== -1) {
+              var x1 = v1[k1_offset];
+              var y1 = v_offset + x1 - k1_offset;
+              x2 = text1_length - x2;
+              if (x1 >= x2) {
+                return diff_bisectSplit_(text1, text2, x1, y1);
+              }
+            }
+          }
+        }
+      }
+      return [
+        [DIFF_DELETE, text1],
+        [DIFF_INSERT, text2]
+      ];
+    }
+    __name(diff_bisect_, "diff_bisect_");
+    function diff_bisectSplit_(text1, text2, x, y) {
+      var text1a = text1.substring(0, x);
+      var text2a = text2.substring(0, y);
+      var text1b = text1.substring(x);
+      var text2b = text2.substring(y);
+      var diffs = diff_main(text1a, text2a);
+      var diffsb = diff_main(text1b, text2b);
+      return diffs.concat(diffsb);
+    }
+    __name(diff_bisectSplit_, "diff_bisectSplit_");
+    function diff_commonPrefix(text1, text2) {
+      if (!text1 || !text2 || text1.charAt(0) !== text2.charAt(0)) {
+        return 0;
+      }
+      var pointermin = 0;
+      var pointermax = Math.min(text1.length, text2.length);
+      var pointermid = pointermax;
+      var pointerstart = 0;
+      while (pointermin < pointermid) {
+        if (text1.substring(pointerstart, pointermid) == text2.substring(pointerstart, pointermid)) {
+          pointermin = pointermid;
+          pointerstart = pointermin;
+        } else {
+          pointermax = pointermid;
+        }
+        pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
+      }
+      if (is_surrogate_pair_start(text1.charCodeAt(pointermid - 1))) {
+        pointermid--;
+      }
+      return pointermid;
+    }
+    __name(diff_commonPrefix, "diff_commonPrefix");
+    function diff_commonOverlap_(text1, text2) {
+      var text1_length = text1.length;
+      var text2_length = text2.length;
+      if (text1_length == 0 || text2_length == 0) {
+        return 0;
+      }
+      if (text1_length > text2_length) {
+        text1 = text1.substring(text1_length - text2_length);
+      } else if (text1_length < text2_length) {
+        text2 = text2.substring(0, text1_length);
+      }
+      var text_length = Math.min(text1_length, text2_length);
+      if (text1 == text2) {
+        return text_length;
+      }
+      var best = 0;
+      var length = 1;
+      while (true) {
+        var pattern = text1.substring(text_length - length);
+        var found = text2.indexOf(pattern);
+        if (found == -1) {
+          return best;
+        }
+        length += found;
+        if (found == 0 || text1.substring(text_length - length) == text2.substring(0, length)) {
+          best = length;
+          length++;
+        }
+      }
+    }
+    __name(diff_commonOverlap_, "diff_commonOverlap_");
+    function diff_commonSuffix(text1, text2) {
+      if (!text1 || !text2 || text1.slice(-1) !== text2.slice(-1)) {
+        return 0;
+      }
+      var pointermin = 0;
+      var pointermax = Math.min(text1.length, text2.length);
+      var pointermid = pointermax;
+      var pointerend = 0;
+      while (pointermin < pointermid) {
+        if (text1.substring(text1.length - pointermid, text1.length - pointerend) == text2.substring(text2.length - pointermid, text2.length - pointerend)) {
+          pointermin = pointermid;
+          pointerend = pointermin;
+        } else {
+          pointermax = pointermid;
+        }
+        pointermid = Math.floor((pointermax - pointermin) / 2 + pointermin);
+      }
+      if (is_surrogate_pair_end(text1.charCodeAt(text1.length - pointermid))) {
+        pointermid--;
+      }
+      return pointermid;
+    }
+    __name(diff_commonSuffix, "diff_commonSuffix");
+    function diff_halfMatch_(text1, text2) {
+      var longtext = text1.length > text2.length ? text1 : text2;
+      var shorttext = text1.length > text2.length ? text2 : text1;
+      if (longtext.length < 4 || shorttext.length * 2 < longtext.length) {
+        return null;
+      }
+      function diff_halfMatchI_(longtext2, shorttext2, i) {
+        var seed = longtext2.substring(i, i + Math.floor(longtext2.length / 4));
+        var j = -1;
+        var best_common = "";
+        var best_longtext_a, best_longtext_b, best_shorttext_a, best_shorttext_b;
+        while ((j = shorttext2.indexOf(seed, j + 1)) !== -1) {
+          var prefixLength = diff_commonPrefix(
+            longtext2.substring(i),
+            shorttext2.substring(j)
+          );
+          var suffixLength = diff_commonSuffix(
+            longtext2.substring(0, i),
+            shorttext2.substring(0, j)
+          );
+          if (best_common.length < suffixLength + prefixLength) {
+            best_common = shorttext2.substring(j - suffixLength, j) + shorttext2.substring(j, j + prefixLength);
+            best_longtext_a = longtext2.substring(0, i - suffixLength);
+            best_longtext_b = longtext2.substring(i + prefixLength);
+            best_shorttext_a = shorttext2.substring(0, j - suffixLength);
+            best_shorttext_b = shorttext2.substring(j + prefixLength);
+          }
+        }
+        if (best_common.length * 2 >= longtext2.length) {
+          return [
+            best_longtext_a,
+            best_longtext_b,
+            best_shorttext_a,
+            best_shorttext_b,
+            best_common
+          ];
+        } else {
+          return null;
+        }
+      }
+      __name(diff_halfMatchI_, "diff_halfMatchI_");
+      var hm1 = diff_halfMatchI_(
+        longtext,
+        shorttext,
+        Math.ceil(longtext.length / 4)
+      );
+      var hm2 = diff_halfMatchI_(
+        longtext,
+        shorttext,
+        Math.ceil(longtext.length / 2)
+      );
+      var hm;
+      if (!hm1 && !hm2) {
+        return null;
+      } else if (!hm2) {
+        hm = hm1;
+      } else if (!hm1) {
+        hm = hm2;
+      } else {
+        hm = hm1[4].length > hm2[4].length ? hm1 : hm2;
+      }
+      var text1_a, text1_b, text2_a, text2_b;
+      if (text1.length > text2.length) {
+        text1_a = hm[0];
+        text1_b = hm[1];
+        text2_a = hm[2];
+        text2_b = hm[3];
+      } else {
+        text2_a = hm[0];
+        text2_b = hm[1];
+        text1_a = hm[2];
+        text1_b = hm[3];
+      }
+      var mid_common = hm[4];
+      return [text1_a, text1_b, text2_a, text2_b, mid_common];
+    }
+    __name(diff_halfMatch_, "diff_halfMatch_");
+    function diff_cleanupSemantic(diffs) {
+      var changes = false;
+      var equalities = [];
+      var equalitiesLength = 0;
+      var lastequality = null;
+      var pointer = 0;
+      var length_insertions1 = 0;
+      var length_deletions1 = 0;
+      var length_insertions2 = 0;
+      var length_deletions2 = 0;
+      while (pointer < diffs.length) {
+        if (diffs[pointer][0] == DIFF_EQUAL) {
+          equalities[equalitiesLength++] = pointer;
+          length_insertions1 = length_insertions2;
+          length_deletions1 = length_deletions2;
+          length_insertions2 = 0;
+          length_deletions2 = 0;
+          lastequality = diffs[pointer][1];
+        } else {
+          if (diffs[pointer][0] == DIFF_INSERT) {
+            length_insertions2 += diffs[pointer][1].length;
+          } else {
+            length_deletions2 += diffs[pointer][1].length;
+          }
+          if (lastequality && lastequality.length <= Math.max(length_insertions1, length_deletions1) && lastequality.length <= Math.max(length_insertions2, length_deletions2)) {
+            diffs.splice(equalities[equalitiesLength - 1], 0, [
+              DIFF_DELETE,
+              lastequality
+            ]);
+            diffs[equalities[equalitiesLength - 1] + 1][0] = DIFF_INSERT;
+            equalitiesLength--;
+            equalitiesLength--;
+            pointer = equalitiesLength > 0 ? equalities[equalitiesLength - 1] : -1;
+            length_insertions1 = 0;
+            length_deletions1 = 0;
+            length_insertions2 = 0;
+            length_deletions2 = 0;
+            lastequality = null;
+            changes = true;
+          }
+        }
+        pointer++;
+      }
+      if (changes) {
+        diff_cleanupMerge(diffs);
+      }
+      diff_cleanupSemanticLossless(diffs);
+      pointer = 1;
+      while (pointer < diffs.length) {
+        if (diffs[pointer - 1][0] == DIFF_DELETE && diffs[pointer][0] == DIFF_INSERT) {
+          var deletion = diffs[pointer - 1][1];
+          var insertion = diffs[pointer][1];
+          var overlap_length1 = diff_commonOverlap_(deletion, insertion);
+          var overlap_length2 = diff_commonOverlap_(insertion, deletion);
+          if (overlap_length1 >= overlap_length2) {
+            if (overlap_length1 >= deletion.length / 2 || overlap_length1 >= insertion.length / 2) {
+              diffs.splice(pointer, 0, [
+                DIFF_EQUAL,
+                insertion.substring(0, overlap_length1)
+              ]);
+              diffs[pointer - 1][1] = deletion.substring(
+                0,
+                deletion.length - overlap_length1
+              );
+              diffs[pointer + 1][1] = insertion.substring(overlap_length1);
+              pointer++;
+            }
+          } else {
+            if (overlap_length2 >= deletion.length / 2 || overlap_length2 >= insertion.length / 2) {
+              diffs.splice(pointer, 0, [
+                DIFF_EQUAL,
+                deletion.substring(0, overlap_length2)
+              ]);
+              diffs[pointer - 1][0] = DIFF_INSERT;
+              diffs[pointer - 1][1] = insertion.substring(
+                0,
+                insertion.length - overlap_length2
+              );
+              diffs[pointer + 1][0] = DIFF_DELETE;
+              diffs[pointer + 1][1] = deletion.substring(overlap_length2);
+              pointer++;
+            }
+          }
+          pointer++;
+        }
+        pointer++;
+      }
+    }
+    __name(diff_cleanupSemantic, "diff_cleanupSemantic");
+    var nonAlphaNumericRegex_ = /[^a-zA-Z0-9]/;
+    var whitespaceRegex_ = /\s/;
+    var linebreakRegex_ = /[\r\n]/;
+    var blanklineEndRegex_ = /\n\r?\n$/;
+    var blanklineStartRegex_ = /^\r?\n\r?\n/;
+    function diff_cleanupSemanticLossless(diffs) {
+      function diff_cleanupSemanticScore_(one, two) {
+        if (!one || !two) {
+          return 6;
+        }
+        var char1 = one.charAt(one.length - 1);
+        var char2 = two.charAt(0);
+        var nonAlphaNumeric1 = char1.match(nonAlphaNumericRegex_);
+        var nonAlphaNumeric2 = char2.match(nonAlphaNumericRegex_);
+        var whitespace1 = nonAlphaNumeric1 && char1.match(whitespaceRegex_);
+        var whitespace2 = nonAlphaNumeric2 && char2.match(whitespaceRegex_);
+        var lineBreak1 = whitespace1 && char1.match(linebreakRegex_);
+        var lineBreak2 = whitespace2 && char2.match(linebreakRegex_);
+        var blankLine1 = lineBreak1 && one.match(blanklineEndRegex_);
+        var blankLine2 = lineBreak2 && two.match(blanklineStartRegex_);
+        if (blankLine1 || blankLine2) {
+          return 5;
+        } else if (lineBreak1 || lineBreak2) {
+          return 4;
+        } else if (nonAlphaNumeric1 && !whitespace1 && whitespace2) {
+          return 3;
+        } else if (whitespace1 || whitespace2) {
+          return 2;
+        } else if (nonAlphaNumeric1 || nonAlphaNumeric2) {
+          return 1;
+        }
+        return 0;
+      }
+      __name(diff_cleanupSemanticScore_, "diff_cleanupSemanticScore_");
+      var pointer = 1;
+      while (pointer < diffs.length - 1) {
+        if (diffs[pointer - 1][0] == DIFF_EQUAL && diffs[pointer + 1][0] == DIFF_EQUAL) {
+          var equality1 = diffs[pointer - 1][1];
+          var edit = diffs[pointer][1];
+          var equality2 = diffs[pointer + 1][1];
+          var commonOffset = diff_commonSuffix(equality1, edit);
+          if (commonOffset) {
+            var commonString = edit.substring(edit.length - commonOffset);
+            equality1 = equality1.substring(0, equality1.length - commonOffset);
+            edit = commonString + edit.substring(0, edit.length - commonOffset);
+            equality2 = commonString + equality2;
+          }
+          var bestEquality1 = equality1;
+          var bestEdit = edit;
+          var bestEquality2 = equality2;
+          var bestScore = diff_cleanupSemanticScore_(equality1, edit) + diff_cleanupSemanticScore_(edit, equality2);
+          while (edit.charAt(0) === equality2.charAt(0)) {
+            equality1 += edit.charAt(0);
+            edit = edit.substring(1) + equality2.charAt(0);
+            equality2 = equality2.substring(1);
+            var score = diff_cleanupSemanticScore_(equality1, edit) + diff_cleanupSemanticScore_(edit, equality2);
+            if (score >= bestScore) {
+              bestScore = score;
+              bestEquality1 = equality1;
+              bestEdit = edit;
+              bestEquality2 = equality2;
+            }
+          }
+          if (diffs[pointer - 1][1] != bestEquality1) {
+            if (bestEquality1) {
+              diffs[pointer - 1][1] = bestEquality1;
+            } else {
+              diffs.splice(pointer - 1, 1);
+              pointer--;
+            }
+            diffs[pointer][1] = bestEdit;
+            if (bestEquality2) {
+              diffs[pointer + 1][1] = bestEquality2;
+            } else {
+              diffs.splice(pointer + 1, 1);
+              pointer--;
+            }
+          }
+        }
+        pointer++;
+      }
+    }
+    __name(diff_cleanupSemanticLossless, "diff_cleanupSemanticLossless");
+    function diff_cleanupMerge(diffs, fix_unicode) {
+      diffs.push([DIFF_EQUAL, ""]);
+      var pointer = 0;
+      var count_delete = 0;
+      var count_insert = 0;
+      var text_delete = "";
+      var text_insert = "";
+      var commonlength;
+      while (pointer < diffs.length) {
+        if (pointer < diffs.length - 1 && !diffs[pointer][1]) {
+          diffs.splice(pointer, 1);
+          continue;
+        }
+        switch (diffs[pointer][0]) {
+          case DIFF_INSERT:
+            count_insert++;
+            text_insert += diffs[pointer][1];
+            pointer++;
+            break;
+          case DIFF_DELETE:
+            count_delete++;
+            text_delete += diffs[pointer][1];
+            pointer++;
+            break;
+          case DIFF_EQUAL:
+            var previous_equality = pointer - count_insert - count_delete - 1;
+            if (fix_unicode) {
+              if (previous_equality >= 0 && ends_with_pair_start(diffs[previous_equality][1])) {
+                var stray = diffs[previous_equality][1].slice(-1);
+                diffs[previous_equality][1] = diffs[previous_equality][1].slice(
+                  0,
+                  -1
+                );
+                text_delete = stray + text_delete;
+                text_insert = stray + text_insert;
+                if (!diffs[previous_equality][1]) {
+                  diffs.splice(previous_equality, 1);
+                  pointer--;
+                  var k = previous_equality - 1;
+                  if (diffs[k] && diffs[k][0] === DIFF_INSERT) {
+                    count_insert++;
+                    text_insert = diffs[k][1] + text_insert;
+                    k--;
+                  }
+                  if (diffs[k] && diffs[k][0] === DIFF_DELETE) {
+                    count_delete++;
+                    text_delete = diffs[k][1] + text_delete;
+                    k--;
+                  }
+                  previous_equality = k;
+                }
+              }
+              if (starts_with_pair_end(diffs[pointer][1])) {
+                var stray = diffs[pointer][1].charAt(0);
+                diffs[pointer][1] = diffs[pointer][1].slice(1);
+                text_delete += stray;
+                text_insert += stray;
+              }
+            }
+            if (pointer < diffs.length - 1 && !diffs[pointer][1]) {
+              diffs.splice(pointer, 1);
+              break;
+            }
+            if (text_delete.length > 0 || text_insert.length > 0) {
+              if (text_delete.length > 0 && text_insert.length > 0) {
+                commonlength = diff_commonPrefix(text_insert, text_delete);
+                if (commonlength !== 0) {
+                  if (previous_equality >= 0) {
+                    diffs[previous_equality][1] += text_insert.substring(
+                      0,
+                      commonlength
+                    );
+                  } else {
+                    diffs.splice(0, 0, [
+                      DIFF_EQUAL,
+                      text_insert.substring(0, commonlength)
+                    ]);
+                    pointer++;
+                  }
+                  text_insert = text_insert.substring(commonlength);
+                  text_delete = text_delete.substring(commonlength);
+                }
+                commonlength = diff_commonSuffix(text_insert, text_delete);
+                if (commonlength !== 0) {
+                  diffs[pointer][1] = text_insert.substring(text_insert.length - commonlength) + diffs[pointer][1];
+                  text_insert = text_insert.substring(
+                    0,
+                    text_insert.length - commonlength
+                  );
+                  text_delete = text_delete.substring(
+                    0,
+                    text_delete.length - commonlength
+                  );
+                }
+              }
+              var n = count_insert + count_delete;
+              if (text_delete.length === 0 && text_insert.length === 0) {
+                diffs.splice(pointer - n, n);
+                pointer = pointer - n;
+              } else if (text_delete.length === 0) {
+                diffs.splice(pointer - n, n, [DIFF_INSERT, text_insert]);
+                pointer = pointer - n + 1;
+              } else if (text_insert.length === 0) {
+                diffs.splice(pointer - n, n, [DIFF_DELETE, text_delete]);
+                pointer = pointer - n + 1;
+              } else {
+                diffs.splice(
+                  pointer - n,
+                  n,
+                  [DIFF_DELETE, text_delete],
+                  [DIFF_INSERT, text_insert]
+                );
+                pointer = pointer - n + 2;
+              }
+            }
+            if (pointer !== 0 && diffs[pointer - 1][0] === DIFF_EQUAL) {
+              diffs[pointer - 1][1] += diffs[pointer][1];
+              diffs.splice(pointer, 1);
+            } else {
+              pointer++;
+            }
+            count_insert = 0;
+            count_delete = 0;
+            text_delete = "";
+            text_insert = "";
+            break;
+        }
+      }
+      if (diffs[diffs.length - 1][1] === "") {
+        diffs.pop();
+      }
+      var changes = false;
+      pointer = 1;
+      while (pointer < diffs.length - 1) {
+        if (diffs[pointer - 1][0] === DIFF_EQUAL && diffs[pointer + 1][0] === DIFF_EQUAL) {
+          if (diffs[pointer][1].substring(
+            diffs[pointer][1].length - diffs[pointer - 1][1].length
+          ) === diffs[pointer - 1][1]) {
+            diffs[pointer][1] = diffs[pointer - 1][1] + diffs[pointer][1].substring(
+              0,
+              diffs[pointer][1].length - diffs[pointer - 1][1].length
+            );
+            diffs[pointer + 1][1] = diffs[pointer - 1][1] + diffs[pointer + 1][1];
+            diffs.splice(pointer - 1, 1);
+            changes = true;
+          } else if (diffs[pointer][1].substring(0, diffs[pointer + 1][1].length) == diffs[pointer + 1][1]) {
+            diffs[pointer - 1][1] += diffs[pointer + 1][1];
+            diffs[pointer][1] = diffs[pointer][1].substring(diffs[pointer + 1][1].length) + diffs[pointer + 1][1];
+            diffs.splice(pointer + 1, 1);
+            changes = true;
+          }
+        }
+        pointer++;
+      }
+      if (changes) {
+        diff_cleanupMerge(diffs, fix_unicode);
+      }
+    }
+    __name(diff_cleanupMerge, "diff_cleanupMerge");
+    function is_surrogate_pair_start(charCode) {
+      return charCode >= 55296 && charCode <= 56319;
+    }
+    __name(is_surrogate_pair_start, "is_surrogate_pair_start");
+    function is_surrogate_pair_end(charCode) {
+      return charCode >= 56320 && charCode <= 57343;
+    }
+    __name(is_surrogate_pair_end, "is_surrogate_pair_end");
+    function starts_with_pair_end(str) {
+      return is_surrogate_pair_end(str.charCodeAt(0));
+    }
+    __name(starts_with_pair_end, "starts_with_pair_end");
+    function ends_with_pair_start(str) {
+      return is_surrogate_pair_start(str.charCodeAt(str.length - 1));
+    }
+    __name(ends_with_pair_start, "ends_with_pair_start");
+    function remove_empty_tuples(tuples) {
+      var ret = [];
+      for (var i = 0; i < tuples.length; i++) {
+        if (tuples[i][1].length > 0) {
+          ret.push(tuples[i]);
+        }
+      }
+      return ret;
+    }
+    __name(remove_empty_tuples, "remove_empty_tuples");
+    function make_edit_splice(before, oldMiddle, newMiddle, after) {
+      if (ends_with_pair_start(before) || starts_with_pair_end(after)) {
+        return null;
+      }
+      return remove_empty_tuples([
+        [DIFF_EQUAL, before],
+        [DIFF_DELETE, oldMiddle],
+        [DIFF_INSERT, newMiddle],
+        [DIFF_EQUAL, after]
+      ]);
+    }
+    __name(make_edit_splice, "make_edit_splice");
+    function find_cursor_edit_diff(oldText, newText, cursor_pos) {
+      var oldRange = typeof cursor_pos === "number" ? { index: cursor_pos, length: 0 } : cursor_pos.oldRange;
+      var newRange = typeof cursor_pos === "number" ? null : cursor_pos.newRange;
+      var oldLength = oldText.length;
+      var newLength = newText.length;
+      if (oldRange.length === 0 && (newRange === null || newRange.length === 0)) {
+        var oldCursor = oldRange.index;
+        var oldBefore = oldText.slice(0, oldCursor);
+        var oldAfter = oldText.slice(oldCursor);
+        var maybeNewCursor = newRange ? newRange.index : null;
+        editBefore: {
+          var newCursor = oldCursor + newLength - oldLength;
+          if (maybeNewCursor !== null && maybeNewCursor !== newCursor) {
+            break editBefore;
+          }
+          if (newCursor < 0 || newCursor > newLength) {
+            break editBefore;
+          }
+          var newBefore = newText.slice(0, newCursor);
+          var newAfter = newText.slice(newCursor);
+          if (newAfter !== oldAfter) {
+            break editBefore;
+          }
+          var prefixLength = Math.min(oldCursor, newCursor);
+          var oldPrefix = oldBefore.slice(0, prefixLength);
+          var newPrefix = newBefore.slice(0, prefixLength);
+          if (oldPrefix !== newPrefix) {
+            break editBefore;
+          }
+          var oldMiddle = oldBefore.slice(prefixLength);
+          var newMiddle = newBefore.slice(prefixLength);
+          return make_edit_splice(oldPrefix, oldMiddle, newMiddle, oldAfter);
+        }
+        editAfter: {
+          if (maybeNewCursor !== null && maybeNewCursor !== oldCursor) {
+            break editAfter;
+          }
+          var cursor = oldCursor;
+          var newBefore = newText.slice(0, cursor);
+          var newAfter = newText.slice(cursor);
+          if (newBefore !== oldBefore) {
+            break editAfter;
+          }
+          var suffixLength = Math.min(oldLength - cursor, newLength - cursor);
+          var oldSuffix = oldAfter.slice(oldAfter.length - suffixLength);
+          var newSuffix = newAfter.slice(newAfter.length - suffixLength);
+          if (oldSuffix !== newSuffix) {
+            break editAfter;
+          }
+          var oldMiddle = oldAfter.slice(0, oldAfter.length - suffixLength);
+          var newMiddle = newAfter.slice(0, newAfter.length - suffixLength);
+          return make_edit_splice(oldBefore, oldMiddle, newMiddle, oldSuffix);
+        }
+      }
+      if (oldRange.length > 0 && newRange && newRange.length === 0) {
+        replaceRange: {
+          var oldPrefix = oldText.slice(0, oldRange.index);
+          var oldSuffix = oldText.slice(oldRange.index + oldRange.length);
+          var prefixLength = oldPrefix.length;
+          var suffixLength = oldSuffix.length;
+          if (newLength < prefixLength + suffixLength) {
+            break replaceRange;
+          }
+          var newPrefix = newText.slice(0, prefixLength);
+          var newSuffix = newText.slice(newLength - suffixLength);
+          if (oldPrefix !== newPrefix || oldSuffix !== newSuffix) {
+            break replaceRange;
+          }
+          var oldMiddle = oldText.slice(prefixLength, oldLength - suffixLength);
+          var newMiddle = newText.slice(prefixLength, newLength - suffixLength);
+          return make_edit_splice(oldPrefix, oldMiddle, newMiddle, oldSuffix);
+        }
+      }
+      return null;
+    }
+    __name(find_cursor_edit_diff, "find_cursor_edit_diff");
+    function diff2(text1, text2, cursor_pos, cleanup) {
+      return diff_main(text1, text2, cursor_pos, cleanup, true);
+    }
+    __name(diff2, "diff");
+    diff2.INSERT = DIFF_INSERT;
+    diff2.DELETE = DIFF_DELETE;
+    diff2.EQUAL = DIFF_EQUAL;
+    module3.exports = diff2;
   }
 });
 
-// packages/language-server/build/server/services/infrastructure/index.js
-var init_infrastructure = __esm({
-  "packages/language-server/build/server/services/infrastructure/index.js"() {
+// packages/language-server/build/server/utils/documents/create-text-edits.js
+function createTextEdits(document, newContents) {
+  const diffs = (0, import_fast_diff.default)(document.getText(), newContents);
+  const edits = [];
+  let offset = 0;
+  for (const [op, text] of diffs) {
+    const start = offset;
+    switch (op) {
+      case import_fast_diff.default.EQUAL:
+        offset += text.length;
+        break;
+      case import_fast_diff.default.DELETE:
+        offset += text.length;
+        edits.push(TextEdit.del(Range.create(document.positionAt(start), document.positionAt(offset))));
+        break;
+      case import_fast_diff.default.INSERT:
+        edits.push(TextEdit.insert(document.positionAt(start), text));
+        break;
+    }
+  }
+  return edits;
+}
+var import_fast_diff;
+var init_create_text_edits = __esm({
+  "packages/language-server/build/server/utils/documents/create-text-edits.js"() {
     "use strict";
-    init_command_service();
-    init_logging_service();
-    init_notification_service();
-    init_winston_logging_service();
+    import_fast_diff = __toESM(require_diff(), 1);
+    init_main();
+    __name(createTextEdits, "createTextEdits");
+  }
+});
+
+// packages/language-server/build/server/utils/documents/get-edit-info.js
+function getEditInfo(document, diagnostic, lintResult) {
+  if (!lintResult || document.version !== lintResult.version) {
+    return void 0;
+  }
+  const warning = lintResult.getWarning?.(diagnostic);
+  if (!warning) {
+    return void 0;
+  }
+  const edit = warning.fix;
+  if (!edit) {
+    return void 0;
+  }
+  return {
+    label: `Fix this ${warning.rule} problem`,
+    edit: {
+      newText: edit.text,
+      range: {
+        start: document.positionAt(edit.range[0]),
+        end: document.positionAt(edit.range[1])
+      }
+    }
+  };
+}
+var init_get_edit_info = __esm({
+  "packages/language-server/build/server/utils/documents/get-edit-info.js"() {
+    "use strict";
+    __name(getEditInfo, "getEditInfo");
+  }
+});
+
+// packages/language-server/build/server/utils/documents/get-disable-type.js
+function getDisableType(document, position) {
+  const lineStartOffset = document.offsetAt(Position.create(position.line, 0));
+  const lineEndOffset = document.offsetAt(Position.create(position.line + 1, 0));
+  const line = document.getText().slice(lineStartOffset, lineEndOffset);
+  const before = line.slice(0, position.character);
+  const after = line.slice(position.character);
+  const disableKind = before.match(/\/\*\s*(stylelint-disable(?:(?:-next)?-line)?)\s[a-z\-/\s,]*$/i)?.[1]?.toLowerCase();
+  return disableKind && /^[a-z\-/\s,]*\*\//i.test(after) ? disableKind : void 0;
+}
+var init_get_disable_type = __esm({
+  "packages/language-server/build/server/utils/documents/get-disable-type.js"() {
+    "use strict";
+    init_main();
+    __name(getDisableType, "getDisableType");
+  }
+});
+
+// packages/language-server/build/server/utils/documents/get-fixes.js
+async function getFixes(runner, document, linterOptions = {}, runnerOptions = {}) {
+  const result = await runner.lintDocument(document, { ...linterOptions, fix: true }, runnerOptions);
+  const fixedCode = typeof result.code === "string" ? result.code : typeof result.output === "string" && result.output.length > 0 ? result.output : void 0;
+  return typeof fixedCode === "string" ? createTextEdits(document, fixedCode) : [];
+}
+var init_get_fixes = __esm({
+  "packages/language-server/build/server/utils/documents/get-fixes.js"() {
+    "use strict";
+    init_create_text_edits();
+    __name(getFixes, "getFixes");
+  }
+});
+
+// packages/language-server/build/server/utils/documents/index.js
+var init_documents = __esm({
+  "packages/language-server/build/server/utils/documents/index.js"() {
+    "use strict";
+    init_create_text_edits();
+    init_get_edit_info();
+    init_get_disable_type();
+    init_get_fixes();
+  }
+});
+
+// packages/language-server/build/server/utils/functions/get-first-return-value.js
+var init_get_first_return_value = __esm({
+  "packages/language-server/build/server/utils/functions/get-first-return-value.js"() {
+    "use strict";
+  }
+});
+
+// packages/language-server/build/server/utils/functions/lazy-call.js
+var init_lazy_call = __esm({
+  "packages/language-server/build/server/utils/functions/lazy-call.js"() {
+    "use strict";
+  }
+});
+
+// packages/language-server/build/server/utils/functions/index.js
+var init_functions = __esm({
+  "packages/language-server/build/server/utils/functions/index.js"() {
+    "use strict";
+    init_get_first_return_value();
+    init_lazy_call();
+  }
+});
+
+// node_modules/non-error/index.js
+function defineProperty(object, key, value) {
+  Object.defineProperty(object, key, {
+    value,
+    writable: false,
+    enumerable: false,
+    configurable: false
+  });
+}
+function stringify(value) {
+  if (value === void 0) {
+    return "undefined";
+  }
+  if (value === null) {
+    return "null";
+  }
+  if (typeof value === "string") {
+    return value;
+  }
+  if (typeof value === "number" || typeof value === "boolean") {
+    return String(value);
+  }
+  if (typeof value === "bigint") {
+    return `${value}n`;
+  }
+  if (typeof value === "symbol") {
+    return value.toString();
+  }
+  if (typeof value === "function") {
+    return `[Function${value.name ? ` ${value.name}` : " (anonymous)"}]`;
+  }
+  if (value instanceof Error) {
+    try {
+      return String(value);
+    } catch {
+      return "<Unserializable error>";
+    }
+  }
+  try {
+    return JSON.stringify(value);
+  } catch {
+    try {
+      return String(value);
+    } catch {
+      return "<Unserializable value>";
+    }
+  }
+}
+var isNonErrorSymbol, NonError;
+var init_non_error = __esm({
+  "node_modules/non-error/index.js"() {
+    isNonErrorSymbol = /* @__PURE__ */ Symbol("isNonError");
+    __name(defineProperty, "defineProperty");
+    __name(stringify, "stringify");
+    NonError = class _NonError extends Error {
+      static {
+        __name(this, "NonError");
+      }
+      constructor(value, { superclass: Superclass = Error } = {}) {
+        if (_NonError.isNonError(value)) {
+          return value;
+        }
+        if (value instanceof Error) {
+          throw new TypeError("Do not pass Error instances to NonError. Throw the error directly instead.");
+        }
+        super(`Non-error value: ${stringify(value)}`);
+        if (Superclass !== Error) {
+          Object.setPrototypeOf(this, Superclass.prototype);
+        }
+        defineProperty(this, "name", "NonError");
+        defineProperty(this, isNonErrorSymbol, true);
+        defineProperty(this, "isNonError", true);
+        defineProperty(this, "value", value);
+      }
+      static isNonError(value) {
+        return value?.[isNonErrorSymbol] === true;
+      }
+      static #handleCallback(callback, arguments_) {
+        try {
+          const result = callback(...arguments_);
+          if (result && typeof result.then === "function") {
+            return (async () => {
+              try {
+                return await result;
+              } catch (error) {
+                if (error instanceof Error) {
+                  throw error;
+                }
+                throw new _NonError(error);
+              }
+            })();
+          }
+          return result;
+        } catch (error) {
+          if (error instanceof Error) {
+            throw error;
+          }
+          throw new _NonError(error);
+        }
+      }
+      static try(callback) {
+        return _NonError.#handleCallback(callback, []);
+      }
+      static wrap(callback) {
+        return (...arguments_) => _NonError.#handleCallback(callback, arguments_);
+      }
+      // This makes instanceof work even when using the `superclass` option
+      static [Symbol.hasInstance](instance) {
+        return _NonError.isNonError(instance);
+      }
+    };
+  }
+});
+
+// node_modules/serialize-error/error-constructors.js
+var list, errorConstructors, errorFactories;
+var init_error_constructors = __esm({
+  "node_modules/serialize-error/error-constructors.js"() {
+    list = [
+      // Native ES errors https://262.ecma-international.org/12.0/#sec-well-known-intrinsic-objects
+      Error,
+      EvalError,
+      RangeError,
+      ReferenceError,
+      SyntaxError,
+      TypeError,
+      URIError,
+      AggregateError,
+      // Built-in errors
+      globalThis.DOMException,
+      // Node-specific errors
+      // https://nodejs.org/api/errors.html
+      globalThis.AssertionError,
+      globalThis.SystemError
+    ].filter(Boolean).map((constructor) => [constructor.name, constructor]);
+    errorConstructors = new Map(list);
+    errorFactories = /* @__PURE__ */ new Map();
+  }
+});
+
+// node_modules/serialize-error/index.js
+function serializeError(value, options = {}) {
+  const {
+    maxDepth = Number.POSITIVE_INFINITY,
+    useToJSON = true
+  } = options;
+  if (typeof value === "object" && value !== null) {
+    return destroyCircular({
+      from: value,
+      seen: /* @__PURE__ */ new Set(),
+      forceEnumerable: true,
+      maxDepth,
+      depth: 0,
+      useToJSON,
+      serialize: true
+    });
+  }
+  if (typeof value === "function") {
+    value = "<Function>";
+  }
+  return destroyCircular({
+    from: new NonError(value),
+    seen: /* @__PURE__ */ new Set(),
+    forceEnumerable: true,
+    maxDepth,
+    depth: 0,
+    useToJSON,
+    serialize: true
+  });
+}
+function isErrorLike(value) {
+  return Boolean(value) && typeof value === "object" && typeof value.name === "string" && typeof value.message === "string" && typeof value.stack === "string";
+}
+var errorProperties, toJsonWasCalled, toJSON, newError, destroyCircular;
+var init_serialize_error = __esm({
+  "node_modules/serialize-error/index.js"() {
+    init_non_error();
+    init_error_constructors();
+    errorProperties = [
+      {
+        property: "name",
+        enumerable: false
+      },
+      {
+        property: "message",
+        enumerable: false
+      },
+      {
+        property: "stack",
+        enumerable: false
+      },
+      {
+        property: "code",
+        enumerable: true
+      },
+      {
+        property: "cause",
+        enumerable: false
+      },
+      {
+        property: "errors",
+        enumerable: false
+      }
+    ];
+    toJsonWasCalled = /* @__PURE__ */ new WeakSet();
+    toJSON = /* @__PURE__ */ __name((from) => {
+      toJsonWasCalled.add(from);
+      const json = from.toJSON();
+      toJsonWasCalled.delete(from);
+      return json;
+    }, "toJSON");
+    newError = /* @__PURE__ */ __name((name) => {
+      if (name === "NonError") {
+        return new NonError();
+      }
+      const factory = errorFactories.get(name);
+      if (factory) {
+        return factory();
+      }
+      const ErrorConstructor = errorConstructors.get(name) ?? Error;
+      return ErrorConstructor === AggregateError ? new ErrorConstructor([]) : new ErrorConstructor();
+    }, "newError");
+    destroyCircular = /* @__PURE__ */ __name(({
+      from,
+      seen,
+      to,
+      forceEnumerable,
+      maxDepth,
+      depth,
+      useToJSON,
+      serialize
+    }) => {
+      if (!to) {
+        if (Array.isArray(from)) {
+          to = [];
+        } else if (!serialize && isErrorLike(from)) {
+          to = newError(from.name);
+        } else {
+          to = {};
+        }
+      }
+      seen.add(from);
+      if (depth >= maxDepth) {
+        seen.delete(from);
+        return to;
+      }
+      if (useToJSON && typeof from.toJSON === "function" && !toJsonWasCalled.has(from)) {
+        seen.delete(from);
+        return toJSON(from);
+      }
+      const continueDestroyCircular = /* @__PURE__ */ __name((value) => destroyCircular({
+        from: value,
+        seen,
+        forceEnumerable,
+        maxDepth,
+        depth: depth + 1,
+        useToJSON,
+        serialize
+      }), "continueDestroyCircular");
+      for (const key of Object.keys(from)) {
+        const value = from[key];
+        if (value && value instanceof Uint8Array && value.constructor.name === "Buffer") {
+          to[key] = serialize ? "[object Buffer]" : value;
+          continue;
+        }
+        if (value !== null && typeof value === "object" && typeof value.pipe === "function") {
+          to[key] = serialize ? "[object Stream]" : value;
+          continue;
+        }
+        if (typeof value === "function") {
+          if (!serialize) {
+            to[key] = value;
+          }
+          continue;
+        }
+        if (serialize && typeof value === "bigint") {
+          to[key] = `${value}n`;
+          continue;
+        }
+        if (!value || typeof value !== "object") {
+          try {
+            to[key] = value;
+          } catch {
+          }
+          continue;
+        }
+        if (!seen.has(value)) {
+          to[key] = continueDestroyCircular(value);
+          continue;
+        }
+        to[key] = "[Circular]";
+      }
+      if (serialize || to instanceof Error) {
+        for (const { property, enumerable } of errorProperties) {
+          const value = from[property];
+          if (value === void 0 || value === null) {
+            continue;
+          }
+          const descriptor = Object.getOwnPropertyDescriptor(to, property);
+          if (descriptor?.configurable === false) {
+            continue;
+          }
+          let processedValue = value;
+          if (typeof value === "object") {
+            processedValue = seen.has(value) ? "[Circular]" : continueDestroyCircular(value);
+          }
+          Object.defineProperty(to, property, {
+            value: processedValue,
+            enumerable: forceEnumerable || enumerable,
+            configurable: true,
+            writable: true
+          });
+        }
+      }
+      seen.delete(from);
+      return to;
+    }, "destroyCircular");
+    __name(serializeError, "serializeError");
+    __name(isErrorLike, "isErrorLike");
+  }
+});
+
+// packages/language-server/build/server/utils/iterables.js
+function isIterable(obj) {
+  return obj !== null && obj !== void 0 && typeof obj[Symbol.iterator] === "function";
+}
+function isIterableObject(obj) {
+  return isIterable(obj) && typeof obj === "object";
+}
+var init_iterables = __esm({
+  "packages/language-server/build/server/utils/iterables.js"() {
+    "use strict";
+    __name(isIterable, "isIterable");
+    __name(isIterableObject, "isIterableObject");
+  }
+});
+
+// packages/language-server/build/server/utils/objects/is-object.js
+function isObject(value) {
+  return typeof value === "object" && value !== null;
+}
+function isEmptyObject(value) {
+  return isObject(value) && !Array.isArray(value) && Object.keys(value).length === 0;
+}
+var init_is_object = __esm({
+  "packages/language-server/build/server/utils/objects/is-object.js"() {
+    "use strict";
+    __name(isObject, "isObject");
+    __name(isEmptyObject, "isEmptyObject");
+  }
+});
+
+// packages/language-server/build/server/utils/objects/merge-assign.js
+function mergeAssign(target, source1, source2) {
+  const targetAsUnion = target;
+  for (const object of [source1, source2]) {
+    if (!object) {
+      continue;
+    }
+    for (const key of Object.getOwnPropertyNames(object)) {
+      if (key === "__proto__" || key === "constructor") {
+        continue;
+      }
+      const value = object[key];
+      if (isObject(value)) {
+        if (Array.isArray(value)) {
+          const existing = targetAsUnion[key];
+          targetAsUnion[key] = Array.isArray(existing) ? existing.concat(value) : value;
+          continue;
+        }
+        if (!targetAsUnion[key]) {
+          targetAsUnion[key] = {};
+        }
+        targetAsUnion[key] = mergeAssign(targetAsUnion[key], value);
+      } else {
+        targetAsUnion[key] = value;
+      }
+    }
+  }
+  return targetAsUnion;
+}
+var init_merge_assign = __esm({
+  "packages/language-server/build/server/utils/objects/merge-assign.js"() {
+    "use strict";
+    init_is_object();
+    __name(mergeAssign, "mergeAssign");
+  }
+});
+
+// node_modules/rfdc/index.js
+var require_rfdc = __commonJS({
+  "node_modules/rfdc/index.js"(exports2, module3) {
+    "use strict";
+    module3.exports = rfdc2;
+    function copyBuffer(cur) {
+      if (cur instanceof Buffer) {
+        return Buffer.from(cur);
+      }
+      return new cur.constructor(cur.buffer.slice(), cur.byteOffset, cur.length);
+    }
+    __name(copyBuffer, "copyBuffer");
+    function rfdc2(opts) {
+      opts = opts || {};
+      if (opts.circles) return rfdcCircles(opts);
+      const constructorHandlers = /* @__PURE__ */ new Map();
+      constructorHandlers.set(Date, (o) => new Date(o));
+      constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
+      constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
+      if (opts.constructorHandlers) {
+        for (const handler2 of opts.constructorHandlers) {
+          constructorHandlers.set(handler2[0], handler2[1]);
+        }
+      }
+      let handler = null;
+      return opts.proto ? cloneProto : clone;
+      function cloneArray(a, fn) {
+        const keys = Object.keys(a);
+        const a2 = new Array(keys.length);
+        for (let i = 0; i < keys.length; i++) {
+          const k = keys[i];
+          const cur = a[k];
+          if (typeof cur !== "object" || cur === null) {
+            a2[k] = cur;
+          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+            a2[k] = handler(cur, fn);
+          } else if (ArrayBuffer.isView(cur)) {
+            a2[k] = copyBuffer(cur);
+          } else {
+            a2[k] = fn(cur);
+          }
+        }
+        return a2;
+      }
+      __name(cloneArray, "cloneArray");
+      function clone(o) {
+        if (typeof o !== "object" || o === null) return o;
+        if (Array.isArray(o)) return cloneArray(o, clone);
+        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+          return handler(o, clone);
+        }
+        const o2 = {};
+        for (const k in o) {
+          if (Object.hasOwnProperty.call(o, k) === false) continue;
+          const cur = o[k];
+          if (typeof cur !== "object" || cur === null) {
+            o2[k] = cur;
+          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+            o2[k] = handler(cur, clone);
+          } else if (ArrayBuffer.isView(cur)) {
+            o2[k] = copyBuffer(cur);
+          } else {
+            o2[k] = clone(cur);
+          }
+        }
+        return o2;
+      }
+      __name(clone, "clone");
+      function cloneProto(o) {
+        if (typeof o !== "object" || o === null) return o;
+        if (Array.isArray(o)) return cloneArray(o, cloneProto);
+        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+          return handler(o, cloneProto);
+        }
+        const o2 = {};
+        for (const k in o) {
+          const cur = o[k];
+          if (typeof cur !== "object" || cur === null) {
+            o2[k] = cur;
+          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+            o2[k] = handler(cur, cloneProto);
+          } else if (ArrayBuffer.isView(cur)) {
+            o2[k] = copyBuffer(cur);
+          } else {
+            o2[k] = cloneProto(cur);
+          }
+        }
+        return o2;
+      }
+      __name(cloneProto, "cloneProto");
+    }
+    __name(rfdc2, "rfdc");
+    function rfdcCircles(opts) {
+      const refs = [];
+      const refsNew = [];
+      const constructorHandlers = /* @__PURE__ */ new Map();
+      constructorHandlers.set(Date, (o) => new Date(o));
+      constructorHandlers.set(Map, (o, fn) => new Map(cloneArray(Array.from(o), fn)));
+      constructorHandlers.set(Set, (o, fn) => new Set(cloneArray(Array.from(o), fn)));
+      if (opts.constructorHandlers) {
+        for (const handler2 of opts.constructorHandlers) {
+          constructorHandlers.set(handler2[0], handler2[1]);
+        }
+      }
+      let handler = null;
+      return opts.proto ? cloneProto : clone;
+      function cloneArray(a, fn) {
+        const keys = Object.keys(a);
+        const a2 = new Array(keys.length);
+        for (let i = 0; i < keys.length; i++) {
+          const k = keys[i];
+          const cur = a[k];
+          if (typeof cur !== "object" || cur === null) {
+            a2[k] = cur;
+          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+            a2[k] = handler(cur, fn);
+          } else if (ArrayBuffer.isView(cur)) {
+            a2[k] = copyBuffer(cur);
+          } else {
+            const index = refs.indexOf(cur);
+            if (index !== -1) {
+              a2[k] = refsNew[index];
+            } else {
+              a2[k] = fn(cur);
+            }
+          }
+        }
+        return a2;
+      }
+      __name(cloneArray, "cloneArray");
+      function clone(o) {
+        if (typeof o !== "object" || o === null) return o;
+        if (Array.isArray(o)) return cloneArray(o, clone);
+        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+          return handler(o, clone);
+        }
+        const o2 = {};
+        refs.push(o);
+        refsNew.push(o2);
+        for (const k in o) {
+          if (Object.hasOwnProperty.call(o, k) === false) continue;
+          const cur = o[k];
+          if (typeof cur !== "object" || cur === null) {
+            o2[k] = cur;
+          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+            o2[k] = handler(cur, clone);
+          } else if (ArrayBuffer.isView(cur)) {
+            o2[k] = copyBuffer(cur);
+          } else {
+            const i = refs.indexOf(cur);
+            if (i !== -1) {
+              o2[k] = refsNew[i];
+            } else {
+              o2[k] = clone(cur);
+            }
+          }
+        }
+        refs.pop();
+        refsNew.pop();
+        return o2;
+      }
+      __name(clone, "clone");
+      function cloneProto(o) {
+        if (typeof o !== "object" || o === null) return o;
+        if (Array.isArray(o)) return cloneArray(o, cloneProto);
+        if (o.constructor !== Object && (handler = constructorHandlers.get(o.constructor))) {
+          return handler(o, cloneProto);
+        }
+        const o2 = {};
+        refs.push(o);
+        refsNew.push(o2);
+        for (const k in o) {
+          const cur = o[k];
+          if (typeof cur !== "object" || cur === null) {
+            o2[k] = cur;
+          } else if (cur.constructor !== Object && (handler = constructorHandlers.get(cur.constructor))) {
+            o2[k] = handler(cur, cloneProto);
+          } else if (ArrayBuffer.isView(cur)) {
+            o2[k] = copyBuffer(cur);
+          } else {
+            const i = refs.indexOf(cur);
+            if (i !== -1) {
+              o2[k] = refsNew[i];
+            } else {
+              o2[k] = cloneProto(cur);
+            }
+          }
+        }
+        refs.pop();
+        refsNew.pop();
+        return o2;
+      }
+      __name(cloneProto, "cloneProto");
+    }
+    __name(rfdcCircles, "rfdcCircles");
+  }
+});
+
+// packages/language-server/build/server/utils/objects/merge-options-with-defaults.js
+function mergeOptionsWithDefaultsInner(options, defaults, seen, mapped, circulars) {
+  if (!isObject(options)) {
+    return deepClone(defaults);
+  }
+  const result = {};
+  for (const key of Object.keys(defaults)) {
+    const fromDefaults = defaults[key];
+    const fromOptions = options[key];
+    if (fromOptions !== void 0) {
+      if (isObject(fromOptions)) {
+        if (seen.has(fromOptions)) {
+          circulars.add([fromOptions, result, key]);
+          continue;
+        }
+        seen.add(fromOptions);
+        const value = Array.isArray(fromOptions) ? fromOptions.map((item) => deepClone(item)) : isObject(fromDefaults) && !Array.isArray(fromDefaults) ? mergeOptionsWithDefaultsInner(fromOptions, fromDefaults, seen, mapped, circulars) : deepClone(fromOptions);
+        mapped.set(fromOptions, value);
+        result[key] = value;
+        continue;
+      }
+      result[key] = fromOptions;
+      continue;
+    }
+    result[key] = deepClone(fromDefaults);
+  }
+  return result;
+}
+function mergeOptionsWithDefaults(options, defaults) {
+  const seen = /* @__PURE__ */ new WeakSet();
+  const mapped = /* @__PURE__ */ new WeakMap();
+  const circulars = /* @__PURE__ */ new Set();
+  const result = mergeOptionsWithDefaultsInner(options, defaults, seen, mapped, circulars);
+  for (const [circular, obj, key] of circulars) {
+    obj[key] = mapped.get(circular);
+  }
+  return result;
+}
+var import_rfdc, deepClone;
+var init_merge_options_with_defaults = __esm({
+  "packages/language-server/build/server/utils/objects/merge-options-with-defaults.js"() {
+    "use strict";
+    import_rfdc = __toESM(require_rfdc(), 1);
+    init_is_object();
+    deepClone = (0, import_rfdc.default)();
+    __name(mergeOptionsWithDefaultsInner, "mergeOptionsWithDefaultsInner");
+    __name(mergeOptionsWithDefaults, "mergeOptionsWithDefaults");
+  }
+});
+
+// packages/language-server/build/server/utils/objects/index.js
+var init_objects = __esm({
+  "packages/language-server/build/server/utils/objects/index.js"() {
+    "use strict";
+    init_is_object();
+    init_merge_assign();
+    init_merge_options_with_defaults();
+  }
+});
+
+// packages/language-server/build/server/utils/errors.js
+function serializeErrors(object) {
+  const serializeInner = /* @__PURE__ */ __name((obj, visited) => {
+    if (!obj || typeof obj !== "object") {
+      return obj;
+    }
+    if (visited.has(obj)) {
+      return visited.get(obj);
+    }
+    if (obj instanceof Error) {
+      const result = serializeError(obj);
+      visited.set(obj, result);
+      return result;
+    }
+    if (obj instanceof Map) {
+      const result = /* @__PURE__ */ new Map();
+      visited.set(obj, result);
+      for (const [key, value] of obj) {
+        const serializedKey = serializeInner(key, visited);
+        const serializedValue = serializeInner(value, visited);
+        if (isObject(key)) {
+          visited.set(key, serializedKey);
+        }
+        if (isObject(value)) {
+          visited.set(value, serializedValue);
+        }
+        result.set(serializedKey, serializedValue);
+      }
+      return result;
+    }
+    if (obj instanceof Set) {
+      const result = /* @__PURE__ */ new Set();
+      visited.set(obj, result);
+      for (const value of obj) {
+        if (!isObject(value)) {
+          result.add(value);
+          continue;
+        }
+        const serializedValue = serializeInner(value, visited);
+        visited.set(value, serializedValue);
+        result.add(serializedValue);
+      }
+      return result;
+    }
+    if (isIterable(obj)) {
+      const result = [];
+      visited.set(obj, result);
+      for (const value of obj) {
+        result.push(serializeInner(value, visited));
+      }
+      return result;
+    }
+    visited.set(obj, "[Circular]");
+    const serializedObj = Object.fromEntries(Object.entries(obj).map(([key, value]) => {
+      if (!isObject(value)) {
+        return [key, value];
+      }
+      if (visited.has(value)) {
+        return [key, visited.get(value)];
+      }
+      if (value instanceof Error) {
+        const serialized = serializeError(value);
+        visited.set(value, serialized);
+        return [key, serialized];
+      }
+      const result = serializeInner(value, visited);
+      visited.set(value, result);
+      return [key, result];
+    }));
+    visited.set(obj, serializedObj);
+    return serializedObj;
+  }, "serializeInner");
+  return serializeInner(object, /* @__PURE__ */ new WeakMap());
+}
+var init_errors = __esm({
+  "packages/language-server/build/server/utils/errors.js"() {
+    "use strict";
+    init_serialize_error();
+    init_iterables();
+    init_objects();
+    __name(serializeErrors, "serializeErrors");
+  }
+});
+
+// packages/language-server/build/server/utils/logging/error-formatter.js
+var ErrorFormatter;
+var init_error_formatter = __esm({
+  "packages/language-server/build/server/utils/logging/error-formatter.js"() {
+    "use strict";
+    init_errors();
+    ErrorFormatter = class {
+      static {
+        __name(this, "ErrorFormatter");
+      }
+      transform(info) {
+        const transformed = serializeErrors({ ...info });
+        for (const key of Object.keys(transformed)) {
+          info[key] = transformed[key];
+        }
+        return info;
+      }
+    };
+  }
+});
+
+// packages/language-server/build/server/utils/logging/get-log-function.js
+var getLogFunction;
+var init_get_log_function = __esm({
+  "packages/language-server/build/server/utils/logging/get-log-function.js"() {
+    "use strict";
+    getLogFunction = /* @__PURE__ */ __name((remoteConsole, level) => {
+      const logFunction = remoteConsole[level];
+      if (typeof logFunction === "function") {
+        return logFunction;
+      }
+      return void 0;
+    }, "getLogFunction");
+  }
+});
+
+// packages/language-server/build/server/utils/strings.js
+var upperCaseFirstChar, padString, padNumber;
+var init_strings = __esm({
+  "packages/language-server/build/server/utils/strings.js"() {
+    "use strict";
+    upperCaseFirstChar = /* @__PURE__ */ __name((str) => {
+      return str.charAt(0).toUpperCase() + str.slice(1);
+    }, "upperCaseFirstChar");
+    padString = /* @__PURE__ */ __name((str, length) => {
+      return str + " ".repeat(length - str.length);
+    }, "padString");
+    padNumber = /* @__PURE__ */ __name((number, length) => {
+      const str = String(number);
+      return "0".repeat(length - str.length) + str;
+    }, "padNumber");
+  }
+});
+
+// packages/language-server/build/server/utils/logging/language-server-formatter.js
+var import_triple_beam, LanguageServerFormatter;
+var init_language_server_formatter = __esm({
+  "packages/language-server/build/server/utils/logging/language-server-formatter.js"() {
+    "use strict";
+    import_triple_beam = __toESM(require_triple_beam(), 1);
+    init_get_log_function();
+    init_strings();
+    LanguageServerFormatter = class {
+      static {
+        __name(this, "LanguageServerFormatter");
+      }
+      options;
+      constructor(options) {
+        this.options = options;
+      }
+      transform(info) {
+        const date = /* @__PURE__ */ new Date();
+        const timestamp = `${date.getHours() % 12 || 12}:${padNumber(date.getMinutes(), 2)}:${padNumber(date.getSeconds(), 2)} ${date.getHours() < 12 ? "a.m." : "p.m."}`;
+        const messageParts = [];
+        const level = String(info[import_triple_beam.LEVEL]);
+        if (!getLogFunction(this.options.connection.console, level)) {
+          messageParts.push(`[${padString(upperCaseFirstChar(level), 5)} - ${timestamp}]`);
+        }
+        if (info.component) {
+          messageParts.push(`[${String(info.component)}]`);
+        }
+        messageParts.push(info.message);
+        delete info.component;
+        delete info.timestamp;
+        const keys = new Set(Object.keys({ ...info }));
+        const postMessageParts = [];
+        if (this.options.preferredKeyOrder) {
+          for (const key of this.options.preferredKeyOrder) {
+            if (keys.has(key)) {
+              postMessageParts.push(`${key}: ${JSON.stringify(info[key])}`);
+              keys.delete(key);
+              delete info[key];
+            }
+          }
+        }
+        for (const key of keys) {
+          if (key === "level" || key === "message") {
+            continue;
+          }
+          postMessageParts.push(`${key}: ${JSON.stringify(info[key])}`);
+          delete info[key];
+        }
+        const message = postMessageParts.length > 0 ? `${messageParts.join(" ")} | ${postMessageParts.join(" ")}` : messageParts.join(" ");
+        info[import_triple_beam.MESSAGE] = message;
+        info.message = message;
+        return info;
+      }
+    };
+  }
+});
+
+// packages/language-server/build/server/utils/logging/language-server-transport.js
+var import_winston_transport, import_triple_beam2, LanguageServerTransport;
+var init_language_server_transport = __esm({
+  "packages/language-server/build/server/utils/logging/language-server-transport.js"() {
+    "use strict";
+    import_winston_transport = __toESM(require_winston_transport(), 1);
+    import_triple_beam2 = __toESM(require_triple_beam(), 1);
+    init_get_log_function();
+    LanguageServerTransport = class extends import_winston_transport.default {
+      static {
+        __name(this, "LanguageServerTransport");
+      }
+      /**
+       * The language server remote console.
+       */
+      #console;
+      constructor(options) {
+        super(options);
+        this.#console = options.connection.console;
+      }
+      log(info, callback) {
+        setImmediate(() => {
+          this.emit("logged", info);
+        });
+        try {
+          const logFunc = getLogFunction(this.#console, String(info[import_triple_beam2.LEVEL]));
+          if (typeof logFunc === "function") {
+            logFunc.call(this.#console, String(info[import_triple_beam2.MESSAGE]));
+          } else {
+            this.#console.log(String(info[import_triple_beam2.MESSAGE]));
+          }
+        } catch (error) {
+          if (!(error instanceof Error) || !error.message.includes("Connection is disposed")) {
+            this.emit("error", error);
+          }
+        }
+        callback();
+      }
+    };
+  }
+});
+
+// packages/language-server/build/server/utils/logging/index.js
+var init_logging = __esm({
+  "packages/language-server/build/server/utils/logging/index.js"() {
+    "use strict";
+    init_error_formatter();
+    init_get_log_function();
+    init_language_server_formatter();
+    init_language_server_transport();
+  }
+});
+
+// packages/language-server/build/server/utils/lsp/create-disable-completion-item.js
+function createDisableCompletionItem(disableType, rule = "") {
+  const item = CompletionItem.create(disableType);
+  item.kind = CompletionItemKind.Snippet;
+  item.insertTextFormat = InsertTextFormat.Snippet;
+  if (disableType === "stylelint-disable") {
+    item.insertText = `/* stylelint-disable \${0:${rule || "rule"}} */
+/* stylelint-enable \${0:${rule || "rule"}} */`;
+    item.detail = "Turn off all Stylelint or individual rules, after which you do not need to re-enable Stylelint. (Stylelint)";
+    item.documentation = {
+      kind: MarkupKind.Markdown,
+      value: `\`\`\`css
+/* stylelint-disable ${rule || "rule"} */
+/* stylelint-enable ${rule || "rule"} */
+\`\`\``
+    };
+  } else {
+    item.insertText = `/* ${disableType} \${0:${rule || "rule"}} */`;
+    item.detail = disableType === "stylelint-disable-line" ? "Turn off Stylelint rules for individual lines only, after which you do not need to explicitly re-enable them. (Stylelint)" : "Turn off Stylelint rules for the next line only, after which you do not need to explicitly re-enable them. (Stylelint)";
+    item.documentation = {
+      kind: MarkupKind.Markdown,
+      value: `\`\`\`css
+/* ${disableType} ${rule || "rule"} */
+\`\`\``
+    };
+  }
+  return item;
+}
+var init_create_disable_completion_item = __esm({
+  "packages/language-server/build/server/utils/lsp/create-disable-completion-item.js"() {
+    "use strict";
+    init_main();
+    __name(createDisableCompletionItem, "createDisableCompletionItem");
+  }
+});
+
+// packages/language-server/build/server/utils/lsp/display-error.js
+function displayError(connection, err) {
+  if (!(err instanceof Error)) {
+    connection.window.showErrorMessage(String(err).replace(/\n/gu, " "));
+    return;
+  }
+  if (isIterableObject(err?.reasons)) {
+    for (const reason of err.reasons) {
+      connection.window.showErrorMessage(`Stylelint: ${reason}`);
+    }
+    return;
+  }
+  if (err?.code === 78) {
+    connection.window.showErrorMessage(`Stylelint: ${err.message}`);
+    return;
+  }
+  connection.window.showErrorMessage((err.stack || err.message).replace(/\n/gu, " "));
+}
+var init_display_error = __esm({
+  "packages/language-server/build/server/utils/lsp/display-error.js"() {
+    "use strict";
+    init_iterables();
+    __name(displayError, "displayError");
+  }
+});
+
+// packages/language-server/build/server/utils/lsp/rule-code-actions-collection.js
+var RuleCodeActionsCollection;
+var init_rule_code_actions_collection = __esm({
+  "packages/language-server/build/server/utils/lsp/rule-code-actions-collection.js"() {
+    "use strict";
+    RuleCodeActionsCollection = class {
+      static {
+        __name(this, "RuleCodeActionsCollection");
+      }
+      /**
+       * The code actions, keyed by their rule.
+       */
+      #actions = /* @__PURE__ */ new Map();
+      /**
+       * Gets the code actions for a rule.
+       */
+      get(ruleId) {
+        const existing = this.#actions.get(ruleId);
+        if (existing) {
+          return existing;
+        }
+        const actions = {};
+        this.#actions.set(ruleId, actions);
+        return actions;
+      }
+      /**
+       * Iterates over the code actions, grouped by rule and sorted by the
+       * priority of the rule.
+       */
+      *[Symbol.iterator]() {
+        for (const actions of this.#actions.values()) {
+          if (actions.fixAll) {
+            yield actions.fixAll;
+          }
+          if (actions.disableLine) {
+            yield actions.disableLine;
+          }
+          if (actions.disableFile) {
+            yield actions.disableFile;
+          }
+          if (actions.documentation) {
+            yield actions.documentation;
+          }
+        }
+      }
+      /**
+       * Gets the number of code actions.
+       */
+      get size() {
+        const iterator = this[Symbol.iterator]();
+        let size = 0;
+        while (!iterator.next().done) {
+          size++;
+        }
+        return size;
+      }
+    };
+  }
+});
+
+// packages/language-server/build/server/utils/lsp/throw-if-cancelled.js
+function throwIfCancelled(token) {
+  if (token.isCancellationRequested) {
+    throw new import_vscode_languageserver_protocol.ResponseError(import_vscode_languageserver_protocol.LSPErrorCodes.RequestCancelled, "Request cancelled");
+  }
+}
+var import_vscode_languageserver_protocol;
+var init_throw_if_cancelled = __esm({
+  "packages/language-server/build/server/utils/lsp/throw-if-cancelled.js"() {
+    "use strict";
+    import_vscode_languageserver_protocol = __toESM(require_main3(), 1);
+    __name(throwIfCancelled, "throwIfCancelled");
+  }
+});
+
+// packages/language-server/build/server/utils/lsp/types.js
+var init_types5 = __esm({
+  "packages/language-server/build/server/utils/lsp/types.js"() {
+    "use strict";
+  }
+});
+
+// packages/language-server/build/server/utils/lsp/index.js
+var init_lsp = __esm({
+  "packages/language-server/build/server/utils/lsp/index.js"() {
+    "use strict";
+    init_create_disable_completion_item();
+    init_display_error();
+    init_rule_code_actions_collection();
+    init_throw_if_cancelled();
+    init_types5();
+  }
+});
+
+// packages/language-server/build/server/utils/fs.js
+function normalizeFsPath(value, platform = import_node_process2.default.platform) {
+  if (!value) {
+    return void 0;
+  }
+  if (platform !== "win32") {
+    return value;
+  }
+  let result = value.replace(/\//gu, "\\");
+  if (/^[a-z]:\\/u.test(result)) {
+    result = result[0].toUpperCase() + result.slice(1);
+  }
+  return result;
+}
+var import_node_process2;
+var init_fs = __esm({
+  "packages/language-server/build/server/utils/fs.js"() {
+    "use strict";
+    import_node_process2 = __toESM(require("node:process"), 1);
+    __name(normalizeFsPath, "normalizeFsPath");
+  }
+});
+
+// packages/language-server/build/server/utils/sets.js
+function intersect(set1, set2) {
+  if (!set1) {
+    return set2;
+  }
+  if (!set2) {
+    return set1;
+  }
+  const [smallerSet, largerSet] = set1.size < set2.size ? [set1, set2] : [set2, set1];
+  const result = /* @__PURE__ */ new Set();
+  for (const item of smallerSet) {
+    if (largerSet.has(item)) {
+      result.add(item);
+    }
+  }
+  return result;
+}
+var init_sets = __esm({
+  "packages/language-server/build/server/utils/sets.js"() {
+    "use strict";
+    __name(intersect, "intersect");
+  }
+});
+
+// packages/language-server/build/server/utils/types.js
+var init_types6 = __esm({
+  "packages/language-server/build/server/utils/types.js"() {
+    "use strict";
+  }
+});
+
+// packages/language-server/build/server/utils/index.js
+var init_utils = __esm({
+  "packages/language-server/build/server/utils/index.js"() {
+    "use strict";
+    init_documents();
+    init_functions();
+    init_logging();
+    init_lsp();
+    init_objects();
+    init_errors();
+    init_fs();
+    init_iterables();
+    init_sets();
+    init_strings();
+    init_types6();
   }
 });
 
@@ -27180,11 +24997,11 @@ function registerNotificationHandlers(metadata, resolve) {
 function registerConnectionHandler(connection, descriptor) {
   switch (descriptor.kind) {
     case "completion":
-      return connection.onCompletion((params, _token, _workDone, _resultProgress) => descriptor.handler(params));
+      return connection.onCompletion((params, token, workDone, resultProgress) => descriptor.handler(params, token, workDone, resultProgress));
     case "codeAction":
-      return connection.onCodeAction((params, _token, _workDone, _resultProgress) => descriptor.handler(params));
+      return connection.onCodeAction((params, token, workDone, resultProgress) => descriptor.handler(params, token, workDone, resultProgress));
     case "documentFormatting":
-      return connection.onDocumentFormatting((params, _token, _workDone, _resultProgress) => descriptor.handler(params));
+      return connection.onDocumentFormatting((params, token, workDone, resultProgress) => descriptor.handler(params, token, workDone, resultProgress));
     default: {
       const neverDescriptor = descriptor;
       throw new Error(`Unsupported connection handler kind: ${String(neverDescriptor)}`);
@@ -27326,6 +25143,7 @@ var init_decorators2 = __esm({
     init_di();
     init_notification_service();
     init_tokens2();
+    init_utils();
     lspServiceMetadataKey = "__languageServerServiceMetadata__";
     lspServiceConstructorMetadataKey = "__isLanguageServerService__";
     __name(isLanguageServerServiceInstance, "isLanguageServerServiceInstance");
@@ -27346,6 +25164,2242 @@ var init_decorators2 = __esm({
     __name(codeActionRequest, "codeActionRequest");
     __name(documentFormattingRequest, "documentFormattingRequest");
     __name(shutdown, "shutdown");
+  }
+});
+
+// packages/language-server/build/server/services/workspace/workspace-folder.service.js
+var import_vscode_languageserver_protocol2, __runInitializers5, __esDecorate5, WorkspaceFolderService;
+var init_workspace_folder_service = __esm({
+  "packages/language-server/build/server/services/workspace/workspace-folder.service.js"() {
+    "use strict";
+    import_vscode_languageserver_protocol2 = __toESM(require_main3(), 1);
+    init_di();
+    init_decorators2();
+    init_tokens2();
+    __runInitializers5 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    __esDecorate5 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    WorkspaceFolderService = (() => {
+      let _classDecorators = [lspService(), inject({
+        inject: [PathIsInsideToken, UriModuleToken, NormalizeFsPathToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      let _instanceExtraInitializers = [];
+      let _clearCache_decorators;
+      var WorkspaceFolderService2 = class {
+        static {
+          __name(this, "WorkspaceFolderService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          _clearCache_decorators = [notification(import_vscode_languageserver_protocol2.DidChangeWorkspaceFoldersNotification.type)];
+          __esDecorate5(this, null, _clearCache_decorators, { kind: "method", name: "clearCache", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "clearCache" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.clearCache, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
+          __esDecorate5(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkspaceFolderService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers5(_classThis, _classExtraInitializers);
+        }
+        #pathIsInside = __runInitializers5(this, _instanceExtraInitializers);
+        #uri;
+        #normalizeFsPath;
+        #cachedFolders;
+        constructor(pathIsInsideFn, uriModule, normalizeFsPathFn) {
+          this.#pathIsInside = pathIsInsideFn;
+          this.#uri = uriModule;
+          this.#normalizeFsPath = normalizeFsPathFn;
+        }
+        /**
+         * Clears the cached workspace folders when the set of workspace folders
+         * changes.
+         */
+        clearCache() {
+          this.#cachedFolders = void 0;
+        }
+        /**
+         * Gets the workspace folder for a given document. If the document is an
+         * untitled file, then the first open workspace folder is returned.
+         * @param connection The language server connection to use to get available
+         * workspace folders.
+         * @param document The document to get the workspace folder for.
+         */
+        async getWorkspaceFolder(connection, document) {
+          const { scheme, fsPath } = this.#uri.parse(document.uri);
+          if (scheme === "untitled") {
+            const folders = await this.#getWorkspaceFolders(connection);
+            const uri = folders?.[0]?.uri;
+            return uri ? this.#uri.parse(uri).fsPath : void 0;
+          }
+          if (!fsPath) {
+            return void 0;
+          }
+          const normalizedDocumentPath = this.#normalizeFsPath(fsPath);
+          if (!normalizedDocumentPath) {
+            return void 0;
+          }
+          const workspaceFolders = await this.#getWorkspaceFolders(connection);
+          if (!workspaceFolders) {
+            return void 0;
+          }
+          for (const { uri } of workspaceFolders) {
+            const workspacePath = this.#uri.parse(uri).fsPath;
+            const normalizedWorkspacePath = this.#normalizeFsPath(workspacePath);
+            if (!normalizedWorkspacePath) {
+              continue;
+            }
+            if (this.#pathIsInside(normalizedDocumentPath, normalizedWorkspacePath)) {
+              return workspacePath;
+            }
+          }
+          return void 0;
+        }
+        async #getWorkspaceFolders(connection) {
+          if (this.#cachedFolders !== void 0) {
+            return this.#cachedFolders;
+          }
+          const folders = await connection.workspace.getWorkspaceFolders();
+          this.#cachedFolders = folders ?? [];
+          return this.#cachedFolders;
+        }
+      };
+      return WorkspaceFolderService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js
+var import_node_path2, import_node_process3, __esDecorate6, __runInitializers6, packageManifestFilename, PackageRootCacheService;
+var init_package_root_cache_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/package-root-cache.service.js"() {
+    "use strict";
+    import_node_path2 = __toESM(require("node:path"), 1);
+    import_node_process3 = __toESM(require("node:process"), 1);
+    init_di();
+    init_utils();
+    init_package_root_service();
+    __esDecorate6 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers6 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    packageManifestFilename = "package.json";
+    PackageRootCacheService = (() => {
+      let _classDecorators = [inject({
+        inject: [PackageRootService]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var PackageRootCacheService2 = class {
+        static {
+          __name(this, "PackageRootCacheService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate6(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          PackageRootCacheService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers6(_classThis, _classExtraInitializers);
+        }
+        #packageRootFinder;
+        #cache = /* @__PURE__ */ new Map();
+        constructor(packageRootFinder) {
+          this.#packageRootFinder = packageRootFinder;
+        }
+        async determineWorkerRoot(workspaceFolder, codeFilename, stylelintPath) {
+          if (codeFilename) {
+            const codeRoot = await this.#getCachedPackageRoot(codeFilename);
+            if (codeRoot) {
+              return codeRoot;
+            }
+          }
+          if (stylelintPath) {
+            const absoluteStylelintPath = import_node_path2.default.isAbsolute(stylelintPath) ? stylelintPath : import_node_path2.default.join(workspaceFolder, stylelintPath);
+            const stylelintRoot = await this.#getCachedPackageRoot(absoluteStylelintPath);
+            if (stylelintRoot) {
+              return stylelintRoot;
+            }
+          }
+          return workspaceFolder;
+        }
+        invalidateForFile(filePath) {
+          if (!filePath) {
+            return;
+          }
+          if (import_node_path2.default.basename(filePath) !== packageManifestFilename) {
+            return;
+          }
+          this.#invalidatePackageRootCache(import_node_path2.default.dirname(filePath));
+        }
+        clearForWorkspace(workspaceFolder) {
+          this.#deleteCacheEntriesWithinPath(workspaceFolder);
+        }
+        clear() {
+          this.#cache.clear();
+        }
+        async #getCachedPackageRoot(startPath) {
+          const cacheKey = this.#normalizeCachePath(startPath);
+          const cached = this.#cache.get(cacheKey);
+          if (cached !== void 0) {
+            return cached ?? void 0;
+          }
+          const result = await this.#packageRootFinder.find(startPath);
+          this.#cache.set(cacheKey, result ?? null);
+          return result;
+        }
+        #invalidatePackageRootCache(directory) {
+          const normalizedDir = this.#normalizeCachePath(directory);
+          for (const [key, value] of this.#cache.entries()) {
+            const matchesKey = this.#isWithinNormalizedPath(normalizedDir, key);
+            const normalizedValue = value ? this.#normalizeCachePath(value) : void 0;
+            const matchesValue = normalizedValue !== void 0 && this.#isWithinNormalizedPath(normalizedDir, normalizedValue);
+            if (matchesKey || matchesValue) {
+              this.#cache.delete(key);
+            }
+          }
+        }
+        #deleteCacheEntriesWithinPath(rootPath) {
+          const normalizedRoot = this.#normalizeCachePath(rootPath);
+          for (const key of this.#cache.keys()) {
+            if (this.#isWithinNormalizedPath(normalizedRoot, key)) {
+              this.#cache.delete(key);
+            }
+          }
+        }
+        #normalizeCachePath(value) {
+          const absolute = import_node_path2.default.isAbsolute(value) ? value : import_node_path2.default.resolve(value);
+          return normalizeFsPath(absolute) ?? absolute;
+        }
+        #isWithinNormalizedPath(normalizedRoot, candidateNormalized) {
+          const comparableRoot = import_node_process3.default.platform === "win32" ? normalizedRoot.toLowerCase() : normalizedRoot;
+          const comparableCandidate = import_node_process3.default.platform === "win32" ? candidateNormalized.toLowerCase() : candidateNormalized;
+          if (comparableCandidate === comparableRoot) {
+            return true;
+          }
+          return comparableCandidate.startsWith(`${comparableRoot}${import_node_path2.default.sep}`);
+        }
+      };
+      return PackageRootCacheService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/pnp-configuration-cache.service.js
+var import_promises2, import_node_path3, import_node_process4, __esDecorate7, __runInitializers7, pnpRegisterFilenames, pnpLoaderFilename, pnpConfigFilenames, resolvePnPConfigKey, PnPConfigurationCacheService;
+var init_pnp_configuration_cache_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/pnp-configuration-cache.service.js"() {
+    "use strict";
+    import_promises2 = __toESM(require("node:fs/promises"), 1);
+    import_node_path3 = __toESM(require("node:path"), 1);
+    import_node_process4 = __toESM(require("node:process"), 1);
+    init_di();
+    init_utils();
+    init_tokens2();
+    __esDecorate7 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers7 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    pnpRegisterFilenames = [".pnp.cjs", ".pnp.js"];
+    pnpLoaderFilename = ".pnp.loader.mjs";
+    pnpConfigFilenames = /* @__PURE__ */ new Set([...pnpRegisterFilenames, pnpLoaderFilename]);
+    resolvePnPConfigKey = /* @__PURE__ */ __name((config) => `${config?.registerPath ?? ""}|${config?.loaderPath ?? ""}`, "resolvePnPConfigKey");
+    PnPConfigurationCacheService = (() => {
+      let _classDecorators = [inject({
+        inject: [FsPromisesModuleToken, PathModuleToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var PnPConfigurationCacheService2 = class {
+        static {
+          __name(this, "PnPConfigurationCacheService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate7(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          PnPConfigurationCacheService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers7(_classThis, _classExtraInitializers);
+        }
+        #fs;
+        #path;
+        #cache = /* @__PURE__ */ new Map();
+        constructor(fsModule, pathModule2) {
+          this.#fs = fsModule ?? import_promises2.default;
+          this.#path = pathModule2 ?? import_node_path3.default;
+        }
+        async findConfiguration(codeFilename) {
+          if (!codeFilename) {
+            return void 0;
+          }
+          let currentDir2 = this.#path.dirname(codeFilename);
+          const visitedKeys = [];
+          while (true) {
+            const cacheKey = this.#normalizeCachePath(currentDir2);
+            visitedKeys.push(cacheKey);
+            const cached = this.#cache.get(cacheKey);
+            if (cached !== void 0) {
+              if (cached) {
+                this.#populateCache(visitedKeys, cached);
+                return cached;
+              }
+            } else {
+              const config = await this.#readPnPConfiguration(currentDir2);
+              if (config) {
+                this.#cache.set(cacheKey, config);
+                this.#populateCache(visitedKeys, config);
+                return config;
+              }
+              this.#cache.set(cacheKey, null);
+            }
+            const parent = this.#path.dirname(currentDir2);
+            if (parent === currentDir2) {
+              return void 0;
+            }
+            currentDir2 = parent;
+          }
+        }
+        invalidateForFile(filePath) {
+          if (!filePath) {
+            return;
+          }
+          const baseName = this.#path.basename(filePath);
+          if (!pnpConfigFilenames.has(baseName)) {
+            return;
+          }
+          this.#invalidatePnPConfigCache(this.#path.dirname(filePath));
+        }
+        clearForWorkspace(workspaceFolder) {
+          this.#deleteCacheEntriesWithinPath(workspaceFolder);
+        }
+        clear() {
+          this.#cache.clear();
+        }
+        resolveConfigKey(config) {
+          return resolvePnPConfigKey(config);
+        }
+        async #readPnPConfiguration(directory) {
+          for (const filename of pnpRegisterFilenames) {
+            const registerPath = await this.#statIfFile(this.#path.join(directory, filename));
+            if (registerPath) {
+              const loaderPath = await this.#statIfFile(this.#path.join(directory, pnpLoaderFilename));
+              return { registerPath, loaderPath };
+            }
+          }
+          return void 0;
+        }
+        async #statIfFile(filePath) {
+          try {
+            const stats = await this.#fs.stat(filePath);
+            if (stats.isFile()) {
+              return filePath;
+            }
+          } catch {
+          }
+          return void 0;
+        }
+        #populateCache(visitedKeys, config) {
+          for (const key of visitedKeys) {
+            this.#cache.set(key, config);
+          }
+        }
+        #invalidatePnPConfigCache(directory) {
+          const normalizedDir = this.#normalizeCachePath(directory);
+          for (const [key, value] of this.#cache.entries()) {
+            const matchesKey = this.#isWithinNormalizedPath(normalizedDir, key);
+            const matchesConfig = value ? this.#pnpConfigMatchesDirectory(value, normalizedDir) : false;
+            if (matchesKey || matchesConfig) {
+              this.#cache.delete(key);
+            }
+          }
+        }
+        #pnpConfigMatchesDirectory(config, normalizedDir) {
+          if (config.registerPath) {
+            const registerDir = this.#normalizeCachePath(this.#path.dirname(config.registerPath));
+            if (this.#isWithinNormalizedPath(normalizedDir, registerDir)) {
+              return true;
+            }
+          }
+          if (config.loaderPath) {
+            const loaderDir = this.#normalizeCachePath(this.#path.dirname(config.loaderPath));
+            if (this.#isWithinNormalizedPath(normalizedDir, loaderDir)) {
+              return true;
+            }
+          }
+          return false;
+        }
+        #deleteCacheEntriesWithinPath(rootPath) {
+          const normalizedRoot = this.#normalizeCachePath(rootPath);
+          for (const key of this.#cache.keys()) {
+            if (this.#isWithinNormalizedPath(normalizedRoot, key)) {
+              this.#cache.delete(key);
+            }
+          }
+        }
+        #normalizeCachePath(value) {
+          const absolute = this.#path.isAbsolute(value) ? value : this.#path.resolve(value);
+          return normalizeFsPath(absolute) ?? absolute;
+        }
+        #isWithinNormalizedPath(normalizedRoot, candidateNormalized) {
+          const comparableRoot = import_node_process4.default.platform === "win32" ? normalizedRoot.toLowerCase() : normalizedRoot;
+          const comparableCandidate = import_node_process4.default.platform === "win32" ? candidateNormalized.toLowerCase() : candidateNormalized;
+          if (comparableCandidate === comparableRoot) {
+            return true;
+          }
+          return comparableCandidate.startsWith(`${comparableRoot}${import_node_path3.default.sep}`);
+        }
+      };
+      return PnPConfigurationCacheService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/worker-environment.service.js
+var __esDecorate8, __runInitializers8, WorkerEnvironmentService;
+var init_worker_environment_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/worker-environment.service.js"() {
+    "use strict";
+    init_di();
+    init_utils();
+    init_tokens2();
+    init_package_root_service();
+    init_pnp_configuration_cache_service();
+    __esDecorate8 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers8 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    WorkerEnvironmentService = (() => {
+      let _classDecorators = [inject({
+        inject: [FsPromisesModuleToken, PathModuleToken, PackageRootService]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var WorkerEnvironmentService2 = class {
+        static {
+          __name(this, "WorkerEnvironmentService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate8(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkerEnvironmentService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers8(_classThis, _classExtraInitializers);
+        }
+        #fs;
+        #path;
+        #packageRootService;
+        constructor(fsModule, pathModule2, packageRootService) {
+          this.#fs = fsModule;
+          this.#path = pathModule2;
+          this.#packageRootService = packageRootService;
+        }
+        async createKey(input) {
+          const normalizedRoot = this.#normalizePath(input.workerRoot);
+          const resolvedStylelintPath = this.#resolveMaybeRelative(input.stylelintPath, normalizedRoot);
+          const stylelintManifest = await this.#resolveStylelintManifest(resolvedStylelintPath);
+          const [packageJson, packageLock, yarnLock, pnpmLock, bunLock, pnpRegister, pnpLoader, stylelintEntry, stylelintPackage] = await Promise.all([
+            this.#statStamp(this.#path.join(normalizedRoot, "package.json")),
+            this.#statStamp(this.#path.join(normalizedRoot, "package-lock.json")),
+            this.#statStamp(this.#path.join(normalizedRoot, "yarn.lock")),
+            this.#statStamp(this.#path.join(normalizedRoot, "pnpm-lock.yaml")),
+            this.#statStamp(this.#path.join(normalizedRoot, "bun.lock")),
+            input.pnpConfig?.registerPath ? this.#statStamp(input.pnpConfig.registerPath) : void 0,
+            input.pnpConfig?.loaderPath ? this.#statStamp(input.pnpConfig.loaderPath) : void 0,
+            resolvedStylelintPath ? this.#statStamp(resolvedStylelintPath) : void 0,
+            stylelintManifest ? this.#statStamp(stylelintManifest) : void 0
+          ]);
+          return [
+            `root:${normalizedRoot}`,
+            `pkg:${packageJson ?? "-"}`,
+            `npmLock:${packageLock ?? "-"}`,
+            `yarnLock:${yarnLock ?? "-"}`,
+            `pnpmLock:${pnpmLock ?? "-"}`,
+            `bunLock:${bunLock ?? "-"}`,
+            `pnp:${resolvePnPConfigKey(input.pnpConfig)}`,
+            `pnpRegister:${pnpRegister ?? "-"}`,
+            `pnpLoader:${pnpLoader ?? "-"}`,
+            `stylelintPath:${resolvedStylelintPath ?? "-"}`,
+            `stylelintEntry:${stylelintEntry ?? "-"}`,
+            `stylelintPkg:${stylelintPackage ?? "-"}`
+          ].join("|");
+        }
+        async #resolveStylelintManifest(stylelintPath) {
+          if (!stylelintPath) {
+            return void 0;
+          }
+          const startDirectory = this.#guessDirectory(stylelintPath);
+          const packageRoot = await this.#packageRootService.find(startDirectory);
+          return packageRoot ? this.#path.join(packageRoot, "package.json") : void 0;
+        }
+        #guessDirectory(target) {
+          const extension = this.#path.extname(target);
+          if (extension) {
+            return this.#path.dirname(target);
+          }
+          return target;
+        }
+        async #statStamp(filePath) {
+          try {
+            const stats = await this.#fs.stat(filePath);
+            if (!stats.isFile()) {
+              return void 0;
+            }
+            return String(Math.trunc(stats.mtimeMs));
+          } catch {
+            return void 0;
+          }
+        }
+        #resolveMaybeRelative(target, base) {
+          if (!target) {
+            return void 0;
+          }
+          return this.#path.isAbsolute(target) ? target : this.#path.resolve(base, target);
+        }
+        #normalizePath(value) {
+          const absolute = this.#path.isAbsolute(value) ? value : this.#path.resolve(value);
+          return normalizeFsPath(absolute) ?? absolute;
+        }
+      };
+      return WorkerEnvironmentService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/worker-process.service.js
+var __esDecorate9, __runInitializers9, WorkerProcessService;
+var init_worker_process_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/worker-process.service.js"() {
+    "use strict";
+    init_di();
+    init_worker_process();
+    init_logging_service();
+    __esDecorate9 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers9 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    WorkerProcessService = (() => {
+      let _classDecorators = [inject({
+        inject: [loggingServiceToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var WorkerProcessService2 = class {
+        static {
+          __name(this, "WorkerProcessService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate9(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkerProcessService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers9(_classThis, _classExtraInitializers);
+        }
+        #logger;
+        constructor(loggingService) {
+          this.#logger = loggingService.createLogger(WorkerProcessService2);
+        }
+        createWorkerProcess(workerRoot, idleTimeoutMs = defaultWorkerIdleTimeoutMs, pnpConfig) {
+          this.#logger.debug("Creating Stylelint worker process", { workerRoot });
+          return new StylelintWorkerProcess(workerRoot, this.#logger.child({ workerRoot }), idleTimeoutMs, pnpConfig);
+        }
+      };
+      return WorkerProcessService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js
+var import_node_path4, import_node_process5, __esDecorate10, __runInitializers10, maxConsecutiveCrashes, workerRecoveryCooldownMs, suppressionNotificationIntervalMs, resolvePathKey, WorkerRegistryService;
+var init_worker_registry_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/worker-registry.service.js"() {
+    "use strict";
+    import_node_path4 = __toESM(require("node:path"), 1);
+    import_node_process5 = __toESM(require("node:process"), 1);
+    init_di();
+    init_utils();
+    init_worker_process();
+    init_logging_service();
+    init_pnp_configuration_cache_service();
+    init_worker_process_service();
+    __esDecorate10 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers10 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    maxConsecutiveCrashes = 3;
+    workerRecoveryCooldownMs = 30 * 1e3;
+    suppressionNotificationIntervalMs = 60 * 1e3;
+    resolvePathKey = /* @__PURE__ */ __name((folderPath) => {
+      const normalized = normalizeFsPath(folderPath);
+      return normalized ?? import_node_path4.default.resolve(folderPath);
+    }, "resolvePathKey");
+    WorkerRegistryService = (() => {
+      let _classDecorators = [inject({
+        inject: [loggingServiceToken, WorkerProcessService]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var WorkerRegistryService2 = class {
+        static {
+          __name(this, "WorkerRegistryService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate10(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkerRegistryService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers10(_classThis, _classExtraInitializers);
+        }
+        #logger;
+        #idleTimeoutMs;
+        #workers = /* @__PURE__ */ new Map();
+        #workerProcessFactory;
+        constructor(loggingService, workerFactory) {
+          this.#logger = loggingService.createLogger(WorkerRegistryService2);
+          this.#workerProcessFactory = workerFactory;
+        }
+        async runWithWorker(context, executor) {
+          const record = this.#getWorker(context);
+          const suppressedError = this.#maybeCreateSuppressedError(context.workspaceFolder, context.workerRoot, record.state);
+          if (suppressedError) {
+            throw suppressedError;
+          }
+          try {
+            const result = await executor(record.process);
+            this.#markWorkerHealthy(record.state);
+            return result;
+          } catch (error) {
+            if (error instanceof StylelintWorkerCrashedError) {
+              throw this.#handleWorkerCrash(context.workspaceFolder, context.workerRoot, record.state, error);
+            }
+            throw error;
+          }
+        }
+        notifyWorkspaceActivity(workspaceFolder) {
+          const workspaceKey = resolvePathKey(workspaceFolder);
+          this.#resetWorkspaceWorkers(workspaceKey);
+        }
+        notifyFileActivity(filePath) {
+          const normalized = normalizeFsPath(filePath);
+          if (!normalized) {
+            return;
+          }
+          const absolute = import_node_path4.default.isAbsolute(normalized) ? normalized : import_node_path4.default.resolve(normalized);
+          for (const workspaceKey of this.#workers.keys()) {
+            if (this.#pathWithinWorkspace(workspaceKey, absolute)) {
+              this.#resetWorkspaceWorkers(workspaceKey);
+            }
+          }
+        }
+        dispose(workspaceFolder) {
+          const workspaceKey = resolvePathKey(workspaceFolder);
+          const workers = this.#workers.get(workspaceKey);
+          if (!workers) {
+            return;
+          }
+          for (const packageWorkers of workers.values()) {
+            for (const record of packageWorkers.values()) {
+              record.process.dispose();
+            }
+          }
+          this.#workers.delete(workspaceKey);
+        }
+        disposeAll() {
+          for (const workers of this.#workers.values()) {
+            for (const packageWorkers of workers.values()) {
+              for (const record of packageWorkers.values()) {
+                record.process.dispose();
+              }
+            }
+          }
+          this.#workers.clear();
+        }
+        #getWorker(context) {
+          const workspaceKey = resolvePathKey(context.workspaceFolder);
+          let workspaceWorkers = this.#workers.get(workspaceKey);
+          if (!workspaceWorkers) {
+            workspaceWorkers = /* @__PURE__ */ new Map();
+            this.#workers.set(workspaceKey, workspaceWorkers);
+          }
+          const packageKey = resolvePathKey(context.workerRoot);
+          let packageWorkers = workspaceWorkers.get(packageKey);
+          if (!packageWorkers) {
+            packageWorkers = /* @__PURE__ */ new Map();
+            workspaceWorkers.set(packageKey, packageWorkers);
+          }
+          const pnpKey = resolvePnPConfigKey(context.pnpConfig);
+          const existing = packageWorkers.get(pnpKey);
+          if (existing) {
+            if (existing.process.isDisposed()) {
+              existing.process.dispose();
+              const replacement = this.#createWorkerRecord(context);
+              packageWorkers.set(pnpKey, replacement);
+              return replacement;
+            }
+            if (context.environmentKey && existing.environmentKey && existing.environmentKey !== context.environmentKey) {
+              existing.process.dispose();
+              const replacement = this.#createWorkerRecord(context);
+              packageWorkers.set(pnpKey, replacement);
+              return replacement;
+            }
+            if (context.environmentKey && !existing.environmentKey) {
+              existing.environmentKey = context.environmentKey;
+            }
+            return existing;
+          }
+          const record = this.#createWorkerRecord(context);
+          packageWorkers.set(pnpKey, record);
+          return record;
+        }
+        #createWorkerRecord(context) {
+          const worker = this.#workerProcessFactory.createWorkerProcess(context.workerRoot, this.#idleTimeoutMs, context.pnpConfig);
+          return {
+            process: worker,
+            environmentKey: context.environmentKey,
+            state: {
+              consecutiveCrashes: 0
+            }
+          };
+        }
+        #markWorkerHealthy(state) {
+          if (state.consecutiveCrashes === 0 && state.cooldownExpiresAt === void 0 && state.lastCrashError === void 0) {
+            return;
+          }
+          state.consecutiveCrashes = 0;
+          state.cooldownExpiresAt = void 0;
+          state.lastCrashError = void 0;
+          state.lastHandledCrashError = void 0;
+          state.lastNotificationAt = void 0;
+        }
+        #handleWorkerCrash(workspaceFolder, workerRoot, state, error) {
+          if (state.lastHandledCrashError !== error) {
+            state.consecutiveCrashes += 1;
+            state.lastHandledCrashError = error;
+          }
+          state.lastCrashError = error;
+          if (state.consecutiveCrashes < maxConsecutiveCrashes) {
+            return error;
+          }
+          const now = Date.now();
+          if (!state.cooldownExpiresAt || now >= state.cooldownExpiresAt) {
+            state.cooldownExpiresAt = now + workerRecoveryCooldownMs;
+            state.lastNotificationAt = void 0;
+            this.#logger?.warn("Stylelint worker entered cooldown after repeated crashes", {
+              workspaceFolder,
+              packageRoot: workerRoot,
+              consecutiveCrashes: state.consecutiveCrashes
+            });
+          }
+          return this.#buildUnavailableError(workspaceFolder, workerRoot, state, now);
+        }
+        #maybeCreateSuppressedError(workspaceFolder, workerRoot, state) {
+          const cooldown = state.cooldownExpiresAt;
+          if (!cooldown) {
+            return void 0;
+          }
+          const now = Date.now();
+          if (now >= cooldown) {
+            state.cooldownExpiresAt = void 0;
+            state.consecutiveCrashes = 0;
+            state.lastHandledCrashError = void 0;
+            state.lastNotificationAt = void 0;
+            return void 0;
+          }
+          return this.#buildUnavailableError(workspaceFolder, workerRoot, state, now);
+        }
+        #buildUnavailableError(workspaceFolder, workerRoot, state, now) {
+          const retryInMs = Math.max(0, (state.cooldownExpiresAt ?? now) - now);
+          const notifyUser = this.#shouldNotifySuppression(state, now);
+          return new StylelintWorkerUnavailableError({
+            workspaceFolder,
+            packageRoot: workerRoot,
+            retryInMs,
+            notifyUser,
+            lastCrashError: state.lastCrashError
+          });
+        }
+        #shouldNotifySuppression(state, now) {
+          if (!state.lastNotificationAt) {
+            state.lastNotificationAt = now;
+            return true;
+          }
+          if (now - state.lastNotificationAt >= suppressionNotificationIntervalMs) {
+            state.lastNotificationAt = now;
+            return true;
+          }
+          return false;
+        }
+        #resetWorkspaceWorkers(workspaceKey) {
+          const workers = this.#workers.get(workspaceKey);
+          if (!workers) {
+            return;
+          }
+          for (const [packageKey, packageWorkers] of workers.entries()) {
+            for (const [pnpKey, record] of packageWorkers.entries()) {
+              if (this.#releaseSuppressedWorker(record.state)) {
+                this.#logger?.debug("Resetting Stylelint worker after workspace activity", {
+                  workspaceFolder: workspaceKey,
+                  packageRoot: packageKey,
+                  pnpKey
+                });
+              }
+            }
+          }
+        }
+        #releaseSuppressedWorker(state) {
+          if (!state.cooldownExpiresAt) {
+            return false;
+          }
+          state.cooldownExpiresAt = void 0;
+          state.consecutiveCrashes = 0;
+          state.lastHandledCrashError = void 0;
+          state.lastNotificationAt = void 0;
+          return true;
+        }
+        #pathWithinWorkspace(workspaceKey, targetPath) {
+          const normalizedTarget = normalizeFsPath(import_node_path4.default.resolve(targetPath));
+          if (!normalizedTarget) {
+            return false;
+          }
+          const normalizedWorkspace = normalizeFsPath(workspaceKey) ?? workspaceKey;
+          const normalizeValue = /* @__PURE__ */ __name((value) => import_node_process5.default.platform === "win32" ? value.toLowerCase() : value, "normalizeValue");
+          const comparableWorkspace = normalizeValue(normalizedWorkspace);
+          const comparableTarget = normalizeValue(normalizedTarget);
+          if (comparableTarget === comparableWorkspace) {
+            return true;
+          }
+          return comparableTarget.startsWith(`${comparableWorkspace}${import_node_path4.default.sep}`);
+        }
+      };
+      return WorkerRegistryService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/workspace-stylelint.service.js
+var __esDecorate11, __runInitializers11, WorkspaceStylelintService;
+var init_workspace_stylelint_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/workspace-stylelint.service.js"() {
+    "use strict";
+    init_di();
+    init_worker_process();
+    init_logging_service();
+    init_package_root_cache_service();
+    init_pnp_configuration_cache_service();
+    init_worker_environment_service();
+    init_worker_registry_service();
+    __esDecorate11 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers11 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    WorkspaceStylelintService = (() => {
+      let _classDecorators = [inject({
+        inject: [
+          loggingServiceToken,
+          PackageRootCacheService,
+          PnPConfigurationCacheService,
+          WorkerEnvironmentService,
+          WorkerRegistryService
+        ]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var WorkspaceStylelintService2 = class {
+        static {
+          __name(this, "WorkspaceStylelintService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate11(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkspaceStylelintService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers11(_classThis, _classExtraInitializers);
+        }
+        #logger;
+        #packageRootCache;
+        #pnpConfigurationCache;
+        #workerEnvironment;
+        #workerRegistry;
+        constructor(loggingService, packageRootCache, pnpConfigurationCache, workerEnvironment, workerRegistry) {
+          this.#logger = loggingService.createLogger(WorkspaceStylelintService2);
+          this.#packageRootCache = packageRootCache;
+          this.#pnpConfigurationCache = pnpConfigurationCache;
+          this.#workerEnvironment = workerEnvironment;
+          this.#workerRegistry = workerRegistry;
+        }
+        async lint(request) {
+          const pnpConfig = await this.#pnpConfigurationCache.findConfiguration(request.options.codeFilename);
+          const workerRoot = await this.#packageRootCache.determineWorkerRoot(request.workspaceFolder, request.options.codeFilename, request.stylelintPath);
+          const environmentKey = await this.#workerEnvironment.createKey({
+            workerRoot,
+            stylelintPath: request.stylelintPath,
+            pnpConfig
+          });
+          try {
+            return await this.#workerRegistry.runWithWorker({
+              workspaceFolder: request.workspaceFolder,
+              workerRoot,
+              pnpConfig,
+              environmentKey
+            }, async (worker) => await worker.lint({
+              options: request.options,
+              stylelintPath: request.stylelintPath,
+              runnerOptions: request.runnerOptions
+            }));
+          } catch (error) {
+            if (error instanceof StylelintNotFoundError) {
+              this.#logger?.debug("Workspace Stylelint not found", {
+                workspaceFolder: request.workspaceFolder
+              });
+            }
+            throw error;
+          }
+        }
+        async resolve(request) {
+          const pnpConfig = await this.#pnpConfigurationCache.findConfiguration(request.codeFilename);
+          const workerRoot = await this.#packageRootCache.determineWorkerRoot(request.workspaceFolder, request.codeFilename, request.stylelintPath);
+          const environmentKey = await this.#workerEnvironment.createKey({
+            workerRoot,
+            stylelintPath: request.stylelintPath,
+            pnpConfig
+          });
+          try {
+            return await this.#workerRegistry.runWithWorker({
+              workspaceFolder: request.workspaceFolder,
+              workerRoot,
+              pnpConfig,
+              environmentKey
+            }, async (worker) => await worker.resolve({
+              stylelintPath: request.stylelintPath,
+              codeFilename: request.codeFilename,
+              runnerOptions: request.runnerOptions
+            }));
+          } catch (error) {
+            if (error instanceof StylelintNotFoundError) {
+              this.#logger?.debug("Workspace Stylelint not found during resolve", {
+                workspaceFolder: request.workspaceFolder
+              });
+            }
+            throw error;
+          }
+        }
+        async resolveConfig(request) {
+          const pnpConfig = await this.#pnpConfigurationCache.findConfiguration(request.filePath);
+          const workerRoot = await this.#packageRootCache.determineWorkerRoot(request.workspaceFolder, request.filePath, request.stylelintPath);
+          const environmentKey = await this.#workerEnvironment.createKey({
+            workerRoot,
+            stylelintPath: request.stylelintPath,
+            pnpConfig
+          });
+          try {
+            return await this.#workerRegistry.runWithWorker({
+              workspaceFolder: request.workspaceFolder,
+              workerRoot,
+              pnpConfig,
+              environmentKey
+            }, async (worker) => await worker.resolveConfig({
+              filePath: request.filePath,
+              stylelintPath: request.stylelintPath,
+              runnerOptions: request.runnerOptions
+            }));
+          } catch (error) {
+            if (error instanceof StylelintNotFoundError) {
+              this.#logger?.debug("Workspace Stylelint not found during resolveConfig", {
+                workspaceFolder: request.workspaceFolder
+              });
+            }
+            throw error;
+          }
+        }
+        dispose(workspaceFolder) {
+          this.#workerRegistry.dispose(workspaceFolder);
+          this.#packageRootCache.clearForWorkspace(workspaceFolder);
+          this.#pnpConfigurationCache.clearForWorkspace(workspaceFolder);
+        }
+        disposeAll() {
+          this.#workerRegistry.disposeAll();
+          this.#packageRootCache.clear();
+          this.#pnpConfigurationCache.clear();
+        }
+        notifyWorkspaceActivity(workspaceFolder) {
+          this.#workerRegistry.notifyWorkspaceActivity(workspaceFolder);
+        }
+        notifyFileActivity(filePath) {
+          this.#workerRegistry.notifyFileActivity(filePath);
+          this.#packageRootCache.invalidateForFile(filePath);
+          this.#pnpConfigurationCache.invalidateForFile(filePath);
+        }
+      };
+      return WorkspaceStylelintService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/stylelint-runtime/stylelint-runner.service.js
+var __esDecorate12, __runInitializers12, noopFormatter, StylelintRunnerService;
+var init_stylelint_runner_service = __esm({
+  "packages/language-server/build/server/services/stylelint-runtime/stylelint-runner.service.js"() {
+    "use strict";
+    init_main();
+    init_di();
+    init_process_linter_result();
+    init_types3();
+    init_tokens2();
+    init_worker_process();
+    init_logging_service();
+    init_package_root_service();
+    init_stylelint_options_service();
+    init_workspace_folder_service();
+    init_workspace_stylelint_service();
+    __esDecorate12 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers12 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    noopFormatter = /* @__PURE__ */ __name((() => ""), "noopFormatter");
+    StylelintRunnerService = (() => {
+      let _classDecorators = [inject({
+        inject: [
+          OsModuleToken,
+          PathModuleToken,
+          UriModuleToken,
+          FsPromisesModuleToken,
+          lspConnectionToken,
+          loggingServiceToken,
+          WorkspaceStylelintService,
+          WorkspaceFolderService,
+          StylelintOptionsService,
+          PackageRootService
+        ]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var StylelintRunnerService2 = class {
+        static {
+          __name(this, "StylelintRunnerService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate12(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          StylelintRunnerService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers12(_classThis, _classExtraInitializers);
+        }
+        /**
+         * The language server connection.
+         */
+        #connection;
+        /**
+         * The logger to use.
+         */
+        #logger;
+        /**
+         * Workspace worker service.
+         */
+        #workspaceService;
+        #workspaceFolderService;
+        #optionsBuilder;
+        #packageRootFinder;
+        #os;
+        #path;
+        #uri;
+        #fs;
+        constructor(osModule, pathModule2, uriModule, fsModule, connection, loggingService, workspaceService, workspaceFolderService, optionsBuilder, packageRootFinder) {
+          this.#os = osModule;
+          this.#path = pathModule2;
+          this.#uri = uriModule;
+          this.#fs = fsModule;
+          this.#connection = connection;
+          this.#logger = loggingService.createLogger(StylelintRunnerService2);
+          this.#workspaceService = workspaceService;
+          this.#workspaceFolderService = workspaceFolderService;
+          this.#optionsBuilder = optionsBuilder;
+          this.#packageRootFinder = packageRootFinder;
+        }
+        /**
+         * Lints the given document using Stylelint. The linting result is then
+         * converted to LSP diagnostics and returned.
+         * @param document
+         * @param linterOptions
+         * @param extensionOptions
+         */
+        async lintDocument(document, linterOptions = {}, runnerOptions = {}) {
+          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
+          const resolvedStylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, workspaceFolder ?? this.#getDocumentFolder(document));
+          const options = await this.#createLinterOptions(document, workspaceFolder, linterOptions, runnerOptions);
+          const diagnostics = await this.#lintWithWorkspaceService(document, workspaceFolder, options, runnerOptions, resolvedStylelintPath);
+          if (diagnostics) {
+            return diagnostics;
+          }
+          this.#logger?.info("No Stylelint found with which to lint document", {
+            uri: document.uri,
+            options: runnerOptions
+          });
+          return { diagnostics: [] };
+        }
+        /**
+         * Lint all files in a workspace folder.
+         * @param workspaceFolder Absolute path to the workspace folder.
+         * @param runnerOptions Extension options derived from settings.
+         */
+        async lintWorkspaceFolder(workspaceFolder, runnerOptions = {}) {
+          const subPackages = await this.#packageRootFinder.findSubPackages(workspaceFolder);
+          if (subPackages.length === 0) {
+            return this.#lintSingleRoot(workspaceFolder, workspaceFolder, runnerOptions);
+          }
+          this.#logger?.info("Found sub-packages in workspace folder", {
+            workspaceFolder,
+            subPackages
+          });
+          const baseGlob = runnerOptions.lintFilesGlob || "**/*.css";
+          const resolvedFiles = [];
+          for await (const file of this.#fs.glob(baseGlob, { cwd: workspaceFolder })) {
+            resolvedFiles.push(this.#path.resolve(workspaceFolder, file));
+          }
+          const filesByRoot = /* @__PURE__ */ new Map();
+          for (const absoluteFile of resolvedFiles) {
+            let bestMatch = workspaceFolder;
+            let bestDepth = 0;
+            for (const pkg of subPackages) {
+              const rel = this.#path.relative(pkg, absoluteFile);
+              if (!rel.startsWith("..") && !this.#path.isAbsolute(rel)) {
+                const depth = pkg.split(this.#path.sep).length;
+                if (depth > bestDepth) {
+                  bestMatch = pkg;
+                  bestDepth = depth;
+                }
+              }
+            }
+            const list2 = filesByRoot.get(bestMatch);
+            if (list2) {
+              list2.push(absoluteFile);
+            } else {
+              filesByRoot.set(bestMatch, [absoluteFile]);
+            }
+          }
+          const allDiagnostics = /* @__PURE__ */ new Map();
+          const lintPromises = [];
+          for (const [root, files] of filesByRoot) {
+            lintPromises.push(this.#lintSingleRoot(root, workspaceFolder, runnerOptions, files));
+          }
+          const results = await Promise.all(lintPromises);
+          for (const result of results) {
+            for (const [filePath, diagnostics] of result) {
+              allDiagnostics.set(filePath, diagnostics);
+            }
+          }
+          return allDiagnostics;
+        }
+        async #lintSingleRoot(cwd, workspaceFolder, runnerOptions, filePaths) {
+          const stylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, workspaceFolder);
+          const files = filePaths ? filePaths.map((f) => this.#path.relative(cwd, f).split(this.#path.sep).join("/")) : [runnerOptions.lintFilesGlob || "**/*.css"];
+          const options = await this.#createBaseOptions(this.#uri.file(cwd).toString(), workspaceFolder, runnerOptions, {
+            files,
+            cwd,
+            allowEmptyInput: true
+          });
+          this.#logger?.info("Linting folder", { cwd, workspaceFolder });
+          try {
+            const result = await this.#workspaceService.lint({
+              workspaceFolder: cwd,
+              options,
+              stylelintPath,
+              runnerOptions
+            });
+            if (!result) {
+              this.#logger?.info("No Stylelint found for folder", { cwd });
+              return /* @__PURE__ */ new Map();
+            }
+            return processMultiFileLinterResult(createRuleMetadataSourceFromSnapshot(result.ruleMetadata), result.linterResult, this.#logger, runnerOptions.rules?.customizations);
+          } catch (error) {
+            return this.#handleLintError(error, cwd, /* @__PURE__ */ new Map());
+          }
+        }
+        async resolve(document, runnerOptions = {}) {
+          if (!this.#workspaceService) {
+            return void 0;
+          }
+          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
+          const fallbackFolder = workspaceFolder ?? this.#getDocumentFolder(document);
+          if (!fallbackFolder) {
+            return void 0;
+          }
+          const stylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, fallbackFolder);
+          try {
+            const result = await this.#workspaceService.resolve({
+              workspaceFolder: fallbackFolder,
+              stylelintPath,
+              codeFilename: this.#uri.parse(document.uri).fsPath,
+              runnerOptions
+            });
+            return result ? {
+              entryPath: result.entryPath,
+              resolvedPath: result.resolvedPath,
+              version: result.version
+            } : void 0;
+          } catch (error) {
+            return this.#handleLintError(error, fallbackFolder, void 0);
+          }
+        }
+        async resolveConfig(document, runnerOptions = {}) {
+          if (!this.#workspaceService) {
+            return void 0;
+          }
+          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
+          const fallbackFolder = workspaceFolder ?? this.#getDocumentFolder(document);
+          if (!fallbackFolder) {
+            return void 0;
+          }
+          const stylelintPath = this.#resolveConfiguredStylelintPath(runnerOptions.stylelintPath, fallbackFolder);
+          const fsPath = this.#uri.parse(document.uri).fsPath;
+          if (!fsPath) {
+            return void 0;
+          }
+          try {
+            const result = await this.#workspaceService.resolveConfig({
+              workspaceFolder: fallbackFolder,
+              filePath: fsPath,
+              stylelintPath,
+              runnerOptions
+            });
+            return result?.config;
+          } catch (error) {
+            return this.#handleLintError(error, fallbackFolder, void 0);
+          }
+        }
+        async handleDocumentOpened(document) {
+          if (!this.#workspaceService) {
+            return;
+          }
+          const workspaceFolder = await this.#workspaceFolderService.getWorkspaceFolder(this.#connection, document);
+          const fallbackFolder = workspaceFolder ?? this.#getDocumentFolder(document);
+          if (!fallbackFolder) {
+            return;
+          }
+          this.#logger?.debug("Document opened, notifying workspace activity", {
+            workspaceFolder: fallbackFolder
+          });
+          this.#workspaceService.notifyWorkspaceActivity(fallbackFolder);
+        }
+        notifyWorkspaceActivity(workspaceFolder) {
+          this.#workspaceService?.notifyWorkspaceActivity(workspaceFolder);
+        }
+        handleWatchedFilesChanged(changes) {
+          if (!this.#workspaceService || changes.length === 0) {
+            return;
+          }
+          for (const change of changes) {
+            const fsPath = this.#uri.parse(change.uri).fsPath;
+            if (fsPath) {
+              this.#workspaceService.notifyFileActivity(fsPath);
+            }
+          }
+        }
+        #handleWorkerUnavailable(error, workspaceFolder) {
+          const retryInSeconds = Math.max(1, Math.ceil(error.retryInMs / 1e3));
+          const lastErrorMessage = error.lastCrashError?.message ?? error.lastCrashError?.originalError?.message;
+          this.#logger?.warn("Stylelint worker temporarily unavailable", {
+            workspaceFolder,
+            packageRoot: error.packageRoot,
+            retryInSeconds,
+            lastError: lastErrorMessage,
+            notifyUser: error.notifyUser
+          });
+        }
+        #resolveConfiguredStylelintPath(stylelintPath, baseFolder) {
+          if (!stylelintPath) {
+            return void 0;
+          }
+          const pathModule2 = this.#path;
+          if (pathModule2.isAbsolute(stylelintPath)) {
+            return stylelintPath;
+          }
+          if (baseFolder) {
+            return pathModule2.join(baseFolder, stylelintPath);
+          }
+          return pathModule2.resolve(stylelintPath);
+        }
+        async #createBaseOptions(resourceUri, workspaceFolder, runnerOptions, linterOptions = {}, overrides = {}) {
+          const baseOptions = await this.#optionsBuilder.build(resourceUri, workspaceFolder, linterOptions, runnerOptions);
+          const options = {
+            ...baseOptions,
+            ...overrides,
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            // @ts-ignore -- (TS2353) `computeEditInfo` option is available since v16.15.
+            computeEditInfo: true
+          };
+          if (options.formatter === void 0) {
+            options.formatter = noopFormatter;
+          }
+          return options;
+        }
+        #handleLintError(error, workspaceFolder, fallback) {
+          if (error instanceof StylelintNotFoundError) {
+            return fallback;
+          }
+          if (error instanceof StylelintWorkerUnavailableError) {
+            this.#handleWorkerUnavailable(error, workspaceFolder);
+            if (error.notifyUser) {
+              throw error;
+            }
+            return fallback;
+          }
+          throw error;
+        }
+        async #createLinterOptions(document, workspaceFolder, linterOptions, runnerOptions) {
+          const options = await this.#createBaseOptions(document.uri, workspaceFolder, runnerOptions, linterOptions, { code: document.getText() });
+          const codeFilename = this.#getCodeFilename(this.#uri.parse(document.uri).fsPath);
+          if (codeFilename) {
+            options.codeFilename = codeFilename;
+          } else if (!linterOptions?.config?.rules) {
+            options.config = { rules: {} };
+          }
+          return options;
+        }
+        #getCodeFilename(fsPath) {
+          if (!fsPath) {
+            return void 0;
+          }
+          if (this.#os.platform() === "win32") {
+            return fsPath.replace(/^[a-z]:/, (match) => match.toUpperCase());
+          }
+          return fsPath;
+        }
+        #getDocumentFolder(document) {
+          const { fsPath } = this.#uri.parse(document.uri);
+          if (!fsPath) {
+            return void 0;
+          }
+          return this.#path.dirname(fsPath);
+        }
+        async #lintWithWorkspaceService(document, workspaceFolder, options, runnerOptions, stylelintPath) {
+          if (!this.#workspaceService) {
+            return void 0;
+          }
+          const lintWorkspaceFolder = workspaceFolder ?? this.#getDocumentFolder(document);
+          if (!lintWorkspaceFolder) {
+            return void 0;
+          }
+          let cachedResult;
+          const convertResult = /* @__PURE__ */ __name((result) => processLinterResult(createRuleMetadataSourceFromSnapshot(result.ruleMetadata), result.linterResult, this.#logger, runnerOptions.rules?.customizations), "convertResult");
+          const runLint = /* @__PURE__ */ __name(async (lintOptions) => {
+            if (lintOptions.codeFilename && !lintOptions.disableDefaultIgnores && /(?:^|[\\/])node_modules(?:[\\/]|$)/.test(lintOptions.codeFilename)) {
+              return { diagnostics: [] };
+            }
+            const result = lintOptions === options && cachedResult ? cachedResult : await this.#workspaceService.lint({
+              workspaceFolder: lintWorkspaceFolder,
+              options: lintOptions,
+              stylelintPath,
+              runnerOptions
+            });
+            if (!result) {
+              throw new StylelintNotFoundError();
+            }
+            if (lintOptions === options) {
+              cachedResult = result;
+              if (this.#logger?.isDebugEnabled()) {
+                this.#logger.debug("Running Stylelint", {
+                  options: { ...lintOptions, code: "..." },
+                  workspaceFolder: lintWorkspaceFolder
+                });
+              }
+            }
+            const lintDiagnostics = convertResult(result);
+            const hasCssSyntaxErrors = result.linterResult.results?.some((lintResult) => lintResult.warnings?.some((warning) => warning.rule === "CssSyntaxError")) ?? false;
+            if (lintOptions.fix && hasCssSyntaxErrors) {
+              lintDiagnostics.code = void 0;
+              lintDiagnostics.output = void 0;
+            }
+            return lintDiagnostics;
+          }, "runLint");
+          try {
+            return await this.#runLintWithErrorHandling(runLint, options);
+          } catch (error) {
+            return this.#handleLintError(error, lintWorkspaceFolder, void 0);
+          }
+        }
+        async #runLintWithErrorHandling(runLint, options) {
+          try {
+            return await runLint(options);
+          } catch (err) {
+            if (!(err instanceof Error)) {
+              throw err;
+            }
+            const lintSyntax = /* @__PURE__ */ __name(async () => await runLint({ ...options, config: { rules: {} } }), "lintSyntax");
+            if (err.message.startsWith("No configuration provided for")) {
+              return await lintSyntax();
+            }
+            if (err.message.includes("No rules found within configuration")) {
+              const combinedResult = await lintSyntax();
+              combinedResult.diagnostics.push({
+                range: Range.create(Position.create(0, 0), Position.create(0, 0)),
+                message: err.message,
+                severity: DiagnosticSeverity.Error,
+                source: "Stylelint",
+                code: "no-rules-configured"
+              });
+              return combinedResult;
+            }
+            throw err;
+          }
+        }
+        disposeWorkspace(workspaceFolder) {
+          this.#workspaceService.dispose(workspaceFolder);
+        }
+        dispose() {
+          this.#workspaceService.disposeAll();
+        }
+      };
+      return StylelintRunnerService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/config/default-options.js
+var defaultLanguageServerOptions;
+var init_default_options = __esm({
+  "packages/language-server/build/server/config/default-options.js"() {
+    "use strict";
+    defaultLanguageServerOptions = {
+      codeAction: {
+        disableRuleComment: {
+          location: "separateLine"
+        }
+      },
+      config: null,
+      configFile: "",
+      configBasedir: "",
+      customSyntax: "",
+      ignoreDisables: false,
+      ignorePath: "",
+      packageManager: "npm",
+      reportDescriptionlessDisables: false,
+      reportInvalidScopeDisables: false,
+      reportNeedlessDisables: false,
+      run: "onType",
+      rules: {
+        customizations: []
+      },
+      snippet: ["css", "postcss"],
+      stylelintPath: "",
+      validate: ["css", "postcss"],
+      lintFiles: {
+        glob: "**/*.css"
+      }
+    };
+  }
+});
+
+// packages/language-server/build/server/services/workspace/workspace-options.service.js
+function extractStylelintSettings(settings) {
+  if (!settings || typeof settings !== "object") {
+    return void 0;
+  }
+  if ("stylelint" in settings) {
+    return settings.stylelint;
+  }
+  return settings;
+}
+var __esDecorate13, __runInitializers13, optionsCacheTtl, WorkspaceOptionsService;
+var init_workspace_options_service = __esm({
+  "packages/language-server/build/server/services/workspace/workspace-options.service.js"() {
+    "use strict";
+    init_di();
+    init_utils();
+    init_default_options();
+    init_tokens2();
+    init_logging_service();
+    __esDecorate13 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers13 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    __name(extractStylelintSettings, "extractStylelintSettings");
+    optionsCacheTtl = 2e3;
+    WorkspaceOptionsService = (() => {
+      let _classDecorators = [inject({
+        inject: [lspConnectionToken, loggingServiceToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var WorkspaceOptionsService2 = class {
+        static {
+          __name(this, "WorkspaceOptionsService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate13(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          WorkspaceOptionsService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers13(_classThis, _classExtraInitializers);
+        }
+        #connection;
+        #logger;
+        #supportsScopedConfiguration = false;
+        #globalOptions = mergeOptionsWithDefaults({}, defaultLanguageServerOptions);
+        #inFlightRequests = /* @__PURE__ */ new Map();
+        #cachedOptions = /* @__PURE__ */ new Map();
+        constructor(connection, loggingService) {
+          this.#connection = connection;
+          this.#logger = loggingService.createLogger(WorkspaceOptionsService2);
+        }
+        setSupportsWorkspaceConfiguration(supported) {
+          this.#supportsScopedConfiguration = supported;
+          if (!supported) {
+            this.clearCache();
+          }
+        }
+        #buildOptions(configuration) {
+          const merged = mergeOptionsWithDefaults(extractStylelintSettings(configuration) ?? {}, defaultLanguageServerOptions);
+          Object.freeze(merged);
+          return merged;
+        }
+        updateGlobalOptions(settings) {
+          this.#globalOptions = this.#buildOptions(settings);
+        }
+        clearCache() {
+          this.#inFlightRequests.clear();
+          this.#cachedOptions.clear();
+        }
+        delete(resource) {
+          this.#inFlightRequests.delete(resource);
+          this.#cachedOptions.delete(resource);
+        }
+        async getOptions(resource) {
+          if (!this.#supportsScopedConfiguration) {
+            return this.#globalOptions;
+          }
+          const cached = this.#cachedOptions.get(resource);
+          if (cached && Date.now() < cached.expiresAt) {
+            return cached.options;
+          }
+          let request = this.#inFlightRequests.get(resource);
+          if (!request) {
+            request = this.#requestScopedOptions(resource);
+            this.#inFlightRequests.set(resource, request);
+            request.then((options) => {
+              this.#cachedOptions.set(resource, {
+                options,
+                expiresAt: Date.now() + optionsCacheTtl
+              });
+            }).catch(() => void 0).finally(() => {
+              this.#inFlightRequests.delete(resource);
+            });
+          }
+          return request;
+        }
+        async #requestScopedOptions(resource) {
+          this.#logger?.debug("Requesting workspace options from client", { resource });
+          const configuration = await this.#connection.workspace.getConfiguration({
+            scopeUri: resource,
+            section: "stylelint"
+          });
+          return this.#buildOptions(configuration);
+        }
+      };
+      return WorkspaceOptionsService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/documents/document-fixes.service.js
+var __esDecorate14, __runInitializers14, getFixesFnToken, DocumentFixesService;
+var init_document_fixes_service = __esm({
+  "packages/language-server/build/server/services/documents/document-fixes.service.js"() {
+    "use strict";
+    init_di();
+    init_logging_service();
+    init_stylelint_runner_service();
+    init_workspace_options_service();
+    __esDecorate14 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers14 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    getFixesFnToken = createToken("DocumentFixesGetFixesFn");
+    DocumentFixesService = (() => {
+      let _classDecorators = [inject({
+        inject: [StylelintRunnerService, WorkspaceOptionsService, loggingServiceToken, getFixesFnToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var DocumentFixesService2 = class {
+        static {
+          __name(this, "DocumentFixesService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate14(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          DocumentFixesService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers14(_classThis, _classExtraInitializers);
+        }
+        #runner;
+        #options;
+        #logger;
+        #getFixes;
+        constructor(runner, options, loggingService, getFixesFn) {
+          this.#runner = runner;
+          this.#options = options;
+          this.#logger = loggingService.createLogger(DocumentFixesService2);
+          this.#getFixes = getFixesFn;
+        }
+        async getFixes(document, linterOptions = {}) {
+          try {
+            const options = await this.#options.getOptions(document.uri);
+            const edits = await this.#getFixes(this.#runner, document, linterOptions, options);
+            this.#logger?.debug("Fixes retrieved", { uri: document.uri, edits });
+            return edits;
+          } catch (error) {
+            this.#logger?.error("Error getting fixes", { uri: document.uri, error });
+            return [];
+          }
+        }
+        async resolveConfig(document) {
+          try {
+            const runnerOptions = await this.#options.getOptions(document.uri);
+            const config = await this.#runner.resolveConfig(document, runnerOptions);
+            this.#logger?.debug("Config resolved", { uri: document.uri, hasConfig: Boolean(config) });
+            return config;
+          } catch (error) {
+            this.#logger?.error("Error resolving config", { uri: document.uri, error });
+            return void 0;
+          }
+        }
+      };
+      return DocumentFixesService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/documents/index.js
+var init_documents2 = __esm({
+  "packages/language-server/build/server/services/documents/index.js"() {
+    "use strict";
+    init_document_diagnostics_service();
+    init_document_fixes_service();
+  }
+});
+
+// packages/language-server/build/server/services/infrastructure/command.service.js
+var LSP, __esDecorate15, __runInitializers15, CommandService;
+var init_command_service = __esm({
+  "packages/language-server/build/server/services/infrastructure/command.service.js"() {
+    "use strict";
+    LSP = __toESM(require_main3(), 1);
+    init_di();
+    init_tokens2();
+    init_logging_service();
+    __esDecorate15 = function(ctor, descriptorIn, decorators, contextIn, initializers, extraInitializers) {
+      function accept(f) {
+        if (f !== void 0 && typeof f !== "function") throw new TypeError("Function expected");
+        return f;
+      }
+      __name(accept, "accept");
+      var kind = contextIn.kind, key = kind === "getter" ? "get" : kind === "setter" ? "set" : "value";
+      var target = !descriptorIn && ctor ? contextIn["static"] ? ctor : ctor.prototype : null;
+      var descriptor = descriptorIn || (target ? Object.getOwnPropertyDescriptor(target, contextIn.name) : {});
+      var _, done = false;
+      for (var i = decorators.length - 1; i >= 0; i--) {
+        var context = {};
+        for (var p in contextIn) context[p] = p === "access" ? {} : contextIn[p];
+        for (var p in contextIn.access) context.access[p] = contextIn.access[p];
+        context.addInitializer = function(f) {
+          if (done) throw new TypeError("Cannot add initializers after decoration has completed");
+          extraInitializers.push(accept(f || null));
+        };
+        var result = (0, decorators[i])(kind === "accessor" ? { get: descriptor.get, set: descriptor.set } : descriptor[key], context);
+        if (kind === "accessor") {
+          if (result === void 0) continue;
+          if (result === null || typeof result !== "object") throw new TypeError("Object expected");
+          if (_ = accept(result.get)) descriptor.get = _;
+          if (_ = accept(result.set)) descriptor.set = _;
+          if (_ = accept(result.init)) initializers.unshift(_);
+        } else if (_ = accept(result)) {
+          if (kind === "field") initializers.unshift(_);
+          else descriptor[key] = _;
+        }
+      }
+      if (target) Object.defineProperty(target, contextIn.name, descriptor);
+      done = true;
+    };
+    __runInitializers15 = function(thisArg, initializers, value) {
+      var useValue = arguments.length > 2;
+      for (var i = 0; i < initializers.length; i++) {
+        value = useValue ? initializers[i].call(thisArg, value) : initializers[i].call(thisArg);
+      }
+      return useValue ? value : void 0;
+    };
+    CommandService = (() => {
+      let _classDecorators = [inject({
+        inject: [lspConnectionToken, loggingServiceToken]
+      })];
+      let _classDescriptor;
+      let _classExtraInitializers = [];
+      let _classThis;
+      var CommandService2 = class {
+        static {
+          __name(this, "CommandService");
+        }
+        static {
+          _classThis = this;
+        }
+        static {
+          const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
+          __esDecorate15(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
+          CommandService2 = _classThis = _classDescriptor.value;
+          if (_metadata) Object.defineProperty(_classThis, Symbol.metadata, { enumerable: true, configurable: true, writable: true, value: _metadata });
+          __runInitializers15(_classThis, _classExtraInitializers);
+        }
+        /**
+         * The language server connection.
+         */
+        #connection;
+        /**
+         * The logger to use.
+         */
+        #logger;
+        /**
+         * Command handlers by command name.
+         */
+        #commands = /* @__PURE__ */ new Map();
+        /**
+         * Instantiates a new command manager.
+         */
+        constructor(connection, loggingService) {
+          this.#connection = connection;
+          this.#logger = loggingService.createLogger(CommandService2);
+        }
+        dispose() {
+          this.#logger?.debug("Disposing command manager");
+          this.#commands.clear();
+          this.#connection.onExecuteCommand(() => void 0);
+        }
+        /**
+         * Registers a handler for a command.
+         */
+        on(name, handler) {
+          if (Array.isArray(name)) {
+            this.#logger?.debug("Registering commands", { commands: name });
+            for (const commandName of name) {
+              this.#commands.set(commandName, handler);
+            }
+            return {
+              dispose: /* @__PURE__ */ __name(() => {
+                this.#logger?.debug("Deregistering commands", { commands: name });
+                for (const commandName of name) {
+                  this.#commands.delete(commandName);
+                }
+              }, "dispose")
+            };
+          }
+          this.#logger?.debug("Registering command", { command: name });
+          this.#commands.set(name, handler);
+          return {
+            dispose: /* @__PURE__ */ __name(() => {
+              this.#logger?.debug("Deregistering command", { command: name });
+              this.#commands.delete(name);
+            }, "dispose")
+          };
+        }
+        /**
+         * Registers the command manager as a request handler.
+         */
+        register() {
+          this.#logger?.debug("Registering ExecuteCommandRequest handler");
+          this.#connection.onExecuteCommand(async (...params) => {
+            this.#logger?.debug("Received ExecuteCommandRequest", {
+              command: params[0].command,
+              arguments: params[0].arguments
+            });
+            const handler = this.#commands.get(params[0].command);
+            if (!handler) {
+              this.#logger?.debug("No handler registered for command", {
+                command: params[0].command
+              });
+              return {};
+            }
+            this.#logger?.debug("Executing command", {
+              command: params[0].command
+            });
+            try {
+              const response = await handler(...params);
+              this.#logger?.debug("Sending command response", {
+                command: params[0].command,
+                response
+              });
+              return response;
+            } catch (error) {
+              this.#logger?.error("Error executing command", {
+                command: params[0].command,
+                error
+              });
+              return new LSP.ResponseError(LSP.ErrorCodes.InternalError, `Error executing command ${params[0].command}`, error);
+            }
+          });
+          this.#logger?.debug("ExecuteCommandRequest handler registered");
+        }
+      };
+      return CommandService2 = _classThis;
+    })();
+  }
+});
+
+// packages/language-server/build/server/services/infrastructure/winston-logging.service.js
+function createWinstonLoggingService(level = "info", logPath) {
+  return {
+    token: loggingServiceToken,
+    inject: [lspConnectionToken, winstonToken],
+    useFactory: /* @__PURE__ */ __name((connection, winstonModule) => {
+      const transports = [
+        new LanguageServerTransport({
+          connection,
+          format: winstonModule.format.combine(new ErrorFormatter(), new LanguageServerFormatter({
+            connection,
+            preferredKeyOrder: ["service", "uri", "command"]
+          }))
+        })
+      ];
+      if (logPath) {
+        transports.push(new winstonModule.transports.File({
+          filename: logPath,
+          format: winstonModule.format.combine(new ErrorFormatter(), winstonModule.format.timestamp(), winstonModule.format.json())
+        }));
+      }
+      const logger = winstonModule.createLogger({
+        level,
+        transports,
+        levels: {
+          error: 0,
+          warn: 1,
+          info: 2,
+          debug: 3
+        }
+      });
+      return {
+        createLogger: /* @__PURE__ */ __name((component) => {
+          const serviceName = component.name || "UnknownService";
+          return logger.child({ service: serviceName });
+        }, "createLogger")
+      };
+    }, "useFactory")
+  };
+}
+var winstonToken;
+var init_winston_logging_service = __esm({
+  "packages/language-server/build/server/services/infrastructure/winston-logging.service.js"() {
+    "use strict";
+    init_di();
+    init_utils();
+    init_tokens2();
+    init_logging_service();
+    winstonToken = createToken("Winston");
+    __name(createWinstonLoggingService, "createWinstonLoggingService");
+  }
+});
+
+// packages/language-server/build/server/services/infrastructure/index.js
+var init_infrastructure = __esm({
+  "packages/language-server/build/server/services/infrastructure/index.js"() {
+    "use strict";
+    init_command_service();
+    init_logging_service();
+    init_notification_service();
+    init_winston_logging_service();
   }
 });
 
@@ -27497,12 +27551,12 @@ var init_stylelint = __esm({
 });
 
 // packages/language-server/build/server/types.js
-var import_vscode_languageserver_protocol, CommandId, CodeActionKind2, Status, StatusNotification;
+var import_vscode_languageserver_protocol3, CommandId, CodeActionKind2, Status, StatusNotification;
 var init_types7 = __esm({
   "packages/language-server/build/server/types.js"() {
     "use strict";
     init_main();
-    import_vscode_languageserver_protocol = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol3 = __toESM(require_main3(), 1);
     (function(CommandId2) {
       CommandId2["ApplyAutoFix"] = "stylelint.applyAutoFix";
       CommandId2["OpenRuleDoc"] = "stylelint.openRuleDoc";
@@ -27517,7 +27571,7 @@ var init_types7 = __esm({
       Status2[Status2["warn"] = 2] = "warn";
       Status2[Status2["error"] = 3] = "error";
     })(Status || (Status = {}));
-    StatusNotification = new import_vscode_languageserver_protocol.NotificationType("stylelint/status");
+    StatusNotification = new import_vscode_languageserver_protocol3.NotificationType("stylelint/status");
   }
 });
 
@@ -27839,10 +27893,11 @@ var init_code_action_service = __esm({
           }
           return {};
         }
-        async handleCodeAction(params) {
+        async handleCodeAction(params, token) {
           const { textDocument, context } = params;
           const { uri } = textDocument;
           this.#logger?.debug("Received onCodeAction", { uri, context });
+          throwIfCancelled(token);
           const document = this.#documents.get(uri);
           if (!document) {
             this.#logger?.debug("Unknown document, ignoring", { uri });
@@ -27855,7 +27910,8 @@ var init_code_action_service = __esm({
             });
             return [];
           }
-          const actions = await this.#getCodeActions(document, context);
+          throwIfCancelled(token);
+          const actions = await this.#getCodeActions(document, context, token);
           this.#logger?.debug("Returning code actions", { uri, count: actions.length });
           return actions;
         }
@@ -27863,10 +27919,11 @@ var init_code_action_service = __esm({
           const options = await this.#options.getOptions(document.uri);
           return options.validate.includes(document.languageId);
         }
-        async #getCodeActions(document, context) {
+        async #getCodeActions(document, context, token) {
           const only = context.only && new Set(context.only);
           const fixAllActions = [];
           if (only?.has(LSP4.CodeActionKind.SourceFixAll) || only?.has(CodeActionKind2.StylelintSourceFixAll)) {
+            throwIfCancelled(token);
             this.#logger?.debug('Creating "source-fix-all" code action');
             const action = await this.#getAutoFixAllAction(document);
             if (action) {
@@ -28000,11 +28057,11 @@ var init_code_actions = __esm({
 });
 
 // packages/language-server/build/server/services/lsp/auto-fix.service.js
-var import_vscode_languageserver_protocol2, __runInitializers19, __esDecorate19, AutoFixService;
+var import_vscode_languageserver_protocol4, __runInitializers19, __esDecorate19, AutoFixService;
 var init_auto_fix_service = __esm({
   "packages/language-server/build/server/services/lsp/auto-fix.service.js"() {
     "use strict";
-    import_vscode_languageserver_protocol2 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol4 = __toESM(require_main3(), 1);
     init_di();
     init_decorators2();
     init_tokens2();
@@ -28136,7 +28193,7 @@ var init_auto_fix_service = __esm({
             });
             return;
           }
-          const workspaceChange = new import_vscode_languageserver_protocol2.WorkspaceChange();
+          const workspaceChange = new import_vscode_languageserver_protocol4.WorkspaceChange();
           const textChange = workspaceChange.getTextEditChange(identifier);
           const edits = await this.#fixes.getFixes(document);
           edits.forEach((edit) => textChange.add(edit));
@@ -28264,7 +28321,7 @@ var init_completion_service = __esm({
           const options = await this.#options.getOptions(document.uri);
           return options.validate.includes(document.languageId) && options.snippet.includes(document.languageId);
         }
-        async handleCompletion(params) {
+        async handleCompletion(params, token) {
           const { textDocument, position } = params;
           const { uri } = textDocument;
           this.#logger?.debug("Received onCompletion", { uri, position });
@@ -28282,6 +28339,7 @@ var init_completion_service = __esm({
             }
             return [];
           }
+          throwIfCancelled(token);
           const diagnostics = this.#diagnostics.getDiagnostics(uri);
           if (!diagnostics || diagnostics.length === 0) {
             const items = [
@@ -30868,11 +30926,11 @@ var init_old_stylelint_warning_service = __esm({
 });
 
 // packages/language-server/build/server/services/lsp/validator.service.js
-var import_vscode_languageserver_protocol3, __runInitializers24, __esDecorate24, __setFunctionName, ValidatorLspService;
+var import_vscode_languageserver_protocol5, __runInitializers24, __esDecorate24, __setFunctionName, validationDebounceDelay, ValidatorLspService;
 var init_validator_service = __esm({
   "packages/language-server/build/server/services/lsp/validator.service.js"() {
     "use strict";
-    import_vscode_languageserver_protocol3 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol5 = __toESM(require_main3(), 1);
     init_di();
     init_utils();
     init_decorators2();
@@ -30926,6 +30984,7 @@ var init_validator_service = __esm({
       if (typeof name === "symbol") name = name.description ? "[".concat(name.description, "]") : "";
       return Object.defineProperty(f, "name", { configurable: true, value: prefix ? "".concat(prefix, " ", name) : name });
     };
+    validationDebounceDelay = 300;
     ValidatorLspService = (() => {
       let _classDecorators = [lspService(), inject({
         inject: [
@@ -30965,7 +31024,7 @@ var init_validator_service = __esm({
           _handleDocumentChanged_decorators = [textDocumentEvent("onDidChangeContent")];
           _handleDocumentSaved_decorators = [textDocumentEvent("onDidSave")];
           _handleDocumentClosed_decorators = [textDocumentEvent("onDidClose")];
-          _private_validateAll_decorators = [notification(import_vscode_languageserver_protocol3.DidChangeWatchedFilesNotification.type), notification(import_vscode_languageserver_protocol3.DidChangeConfigurationNotification.type)];
+          _private_validateAll_decorators = [notification(import_vscode_languageserver_protocol5.DidChangeWatchedFilesNotification.type), notification(import_vscode_languageserver_protocol5.DidChangeConfigurationNotification.type)];
           _clearAllProblems_decorators = [command(CommandId.ClearAllProblems)];
           _lintFiles_decorators = [command(CommandId.LintFiles)];
           __esDecorate24(this, null, _onInitialize_decorators, { kind: "method", name: "onInitialize", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "onInitialize" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.onInitialize, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
@@ -30991,6 +31050,8 @@ var init_validator_service = __esm({
         #logger;
         #uri;
         #publishedUris = /* @__PURE__ */ new Set();
+        #debounceTimers = /* @__PURE__ */ new Map();
+        #pendingValidations = /* @__PURE__ */ new Map();
         constructor(documents, options, diagnostics, runner, connection, loggingService, uriModule) {
           this.#documents = documents;
           this.#options = options;
@@ -31016,7 +31077,7 @@ var init_validator_service = __esm({
         async handleDocumentChanged({ document }) {
           const options = await this.#options.getOptions(document.uri);
           if (options.run === "onType") {
-            await this.#validate(document);
+            await this.#validateDebounced(document);
           }
         }
         async handleDocumentSaved({ document }) {
@@ -31026,13 +31087,41 @@ var init_validator_service = __esm({
           }
         }
         async handleDocumentClosed({ document }) {
+          this.#cancelPendingValidation(document.uri);
           await this.#clearDiagnostics(document);
         }
         async #shouldValidate(document) {
           const options = await this.#options.getOptions(document.uri);
           return options.validate.includes(document.languageId);
         }
+        /**
+         * Schedules a debounced validation for the document. If a previous
+         * debounce timer exists for the same URI it is cancelled first, so only
+         * the latest edit triggers a lint.
+         */
+        #validateDebounced(document) {
+          return new Promise((resolve) => {
+            this.#cancelPendingValidation(document.uri);
+            const timer = setTimeout(() => {
+              this.#debounceTimers.delete(document.uri);
+              const validation = this.#validate(document).finally(() => {
+                this.#pendingValidations.delete(document.uri);
+              });
+              this.#pendingValidations.set(document.uri, validation);
+              validation.then(resolve, resolve);
+            }, validationDebounceDelay);
+            this.#debounceTimers.set(document.uri, timer);
+          });
+        }
+        #cancelPendingValidation(uri) {
+          const timer = this.#debounceTimers.get(uri);
+          if (timer) {
+            clearTimeout(timer);
+            this.#debounceTimers.delete(uri);
+          }
+        }
         async #validate(document) {
+          const versionBefore = document.version;
           if (!await this.#shouldValidate(document)) {
             if (this.#diagnostics.getDiagnostics(document.uri).length > 0) {
               this.#logger?.debug("Document should not be validated, clearing diagnostics", {
@@ -31051,6 +31140,15 @@ var init_validator_service = __esm({
           const result = await this.#lintDocument(document);
           if (!result) {
             this.#logger?.debug("No lint result, ignoring", { uri: document.uri });
+            return;
+          }
+          const currentDocument = this.#documents.get(document.uri);
+          if (currentDocument && currentDocument.version !== versionBefore) {
+            this.#logger?.debug("Discarding stale lint result", {
+              uri: document.uri,
+              lintedVersion: versionBefore,
+              currentVersion: currentDocument.version
+            });
             return;
           }
           this.#logger?.debug("Sending diagnostics", {
@@ -31163,11 +31261,11 @@ var init_validator_service = __esm({
 });
 
 // packages/language-server/build/server/services/lsp/workspace-activity.service.js
-var import_vscode_languageserver_protocol4, __runInitializers25, __esDecorate25, WorkspaceActivityLspService;
+var import_vscode_languageserver_protocol6, __runInitializers25, __esDecorate25, WorkspaceActivityLspService;
 var init_workspace_activity_service = __esm({
   "packages/language-server/build/server/services/lsp/workspace-activity.service.js"() {
     "use strict";
-    import_vscode_languageserver_protocol4 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol6 = __toESM(require_main3(), 1);
     init_di();
     init_decorators2();
     init_stylelint_runner_service();
@@ -31231,7 +31329,7 @@ var init_workspace_activity_service = __esm({
         static {
           const _metadata = typeof Symbol === "function" && Symbol.metadata ? /* @__PURE__ */ Object.create(null) : void 0;
           _handleDocumentOpened_decorators = [textDocumentEvent("onDidOpen")];
-          _handleWatchedFilesChanged_decorators = [notification(import_vscode_languageserver_protocol4.DidChangeWatchedFilesNotification.type)];
+          _handleWatchedFilesChanged_decorators = [notification(import_vscode_languageserver_protocol6.DidChangeWatchedFilesNotification.type)];
           __esDecorate25(this, null, _handleDocumentOpened_decorators, { kind: "method", name: "handleDocumentOpened", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "handleDocumentOpened" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.handleDocumentOpened, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
           __esDecorate25(this, null, _handleWatchedFilesChanged_decorators, { kind: "method", name: "handleWatchedFilesChanged", static: false, private: false, access: { has: /* @__PURE__ */ __name((obj) => "handleWatchedFilesChanged" in obj, "has"), get: /* @__PURE__ */ __name((obj) => obj.handleWatchedFilesChanged, "get") }, metadata: _metadata }, null, _instanceExtraInitializers);
           __esDecorate25(null, _classDescriptor = { value: _classThis }, _classDecorators, { kind: "class", name: _classThis.name, metadata: _metadata }, null, _classExtraInitializers);
@@ -35275,11 +35373,11 @@ var init_lsp_service_runtime = __esm({
 function createLanguageServerFeature(options) {
   return new LanguageServerFeature(options.connection, options.runtimeFactory ?? defaultRuntimeFactory);
 }
-var import_vscode_languageserver_protocol5, defaultRuntimeFactory, LanguageServerFeature;
+var import_vscode_languageserver_protocol7, defaultRuntimeFactory, LanguageServerFeature;
 var init_language_server_feature = __esm({
   "packages/language-server/build/server/runtime/language-server-feature.js"() {
     "use strict";
-    import_vscode_languageserver_protocol5 = __toESM(require_main3(), 1);
+    import_vscode_languageserver_protocol7 = __toESM(require_main3(), 1);
     init_decorators2();
     init_services();
     init_tokens2();
@@ -35388,7 +35486,7 @@ var init_language_server_feature = __esm({
         this.#optionsService?.setSupportsWorkspaceConfiguration(this.#supportsWorkspaceConfiguration);
         const baseResult = {
           capabilities: {
-            textDocumentSync: import_vscode_languageserver_protocol5.TextDocumentSyncKind.Full
+            textDocumentSync: import_vscode_languageserver_protocol7.TextDocumentSyncKind.Full
           }
         };
         const decorated = this.#serviceRuntime?.runInitializers(params);
@@ -35401,7 +35499,7 @@ var init_language_server_feature = __esm({
         if (!this.#supportsWorkspaceConfiguration) {
           return;
         }
-        await this.#connection.client.register(import_vscode_languageserver_protocol5.DidChangeConfigurationNotification.type, {
+        await this.#connection.client.register(import_vscode_languageserver_protocol7.DidChangeConfigurationNotification.type, {
           section: "stylelint"
         });
       }
@@ -39524,7 +39622,7 @@ var require_brace_expansion = __commonJS({
           var x = numeric(n[0]);
           var y = numeric(n[1]);
           var width = Math.max(n[0].length, n[1].length);
-          var incr = n.length == 3 ? Math.abs(numeric(n[2])) : 1;
+          var incr = n.length == 3 ? Math.max(Math.abs(numeric(n[2])), 1) : 1;
           var test = lte;
           var reverse = y < x;
           if (reverse) {
